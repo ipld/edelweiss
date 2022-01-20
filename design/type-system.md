@@ -45,9 +45,17 @@ In practice, it is too difficult to ensure that a large and growing set of type 
 
 This enables us to work with an equivalent and simpler definition of the type relation:
 
-	"type1 is readable as type2" if and only if "values encoded in the IPLD data model of type1 can be decoded as values in the IPLD data model of type2".
+	(X) "type1 is readable as type2" if and only if "values encoded in the IPLD data model of type1 can be decoded as values in the IPLD data model of type2".
 
 We use the shorthand "type1 > type2" to denote "type1 is readable as type2". This notation is justified by the intuition that type1 must have more information than type2, if a value of type1 is to be used in places where a value of type2 is expected.
+
+We use the shorthand "type1 = type2" to denote that both "type1 > type2" and "type1 < type2" hold.
+
+Definition (X) sets the tone for the remainder of this document. Specifically, it makes type relations the primary focus of design discussions. Whereas, any choice of type representations is acceptable, as long as is does not violate (X).
+
+The rest of this document focuses on justifying our choices of type relations (where the justification criteria is singularly aimed at facilitating evolution of protocol definitions while maintaining interoperability). We mostly avoid prescribing reresentations to types in what follows, except in cases where it helps intuition.
+
+Our intention is that once type relations are set in stone, choosing corresponding representations that meet type constraints and optimize for side concerns (like readability or overhead) should be an easier and self-contained task.
 
 ## THE LEGACY OF IPLD SCHEMA
 
@@ -71,7 +79,7 @@ The key point here is that, unlike IPLD Schema, a protocol language aspires to r
 
 In designing type representations, there are a few requirements that arose from our experience with PL applications (like delegated routing and cache middleware, for instance):
 
-### Different type kinds should have _distinguishable representations_ (R1)
+### Composite types should have _distinguishable representations_ (R1)
 
 For instance, a struct should not be decodable from the encoding of a map; a list should not be decodable from the encoding of a struct. This rule is generally violated by existing IPLD schema representations, as this is not a design requirement in the IPLD schema use case. For instance, the dagjson encoding:
 
@@ -367,3 +375,37 @@ Optional values can also be modeled via unions and singletons, for example:
           PeerID : Bytes
           Address : OptionalAddress
      end
+
+### STRINGS
+
+A unicode character is a category of its own, having no semantic relationship to other primitive types. While many legacy languages equate characters to integral types, this is a coincidental relation arising from a specific way to represent a character. As a result, we think that a unicode character is appropriately modelled by a dedicated primitive type, let's call it `Char`, which is not interoperable with other primitive types. 
+
+Formally, if P is any non-Char primitive type, then P is not readable as Char and Char is not readable as P.
+
+Representation-wise, there are two possibilities:
+
+(C1) For practicallity, a single Char could be encoded/decoded as an IPLD Integer. This would introduce the semantically undesirable relationships Char > Int and Char < Int. However, their impact of introducing protocol incompatibilities in practice is low.
+
+(C2) Alternatively, a stricter approach would use a Char IPLD representation which cannot be confused with any other type. This would require wrapping a char in an IPLD struct, which adds space overhead. On the other hand, individual chars are rarely used in protocols and if so a large fraction of representation overhead is alleviated by compressing algorithms.
+
+Lists of Unicode characters are, by far, the most commonly used data types. And so it is justified to give them a type name, `String`. However, in order to make sure that semantics are clearly reflected, `String` should be no more than an alias for `List{Char}`.
+
+We have already postulated that a `Byte` is not interoperable with a `Char`:
+
+     Neither `Byte > Char`, nor `Char > Byte`.
+
+Appealing to the relations for lists, this implies:
+
+     Neither `List{Byte} > List{Char}`, nor `List{Char} > List{Byte}`.
+
+Substituting for aliases results in:
+
+     Neither `String > Bytes`, nor `Bytes > String`.
+
+This is what we want, because from a data semantics point of view. An unconstrained list of bytes has no canonical interpretation as a list of characters, and vice versa. Indeed, many modern high-level languages (which focus on correctness of data semantics, as opposed to representational convenience) deem strings and bytes as not interoperable (e.g. Julia, Lean, Rust, etc).
+
+Now let's turn our attention to the IPLD representation of strings and bytes.
+
+We have already postulated that `String = List{Char}`, which implies that `String` must be decodable from an encoding of `List{Char}`. However, type relations do not preclude a `String` (as well as, `List{Char}`) from also being encodable/decodable to/from an IPLD String that holds a valid unicode encoding, as well. (A similar logic applies to bytes.)
+
+As a result, `String = List{Char}` (respectively `Bytes = List{Byte}`) can be encoded to an IPLD String (respectively, IPLD Bytes) and decoded from both an IPLD String (respectively, IPLD Bytes) and the IPLD representation of `List{Char}` (respectively, `List{Byte}`).
