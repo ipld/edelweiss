@@ -21,3 +21,7 @@ type SingletonByte struct {
 type SingletonChar struct {
 	Char rune
 }
+
+type SingletonString struct {
+	String string
+}
