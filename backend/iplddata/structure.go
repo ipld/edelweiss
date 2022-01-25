@@ -26,8 +26,37 @@ func (v *Structure) Parse(n datamodel.Node) error {
 	if n.Kind() != ipld.Kind_Map {
 		return ErrNA
 	} else {
-		XXX
-		return nil
+		structureTagFound := false
+		iter := n.MapIterator()
+		for !iter.Done() {
+			kn, vn, _ := iter.Next()
+			kns, err := kn.AsString()
+			if err != nil {
+				return ErrNA
+			}
+			vns, _ := vn.AsString()
+			if kns == repnTypeKey { // parse type key
+				if vns == repnStructure {
+					structureTagFound = true
+					continue
+				} else {
+					return ErrNA
+				}
+			} else { // parse user keys
+				var f Field
+				f.Name = kns
+				if err = f.Value.Parse(vn); err != nil {
+					return ErrNA
+				} else {
+					*v = append(*v, f)
+				}
+			}
+		}
+		if structureTagFound {
+			return nil
+		} else {
+			return ErrNA
+		}
 	}
 }
 
@@ -37,11 +66,13 @@ func (Structure) Kind() datamodel.Kind {
 	return datamodel.Kind_Map
 }
 
-var repnStructure = basicnode.NewString("structure")
+const repnStructure = "structure"
+
+var repnStructureNode = basicnode.NewString(repnStructure)
 
 func (v Structure) LookupByString(s string) (datamodel.Node, error) {
 	if s == repnTypeKey {
-		return repnStructure, nil
+		return repnStructureNode, nil
 	}
 	for _, f := range v {
 		if f.Name == s {
@@ -126,7 +157,7 @@ func (iter *structureIterator) Next() (datamodel.Node, datamodel.Node, error) {
 	}
 	if iter.at == -1 {
 		iter.at++
-		return repnTypeKeyNode, repnStructure, nil
+		return repnTypeKeyNode, repnStructureNode, nil
 	} else {
 		v := iter.s[iter.at]
 		iter.at++
