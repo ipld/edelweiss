@@ -1,4 +1,4 @@
-package ipld
+package ipldbind
 
 import (
 	"github.com/ipld/edelweiss/def"
@@ -17,11 +17,11 @@ func (Bool) Type() Type {
 	return BoolType{}
 }
 
+// datamodel.Node implementation
+
 func (Bool) Kind() datamodel.Kind {
 	return datamodel.Kind_Bool
 }
-
-// datamodel.Node implementation
 
 func (Bool) LookupByString(string) (datamodel.Node, error) {
 	return nil, ErrNA
