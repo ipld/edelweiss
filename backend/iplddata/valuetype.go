@@ -24,7 +24,7 @@ import (
 // [ ] link (lib)
 // [x] list (lib+codegen)
 // [ ] map (lib+codegen)
-// [ ] structure (lib+codegen) <-
+// [x] structure (lib+codegen)
 // [ ] tuple (lib+codegen)
 // [ ] union (codegen) <-
 // [ ] ref+named (codegen)
@@ -33,7 +33,7 @@ import (
 //
 // [ ] specials:
 //	[ ] string (lib)
-//	[~] any (lib)
+//	[x] any (lib)
 //	[ ] nothing (lib)
 
 type Value interface {

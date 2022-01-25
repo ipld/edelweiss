@@ -9,7 +9,7 @@ import (
 type List []Any
 
 func (List) Def() def.Type {
-	return def.List{def.Any{}}
+	return def.List{Element: def.Any{}}
 }
 
 func (v *List) Parse(n datamodel.Node) error {

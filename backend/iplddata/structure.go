@@ -17,7 +17,7 @@ type Field struct {
 func (v Structure) Def() def.Type {
 	fs := make([]def.Field, len(v))
 	for i := range v {
-		fs[i] = def.Field{v[i].Name, v[i].Value.Def()}
+		fs[i] = def.Field{Name: v[i].Name, Type: v[i].Value.Def()}
 	}
 	return def.MakeStructure(fs...)
 }
