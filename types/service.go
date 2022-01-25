@@ -17,7 +17,7 @@ type Method struct {
 	Type Type
 }
 
-func MakeService(fields []Method) Service {
+func MakeService(fields ...Method) Service {
 	return Service{
 		Methods: makeMethods(fields),
 	}

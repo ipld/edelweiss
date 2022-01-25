@@ -16,7 +16,7 @@ type Case struct {
 	Type Type
 }
 
-func MakeUnion(cases []Case) Union {
+func MakeUnion(cases ...Case) Union {
 	return Union{
 		Cases: makeCases(cases),
 	}

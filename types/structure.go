@@ -16,7 +16,7 @@ type Field struct {
 	Type Type
 }
 
-func MakeStructure(fields []Field) Structure {
+func MakeStructure(fields ...Field) Structure {
 	return Structure{
 		Fields: makeFields(fields),
 	}
