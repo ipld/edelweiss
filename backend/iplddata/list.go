@@ -12,6 +12,19 @@ func (List) Def() def.Type {
 	return def.List{Element: def.Any{}}
 }
 
+func listEqual(x, y List) bool {
+	if len(x) != len(y) {
+		return false
+	} else {
+		for i := range x {
+			if x[i] != y[i] {
+				return false
+			}
+		}
+		return true
+	}
+}
+
 func (v *List) Parse(n datamodel.Node) error {
 	if n.Kind() != ipld.Kind_List {
 		return ErrNA

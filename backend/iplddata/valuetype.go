@@ -28,8 +28,8 @@ import (
 // [ ] tuple (lib+codegen)
 // [ ] union (codegen) <-
 // [ ] ref+named (codegen)
-// [ ] fn (lib+codegen)
-// [ ] service (codegen)
+// [ ] fn (lib+codegen) <-
+// [ ] service (codegen) <-
 //
 // [ ] specials:
 //	[ ] string (lib)

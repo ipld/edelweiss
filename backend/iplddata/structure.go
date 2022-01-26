@@ -22,6 +22,19 @@ func (v Structure) Def() def.Type {
 	return def.MakeStructure(fs...)
 }
 
+func structureEqual(x, y Structure) bool {
+	if len(x) != len(y) {
+		return false
+	} else {
+		for i := range x {
+			if x[i] != y[i] {
+				return false
+			}
+		}
+		return true
+	}
+}
+
 func (v *Structure) Parse(n datamodel.Node) error {
 	if n.Kind() != ipld.Kind_Map {
 		return ErrNA
