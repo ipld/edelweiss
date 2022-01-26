@@ -28,8 +28,8 @@ import (
 // [-] tuple (lib+codegen)
 // [ ] union (codegen)
 // [ ] ref+named (codegen)
-// [•] fn (lib+codegen)
-// [•] service (codegen)
+// [•] fn: call/return (lib+codegen)
+// [ ] service (codegen)
 //
 // [ ] specials:
 //	[•] string (lib)
@@ -37,7 +37,7 @@ import (
 
 type Value interface {
 	Def() def.Type
-	datamodel.Node
+	Node() datamodel.Node
 }
 
 type Parser interface {
@@ -45,7 +45,9 @@ type Parser interface {
 }
 
 var (
-	ErrNA         = fmt.Errorf("n/a")
-	ErrBounds     = fmt.Errorf("index out of bounds")
-	ErrUnexpected = fmt.Errorf("unexpected")
+	ErrNA           = fmt.Errorf("n/a")
+	ErrBounds       = fmt.Errorf("index out of bounds")
+	ErrUnexpected   = fmt.Errorf("unexpected")
+	ErrInvalid      = fmt.Errorf("invalid format")
+	ErrNotSupported = fmt.Errorf("not supported")
 )

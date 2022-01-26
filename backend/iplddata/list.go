@@ -25,6 +25,10 @@ func listEqual(x, y List) bool {
 	}
 }
 
+func (v List) Node() datamodel.Node {
+	return v
+}
+
 func (v *List) Parse(n datamodel.Node) error {
 	if n.Kind() != ipld.Kind_List {
 		return ErrNA
