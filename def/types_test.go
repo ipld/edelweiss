@@ -11,13 +11,21 @@ func TestServiceDef(t *testing.T) {
 			Field{"key", Ref{"Key"}},
 			Field{"value", Any{}},
 		)},
+		Named{"ResultOk", MakeStructure(
+			Field{"status", SingletonString{"ok"}},
+			Field{"value", Any{}},
+		)},
+		Named{"ResultError", MakeStructure(
+			Field{"status", SingletonString{"error"}},
+			Field{"value", String{}},
+		)},
 		MakeService(
 			Method{"Put1",
 				Fn{
 					Arg: Ref{"PutArgs"},
 					Return: MakeUnion(
-						Case{"ok", Any{}},
-						Case{"error", String{}},
+						Case{"ok", Ref{"ResultOk"}},
+						Case{"error", Ref{"ResultError"}},
 					),
 				},
 			},
@@ -25,9 +33,8 @@ func TestServiceDef(t *testing.T) {
 				Fn{
 					Arg: MakeTuple(Ref{"Key"}, Any{}),
 					Return: MakeUnion(
-						Case{"ok", Any{}},
-						Case{"error1", Nothing{}},
-						Case{"error2", Nothing{}},
+						Case{"ok", Ref{"ResultOk"}},
+						Case{"error", Ref{"ResultError"}},
 					),
 				},
 			},
@@ -35,8 +42,8 @@ func TestServiceDef(t *testing.T) {
 				Fn{
 					Arg: Ref{"Key"},
 					Return: MakeUnion(
-						Case{"found", Any{}},
-						Case{"not_found", Nothing{}},
+						Case{"found", Ref{"ResultOk"}},
+						Case{"not_found", Ref{"ResultError"}},
 					),
 				},
 			},

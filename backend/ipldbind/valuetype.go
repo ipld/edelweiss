@@ -34,7 +34,6 @@ import (
 // [ ] specials:
 //	[ ] string (lib)
 //	[ ] any (lib)
-//	[ ] nothing (lib)
 
 type Value interface {
 	IPLDNode() datamodel.Node

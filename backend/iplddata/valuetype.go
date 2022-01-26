@@ -23,18 +23,17 @@ import (
 //
 // [ ] link (lib)
 // [x] list (lib+codegen)
-// [ ] map (lib+codegen)
+// [-] map (lib+codegen)
 // [x] structure (lib+codegen)
-// [ ] tuple (lib+codegen)
-// [ ] union (codegen) <-
+// [-] tuple (lib+codegen)
+// [ ] union (codegen)
 // [ ] ref+named (codegen)
-// [ ] fn (lib+codegen) <-
-// [ ] service (codegen) <-
+// [•] fn (lib+codegen)
+// [•] service (codegen)
 //
 // [ ] specials:
-//	[ ] string (lib)
+//	[•] string (lib)
 //	[x] any (lib)
-//	[ ] nothing (lib)
 
 type Value interface {
 	Def() def.Type
