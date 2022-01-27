@@ -64,7 +64,7 @@ func (v List) LookupByIndex(i int64) (datamodel.Node, error) {
 	if i < 0 || i >= v.Length() {
 		return nil, ErrBounds
 	} else {
-		return v[i], nil
+		return v[i].Node(), nil
 	}
 }
 
@@ -136,7 +136,7 @@ func (iter *listIterator) Next() (int64, datamodel.Node, error) {
 	v := iter.list[iter.at]
 	i := int64(iter.at)
 	iter.at++
-	return i, v, nil
+	return i, v.Node(), nil
 }
 
 func (iter *listIterator) Done() bool {

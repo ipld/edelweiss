@@ -21,6 +21,10 @@ func (v *Bool) Parse(n datamodel.Node) error {
 	}
 }
 
+func (v Bool) Node() datamodel.Node {
+	return v
+}
+
 // datamodel.Node implementation
 
 func (Bool) Kind() datamodel.Kind {

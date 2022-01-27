@@ -21,26 +21,41 @@ func (v Structure) Def() def.Type {
 }
 
 func (v Structure) Node() datamodel.Node {
-	return v.ToMap().Node()
+	return v.Envelope().Node()
 }
 
-const structureEnvelopeTag = "structure"
-
-func (v Structure) ToMap() Map {
+func (v Structure) Envelope() Map {
 	m := make(Map, len(v)+1)
-	m[0] = makeEnvelopeTag(structureEnvelopeTag)
+	m[0] = makeEnvelopeTag(envelopeStructureTagValue)
 	for i := range v {
-		m[i+1] = KeyValue{Key: Any(String(v[i].Name)), Value: v[i].Value}
+		m[i+1] = KeyValue{Key: Any{String(v[i].Name)}, Value: v[i].Value}
 	}
 	return m
 }
 
 func (x *Structure) Parse(n datamodel.Node) error {
+	*x = Structure{}
 	var m Map
 	if err := m.Parse(n); err != nil {
 		return err
 	}
-	XXX
+	tagFound := false
+	for _, kv := range m {
+		if tag, ok := extractEnvelopeTag(kv); ok {
+			if tag != envelopeStructureTagValue {
+				return ErrInvalid
+			}
+		} else {
+			if n, ok := kv.Key.Value.(String); ok {
+				*x = append(*x, Field{Name: string(n), Value: kv.Value})
+			}
+		}
+	}
+	if tagFound {
+		return nil
+	} else {
+		return ErrInvalid
+	}
 }
 
 func structureEqual(x, y Structure) bool {

@@ -7,12 +7,12 @@ import (
 	"github.com/ipld/go-ipld-prime/datamodel"
 )
 
-// [ ] primitives:
+// [x] primitives:
 //	[x] bool (lib)
-//	[ ] int (lib)
-//	[ ] float (lib)
-//	[ ] byte (lib)
-//	[ ] char (lib)
+//	[x] int (lib)
+//	[x] float (lib)
+//	[x] byte (lib)
+//	[x] char (lib)
 //
 // [ ] singletons:
 //	[ ] singleton bool (codegen)
@@ -21,18 +21,18 @@ import (
 //	[ ] singleton byte (codegen)
 //	[ ] singleton char (codegen)
 //
-// [ ] link (lib)
+// [•] link (lib)
 // [x] list (lib+codegen)
-// [-] map (lib+codegen)
+// [x] map (lib+codegen)
 // [x] structure (lib+codegen)
 // [-] tuple (lib+codegen)
 // [ ] union (codegen)
 // [ ] ref+named (codegen)
-// [•] fn: call/return (lib+codegen)
+// [x] fn: call/return (lib+codegen)
 // [ ] service (codegen)
 //
-// [ ] specials:
-//	[•] string (lib)
+// [x] specials:
+//	[x] string (lib)
 //	[x] any (lib)
 
 type Value interface {

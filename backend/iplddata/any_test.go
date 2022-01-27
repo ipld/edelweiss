@@ -10,7 +10,7 @@ import (
 func TestAnyRoundtrip(t *testing.T) {
 	var x0 Any
 	x0.Value = Bool(true)
-	buf, err := ipld.Encode(x0, dagjson.Encode)
+	buf, err := ipld.Encode(x0.Node(), dagjson.Encode)
 	if err != nil {
 		t.Fatal(err)
 	}
