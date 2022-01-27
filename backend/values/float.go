@@ -1,4 +1,4 @@
-package iplddata
+package values
 
 import (
 	"github.com/ipld/edelweiss/def"

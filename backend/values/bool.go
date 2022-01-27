@@ -1,20 +1,28 @@
-package ipldbind
+package values
 
 import (
 	"github.com/ipld/edelweiss/def"
+	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/datamodel"
 )
 
 type Bool bool
 
-func (v Bool) IPLDNode() datamodel.Node {
-	return v
+func (Bool) Def() def.Type {
+	return def.Bool{}
 }
 
-// backend.Type implementation
+func (v *Bool) Parse(n datamodel.Node) error {
+	if n.Kind() != ipld.Kind_Bool {
+		return ErrNA
+	} else {
+		*(*bool)(v), _ = n.AsBool()
+		return nil
+	}
+}
 
-func (Bool) Type() Type {
-	return BoolType{}
+func (v Bool) Node() datamodel.Node {
+	return v
 }
 
 // datamodel.Node implementation
@@ -84,73 +92,10 @@ func (Bool) AsLink() (datamodel.Link, error) {
 }
 
 func (Bool) Prototype() datamodel.NodePrototype {
-	return BoolType{}
+	return nil // not needed
 }
 
-// datamodel.NodeAssembler implementation
-
-func (*Bool) BeginMap(sizeHint int64) (datamodel.MapAssembler, error) {
-	return nil, ErrNA
-}
-
-func (*Bool) BeginList(sizeHint int64) (datamodel.ListAssembler, error) {
-	return nil, ErrNA
-}
-
-func (*Bool) AssignNull() error {
-	return ErrNA
-}
-
-func (x *Bool) AssignBool(b bool) error {
-	*(*bool)(x) = b
-	return nil
-}
-
-func (*Bool) AssignInt(int64) error {
-	return ErrNA
-}
-
-func (*Bool) AssignFloat(float64) error {
-	return ErrNA
-}
-
-func (*Bool) AssignString(string) error {
-	return ErrNA
-}
-
-func (*Bool) AssignBytes([]byte) error {
-	return ErrNA
-}
-
-func (*Bool) AssignLink(datamodel.Link) error {
-	return ErrNA
-}
-
-func (x *Bool) AssignNode(n datamodel.Node) error {
-	if b, err := n.AsBool(); err != nil {
-		return err
-	} else {
-		return x.AssignBool(b)
-	}
-}
-
-// datamodel.NodeBuilder implementation
-
-func (x *Bool) Build() datamodel.Node {
-	return *x
-}
-
-func (x *Bool) Reset() {
-	*x = false
-}
-
-type BoolType struct{}
-
-func (BoolType) Def() def.Type {
-	return def.Bool{}
-}
-
-func (BoolType) NewBuilder() datamodel.NodeBuilder {
-	var v Bool
-	return &v
+func TryParseBool(n datamodel.Node) (Bool, error) {
+	var b Bool
+	return b, b.Parse(n)
 }
