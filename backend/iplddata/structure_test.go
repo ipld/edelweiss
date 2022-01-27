@@ -9,8 +9,11 @@ import (
 
 func TestStructureRoundtrip(t *testing.T) {
 	x0 := Structure{
-		// Field{Name: "f1", Value: Any{Bool(true)}},
-		// Field{Name: "f2", Value: Any{Bool(false)}},
+		Field{Name: "f1", Value: Any{Bool(true)}},
+		Field{Name: "f2", Value: Any{Bool(false)}},
+		Field{Name: "f3", Value: Any{String("haha")}},
+		Field{Name: "f4", Value: Any{Float(2.3)}},
+		Field{Name: "f5", Value: Any{Int(7)}},
 	}
 	buf, err := ipld.Encode(x0.Node(), dagjson.Encode)
 	if err != nil {
