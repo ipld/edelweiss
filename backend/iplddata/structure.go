@@ -41,10 +41,11 @@ func (x *Structure) Parse(n datamodel.Node) error {
 	}
 	tagFound := false
 	for _, kv := range m {
-		if tag, ok := extractEnvelopeTag(kv); ok {
+		if tag, ok := extractEnvelopeTag(kv); ok && !tagFound {
 			if tag != envelopeStructureTagValue {
 				return ErrInvalid
 			}
+			tagFound = true
 		} else {
 			if n, ok := kv.Key.Value.(String); ok {
 				*x = append(*x, Field{Name: string(n), Value: kv.Value})
