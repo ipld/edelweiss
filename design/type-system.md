@@ -256,12 +256,12 @@ We note here that the requirement (R1) — that type kinds have distinguishable 
 Union types play a special role in a protocol language, because they provide a unique opportunity to shape interoperability.
 
 From a programmer's standpoint, a union is a collection of cases, each distinguished by a unique name.
-Each case is associated with a type. Case types do not have to be unique. E.g. in pseudo-code:
+Each case is associated with a type. Case types are unrestricted, however there should be no "shadowed" cases. In pseudo-code, we might write a union as:
 
      union MyUnion
           Name1 : Type1
           Name2 : Type2
-          Name3 : Type2
+          Name3 : Type3
      end
 
 There are different strategies to represent a union — aka to encode/decode a union to an IPLD Data Model value. Each strategy induces different interoperability properties of the union type, as reflected in the "readable as" relationship.
@@ -278,7 +278,7 @@ This representation strategy induces the following simple type interoperability 
 
 - Let P and Q be two union types. Then:
 
-     P > Q, if for every case in P of type S, there is a case in Q of type T with T > S
+     P > Q, if for every case in P of type S, there is a case in Q of type T with S > T
 
 - Let T be any type and P be a union type. Then:
 
