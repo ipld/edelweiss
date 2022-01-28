@@ -4,6 +4,10 @@ type Structure struct {
 	Fields FieldListOrNone
 }
 
+func (Structure) Kind() string {
+	return "Structure"
+}
+
 type FieldListOrNone interface{}
 
 type FieldList struct {

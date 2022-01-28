@@ -4,6 +4,10 @@ type Union struct {
 	Cases CaseListOrNone
 }
 
+func (Union) Kind() string {
+	return "Union"
+}
+
 type CaseListOrNone interface{}
 
 type CaseList struct {

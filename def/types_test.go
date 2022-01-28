@@ -6,19 +6,24 @@ import (
 
 func TestServiceDef(t *testing.T) {
 	_ = Types{
+
 		Named{"Key", List{Byte{}}},
+
 		Named{"PutArgs", MakeStructure(
 			Field{"key", Ref{"Key"}},
 			Field{"value", Any{}},
 		)},
+
 		Named{"ResultOk", MakeStructure(
 			Field{"status", SingletonString{"ok"}},
 			Field{"value", Any{}},
 		)},
+
 		Named{"ResultError", MakeStructure(
 			Field{"status", SingletonString{"error"}},
 			Field{"value", String{}},
 		)},
+
 		Named{"RoutingService",
 			MakeService(
 				Method{"Put1",

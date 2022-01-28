@@ -1,5 +1,7 @@
 package def
 
-type Type interface{}
+type Type interface {
+	Kind() string
+}
 
 type Types []Type

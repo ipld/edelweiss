@@ -4,3 +4,7 @@ type Named struct {
 	Name string
 	Type Type
 }
+
+func (Named) Kind() string {
+	return "Named"
+}

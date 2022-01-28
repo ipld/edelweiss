@@ -4,6 +4,10 @@ type Tuple struct {
 	Slots SlotListOrNone
 }
 
+func (Tuple) Kind() string {
+	return "Tuple"
+}
+
 type SlotListOrNone interface{}
 
 type SlotList struct {

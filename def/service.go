@@ -5,6 +5,10 @@ type Service struct {
 	Methods MethodListOrNone
 }
 
+func (Service) Kind() string {
+	return "Service"
+}
+
 type MethodListOrNone interface{}
 
 type MethodList struct {

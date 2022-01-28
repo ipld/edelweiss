@@ -4,3 +4,7 @@ package def
 type Ref struct {
 	Name string
 }
+
+func (Ref) Kind() string {
+	return "Ref"
+}
