@@ -19,34 +19,36 @@ func TestServiceDef(t *testing.T) {
 			Field{"status", SingletonString{"error"}},
 			Field{"value", String{}},
 		)},
-		MakeService(
-			Method{"Put1",
-				Fn{
-					Arg: Ref{"PutArgs"},
-					Return: MakeUnion(
-						Case{"ok", Ref{"ResultOk"}},
-						Case{"error", Ref{"ResultError"}},
-					),
+		Named{"RoutingService",
+			MakeService(
+				Method{"Put1",
+					Fn{
+						Arg: Ref{"PutArgs"},
+						Return: MakeUnion(
+							Case{"ok", Ref{"ResultOk"}},
+							Case{"error", Ref{"ResultError"}},
+						),
+					},
 				},
-			},
-			Method{"Put2",
-				Fn{
-					Arg: MakeTuple(Ref{"Key"}, Any{}),
-					Return: MakeUnion(
-						Case{"ok", Ref{"ResultOk"}},
-						Case{"error", Ref{"ResultError"}},
-					),
+				Method{"Put2",
+					Fn{
+						Arg: MakeTuple(Ref{"Key"}, Any{}),
+						Return: MakeUnion(
+							Case{"ok", Ref{"ResultOk"}},
+							Case{"error", Ref{"ResultError"}},
+						),
+					},
 				},
-			},
-			Method{"Get",
-				Fn{
-					Arg: Ref{"Key"},
-					Return: MakeUnion(
-						Case{"found", Ref{"ResultOk"}},
-						Case{"not_found", Ref{"ResultError"}},
-					),
+				Method{"Get",
+					Fn{
+						Arg: Ref{"Key"},
+						Return: MakeUnion(
+							Case{"found", Ref{"ResultOk"}},
+							Case{"not_found", Ref{"ResultError"}},
+						),
+					},
 				},
-			},
-		),
+			),
+		},
 	}
 }
