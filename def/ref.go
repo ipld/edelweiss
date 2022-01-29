@@ -5,6 +5,10 @@ type Ref struct {
 	Name string
 }
 
+func (Ref) Deps() Types {
+	return nil
+}
+
 func (Ref) Kind() string {
 	return "Ref"
 }

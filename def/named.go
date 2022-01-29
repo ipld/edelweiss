@@ -5,6 +5,10 @@ type Named struct {
 	Type Type
 }
 
+func (n Named) Deps() Types {
+	return Types{n.Type}
+}
+
 func (Named) Kind() string {
 	return "Named"
 }

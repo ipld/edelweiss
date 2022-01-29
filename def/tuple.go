@@ -4,15 +4,33 @@ type Tuple struct {
 	Slots SlotListOrNone
 }
 
+func (t Tuple) Deps() Types {
+	if t.Slots == nil {
+		return nil
+	} else {
+		return t.Slots.Deps()
+	}
+}
+
 func (Tuple) Kind() string {
 	return "Tuple"
 }
 
-type SlotListOrNone interface{}
+type SlotListOrNone interface {
+	Deps() Types
+}
 
 type SlotList struct {
 	Slot Type
 	Rest SlotListOrNone
+}
+
+func (sl SlotList) Deps() Types {
+	if sl.Rest == nil {
+		return Types{sl.Slot}
+	} else {
+		return append(Types{sl.Slot}, sl.Rest.Deps()...)
+	}
 }
 
 func MakeTuple(slots ...Type) Tuple {
