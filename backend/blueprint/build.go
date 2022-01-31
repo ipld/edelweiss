@@ -18,7 +18,7 @@ type GoDir struct {
 }
 
 func (x GoDir) Build() error {
-	return XXX
+	panic("xxx")
 }
 
 type GoFile struct {
@@ -27,7 +27,7 @@ type GoFile struct {
 }
 
 func (x GoFile) Build() error {
-	return XXX
+	panic("xxx")
 }
 
 type Generator interface {

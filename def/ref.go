@@ -5,6 +5,8 @@ type Ref struct {
 	Name string
 }
 
+type Refs []Ref
+
 func (Ref) Deps() Types {
 	return nil
 }

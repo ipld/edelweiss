@@ -6,7 +6,7 @@ import (
 	"github.com/ipld/edelweiss/def"
 )
 
-type GoType interface {
+type GoTypeImpl interface {
 	Def() GoTypeDef
 	WriteDef(io.Writer)
 	WriteRef(io.Writer) // XXX: import context for aliases
@@ -15,7 +15,7 @@ type GoType interface {
 type GoTypeDef struct {
 	Def  def.Type
 	Ref  GoTypeRef
-	Deps []GoType
+	Deps []GoTypeImpl
 }
 
 type GoTypeRef struct {
