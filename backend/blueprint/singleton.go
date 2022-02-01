@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"io"
 
+	cg "github.com/ipld/edelweiss/backend/codegen"
 	"github.com/ipld/edelweiss/def"
 )
 
-func BuildSingletonBoolGoImpl(plan GoTypeImplPlan, typeDef def.SingletonBool, goTypeRef GoTypeRef) (GoTypeImpl, error) {
+func BuildSingletonBoolGoImpl(typeDef def.SingletonBool, goTypeRef cg.GoTypeRef) (cg.GoTypeImpl, error) {
 	return &GoSingletonImpl{
 		def: typeDef,
 		ref: goTypeRef,
@@ -24,7 +25,7 @@ func BuildSingletonBoolGoImpl(plan GoTypeImplPlan, typeDef def.SingletonBool, go
 	}, nil
 }
 
-func BuildSingletonFloatGoImpl(plan GoTypeImplPlan, typeDef def.SingletonFloat, goTypeRef GoTypeRef) (GoTypeImpl, error) {
+func BuildSingletonFloatGoImpl(typeDef def.SingletonFloat, goTypeRef cg.GoTypeRef) (cg.GoTypeImpl, error) {
 	return &GoSingletonImpl{
 		def: typeDef,
 		ref: goTypeRef,
@@ -41,7 +42,7 @@ func BuildSingletonFloatGoImpl(plan GoTypeImplPlan, typeDef def.SingletonFloat, 
 	}, nil
 }
 
-func BuildSingletonIntGoImpl(plan GoTypeImplPlan, typeDef def.SingletonInt, goTypeRef GoTypeRef) (GoTypeImpl, error) {
+func BuildSingletonIntGoImpl(typeDef def.SingletonInt, goTypeRef cg.GoTypeRef) (cg.GoTypeImpl, error) {
 	return &GoSingletonImpl{
 		def: typeDef,
 		ref: goTypeRef,
@@ -58,7 +59,7 @@ func BuildSingletonIntGoImpl(plan GoTypeImplPlan, typeDef def.SingletonInt, goTy
 	}, nil
 }
 
-func BuildSingletonByteGoImpl(plan GoTypeImplPlan, typeDef def.SingletonByte, goTypeRef GoTypeRef) (GoTypeImpl, error) {
+func BuildSingletonByteGoImpl(typeDef def.SingletonByte, goTypeRef cg.GoTypeRef) (cg.GoTypeImpl, error) {
 	return &GoSingletonImpl{
 		def: typeDef,
 		ref: goTypeRef,
@@ -75,7 +76,7 @@ func BuildSingletonByteGoImpl(plan GoTypeImplPlan, typeDef def.SingletonByte, go
 	}, nil
 }
 
-func BuildSingletonCharGoImpl(plan GoTypeImplPlan, typeDef def.SingletonChar, goTypeRef GoTypeRef) (GoTypeImpl, error) {
+func BuildSingletonCharGoImpl(typeDef def.SingletonChar, goTypeRef cg.GoTypeRef) (cg.GoTypeImpl, error) {
 	return &GoSingletonImpl{
 		def: typeDef,
 		ref: goTypeRef,
@@ -92,7 +93,7 @@ func BuildSingletonCharGoImpl(plan GoTypeImplPlan, typeDef def.SingletonChar, go
 	}, nil
 }
 
-func BuildSingletonStringGoImpl(plan GoTypeImplPlan, typeDef def.SingletonString, goTypeRef GoTypeRef) (GoTypeImpl, error) {
+func BuildSingletonStringGoImpl(typeDef def.SingletonString, goTypeRef cg.GoTypeRef) (cg.GoTypeImpl, error) {
 	return &GoSingletonImpl{
 		def: typeDef,
 		ref: goTypeRef,
@@ -111,7 +112,7 @@ func BuildSingletonStringGoImpl(plan GoTypeImplPlan, typeDef def.SingletonString
 
 type GoSingletonImpl struct {
 	def  def.Type
-	ref  GoTypeRef
+	ref  cg.GoTypeRef
 	data singletonBlueprintData
 }
 
@@ -119,7 +120,7 @@ func (g GoSingletonImpl) Def() def.Type {
 	return g.def
 }
 
-func (g GoSingletonImpl) GoTypeRef() GoTypeRef {
+func (g GoSingletonImpl) GoTypeRef() cg.GoTypeRef {
 	return g.ref
 }
 

@@ -3,6 +3,8 @@ package blueprint
 import (
 	"fmt"
 
+	blue "github.com/ipld/edelweiss/backend/blueprint"
+	cg "github.com/ipld/edelweiss/backend/codegen"
 	"github.com/ipld/edelweiss/def"
 )
 
@@ -54,7 +56,7 @@ func ComputeNameToDef(defs def.Types) (NameToDef, error) {
 
 // assign go names to defs: def -> go type ref
 
-type DefToGoTypeRef map[def.Type]GoTypeRef
+type DefToGoTypeRef map[def.Type]cg.GoTypeRef
 
 func AssignGoTypeRefToDef(defs def.Types) (DefToGoTypeRef, def.Refs, error) {
 	defToGo := DefToGoTypeRef{} // all defs that must be named and implemented in go
@@ -62,7 +64,7 @@ func AssignGoTypeRefToDef(defs def.Types) (DefToGoTypeRef, def.Refs, error) {
 	for _, typeDef := range defs {
 		switch t := typeDef.(type) {
 		case def.Named:
-			if err := assignGoTypeRefToDef(defToGo, refs, t.Type, &GoTypeRef{
+			if err := assignGoTypeRefToDef(defToGo, refs, t.Type, &cg.GoTypeRef{
 				PkgPath:  "", // for now everything lives in one package
 				TypeName: t.Name,
 			}); err != nil {
@@ -75,7 +77,7 @@ func AssignGoTypeRefToDef(defs def.Types) (DefToGoTypeRef, def.Refs, error) {
 	return defToGo, refs, nil
 }
 
-func assignGoTypeRefToDef(defToGo DefToGoTypeRef, refs def.Refs, typeDef def.Type, goTypeRef *GoTypeRef) error {
+func assignGoTypeRefToDef(defToGo DefToGoTypeRef, refs def.Refs, typeDef def.Type, goTypeRef *cg.GoTypeRef) error {
 	switch t := typeDef.(type) {
 	case def.Named:
 		return fmt.Errorf("named types must be at the top level")
@@ -88,7 +90,7 @@ func assignGoTypeRefToDef(defToGo DefToGoTypeRef, refs def.Refs, typeDef def.Typ
 		switch typeDef.(type) {
 		case def.Ref: // don't name anonymous references
 		default:
-			defToGo[typeDef] = GoTypeRef{
+			defToGo[typeDef] = cg.GoTypeRef{
 				PkgPath:  "", // for now everything lives in one package
 				TypeName: makeTypeName(defToGo, typeDef),
 			}
@@ -108,7 +110,7 @@ func makeTypeName(defToGo DefToGoTypeRef, typeDef def.Type) string {
 
 // link refs to go type refs: ref -> go type ref
 
-type RefToGoTypeRef map[def.Ref]GoTypeRef
+type RefToGoTypeRef map[def.Ref]cg.GoTypeRef
 
 func LinkRefToGoTypeRef(refs def.Refs, nameToDef NameToDef, defToGoTypeRef DefToGoTypeRef) (RefToGoTypeRef, error) {
 	refToGoTypeRef := RefToGoTypeRef{}
@@ -133,7 +135,7 @@ type GoTypeImplPlan struct {
 	RefToGoTypeRef // references used throughout definitions
 }
 
-type DefToGoTypeImpl map[def.Type]GoTypeImpl
+type DefToGoTypeImpl map[def.Type]cg.GoTypeImpl
 
 func BuildGoTypeImpl(plan GoTypeImplPlan) (DefToGoTypeImpl, error) {
 	defToGoTypeImpl := DefToGoTypeImpl{}
@@ -147,20 +149,20 @@ func BuildGoTypeImpl(plan GoTypeImplPlan) (DefToGoTypeImpl, error) {
 	return defToGoTypeImpl, nil
 }
 
-func buildGoTypeImpl(plan GoTypeImplPlan, typeDef def.Type, goTypeRef GoTypeRef) (GoTypeImpl, error) {
+func buildGoTypeImpl(plan GoTypeImplPlan, typeDef def.Type, goTypeRef cg.GoTypeRef) (cg.GoTypeImpl, error) {
 	switch d := typeDef.(type) {
 	case def.SingletonBool:
-		return BuildSingletonBoolGoImpl(plan, d, goTypeRef)
+		return blue.BuildSingletonBoolGoImpl(d, goTypeRef)
 	case def.SingletonFloat:
-		return BuildSingletonFloatGoImpl(plan, d, goTypeRef)
+		return blue.BuildSingletonFloatGoImpl(d, goTypeRef)
 	case def.SingletonInt:
-		return BuildSingletonIntGoImpl(plan, d, goTypeRef)
+		return blue.BuildSingletonIntGoImpl(d, goTypeRef)
 	case def.SingletonByte:
-		return BuildSingletonByteGoImpl(plan, d, goTypeRef)
+		return blue.BuildSingletonByteGoImpl(d, goTypeRef)
 	case def.SingletonChar:
-		return BuildSingletonCharGoImpl(plan, d, goTypeRef)
+		return blue.BuildSingletonCharGoImpl(d, goTypeRef)
 	case def.SingletonString:
-		return BuildSingletonStringGoImpl(plan, d, goTypeRef)
+		return blue.BuildSingletonStringGoImpl(d, goTypeRef)
 	default:
 		return nil, fmt.Errorf("unsupported user type definition %#v", typeDef)
 	}
