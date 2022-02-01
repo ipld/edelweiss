@@ -1,4 +1,4 @@
-package blueprint
+package compile
 
 import (
 	"fmt"

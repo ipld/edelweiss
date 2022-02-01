@@ -1,6 +1,9 @@
 package blueprint
 
-type singletonBlueprintData struct {
+import "html/template"
+
+type singletonBlueprint struct {
+	// type dependent
 	TypeName         string
 	IPLDKindName     string
 	IPLDAsMethodName string
@@ -9,13 +12,18 @@ type singletonBlueprintData struct {
 	AsIntReturns     string
 	AsFloatReturns   string
 	AsStringReturns  string
+	// file context dependent
+	IPLDPkgAlias      string
+	DatamodelPkgAlias string
 }
 
-const singletonBlueprint = `
+var singletonTemplateCompiled = template.Must(template.New("singleton").Parse(singletonTemplateSrc))
+
+const singletonTemplateSrc = `
 type {{.TypeName}} struct{}
 
-func ({{.TypeName}}) Parse(n datamodel.Node) error {
-	if n.Kind() != ipld.{{.IPLDKindName}} {
+func ({{.TypeName}}) Parse(n {{.DatamodelPkgAlias}}.Node) error {
+	if n.Kind() != {{.IPLDPkgAlias}}.{{.IPLDKindName}} {
 		return ErrNA
 	}
 	if n.{{.IPLDAsMethodName}}() != {{.IPLDValueLiteral}} {
@@ -24,35 +32,35 @@ func ({{.TypeName}}) Parse(n datamodel.Node) error {
 	return nil
 }
 
-func (v {{.TypeName}}) Node() datamodel.Node {
+func (v {{.TypeName}}) Node() {{.DatamodelPkgAlias}}.Node {
 	return v
 }
 
-func ({{.TypeName}}) Kind() datamodel.Kind {
-	return datamodel.{{.IPLDKindName}}
+func ({{.TypeName}}) Kind() {{.DatamodelPkgAlias}}.Kind {
+	return {{.DatamodelPkgAlias}}.{{.IPLDKindName}}
 }
 
-func ({{.TypeName}}) LookupByString(string) (datamodel.Node, error) {
+func ({{.TypeName}}) LookupByString(string) ({{.DatamodelPkgAlias}}.Node, error) {
 	return nil, ErrNA
 }
 
-func ({{.TypeName}}) LookupByNode(key datamodel.Node) (datamodel.Node, error) {
+func ({{.TypeName}}) LookupByNode(key {{.DatamodelPkgAlias}}.Node) ({{.DatamodelPkgAlias}}.Node, error) {
 	return nil, ErrNA
 }
 
-func ({{.TypeName}}) LookupByIndex(idx int64) (datamodel.Node, error) {
+func ({{.TypeName}}) LookupByIndex(idx int64) ({{.DatamodelPkgAlias}}.Node, error) {
 	return nil, ErrNA
 }
 
-func ({{.TypeName}}) LookupBySegment(seg datamodel.PathSegment) (datamodel.Node, error) {
+func ({{.TypeName}}) LookupBySegment(seg {{.DatamodelPkgAlias}}.PathSegment) ({{.DatamodelPkgAlias}}.Node, error) {
 	return nil, ErrNA
 }
 
-func ({{.TypeName}}) MapIterator() datamodel.MapIterator {
+func ({{.TypeName}}) MapIterator() {{.DatamodelPkgAlias}}.MapIterator {
 	return nil
 }
 
-func ({{.TypeName}}) ListIterator() datamodel.ListIterator {
+func ({{.TypeName}}) ListIterator() {{.DatamodelPkgAlias}}.ListIterator {
 	return nil
 }
 
@@ -88,11 +96,11 @@ func ({{.TypeName}}) AsBytes() ([]byte, error) {
 	return nil, ErrNA
 }
 
-func ({{.TypeName}}) AsLink() (datamodel.Link, error) {
+func ({{.TypeName}}) AsLink() ({{.DatamodelPkgAlias}}.Link, error) {
 	return nil, ErrNA
 }
 
-func ({{.TypeName}}) Prototype() datamodel.NodePrototype {
+func ({{.TypeName}}) Prototype() {{.DatamodelPkgAlias}}.NodePrototype {
 	return nil
 }
 `

@@ -12,7 +12,7 @@ func BuildSingletonBoolGoImpl(typeDef def.SingletonBool, goTypeRef cg.GoTypeRef)
 	return &GoSingletonImpl{
 		def: typeDef,
 		ref: goTypeRef,
-		data: singletonBlueprintData{
+		blue: singletonBlueprint{
 			TypeName:         goTypeRef.TypeName,
 			IPLDKindName:     "Kind_Bool",
 			IPLDAsMethodName: "AsBool",
@@ -29,7 +29,7 @@ func BuildSingletonFloatGoImpl(typeDef def.SingletonFloat, goTypeRef cg.GoTypeRe
 	return &GoSingletonImpl{
 		def: typeDef,
 		ref: goTypeRef,
-		data: singletonBlueprintData{
+		blue: singletonBlueprint{
 			TypeName:         goTypeRef.TypeName,
 			IPLDKindName:     "Kind_Float",
 			IPLDAsMethodName: "AsFloat",
@@ -46,7 +46,7 @@ func BuildSingletonIntGoImpl(typeDef def.SingletonInt, goTypeRef cg.GoTypeRef) (
 	return &GoSingletonImpl{
 		def: typeDef,
 		ref: goTypeRef,
-		data: singletonBlueprintData{
+		blue: singletonBlueprint{
 			TypeName:         goTypeRef.TypeName,
 			IPLDKindName:     "Kind_Int",
 			IPLDAsMethodName: "AsInt",
@@ -63,7 +63,7 @@ func BuildSingletonByteGoImpl(typeDef def.SingletonByte, goTypeRef cg.GoTypeRef)
 	return &GoSingletonImpl{
 		def: typeDef,
 		ref: goTypeRef,
-		data: singletonBlueprintData{
+		blue: singletonBlueprint{
 			TypeName:         goTypeRef.TypeName,
 			IPLDKindName:     "Kind_Int",
 			IPLDAsMethodName: "AsInt",
@@ -80,7 +80,7 @@ func BuildSingletonCharGoImpl(typeDef def.SingletonChar, goTypeRef cg.GoTypeRef)
 	return &GoSingletonImpl{
 		def: typeDef,
 		ref: goTypeRef,
-		data: singletonBlueprintData{
+		blue: singletonBlueprint{
 			TypeName:         goTypeRef.TypeName,
 			IPLDKindName:     "Kind_Int",
 			IPLDAsMethodName: "AsInt",
@@ -97,7 +97,7 @@ func BuildSingletonStringGoImpl(typeDef def.SingletonString, goTypeRef cg.GoType
 	return &GoSingletonImpl{
 		def: typeDef,
 		ref: goTypeRef,
-		data: singletonBlueprintData{
+		blue: singletonBlueprint{
 			TypeName:         goTypeRef.TypeName,
 			IPLDKindName:     "Kind_String",
 			IPLDAsMethodName: "AsString",
@@ -113,7 +113,7 @@ func BuildSingletonStringGoImpl(typeDef def.SingletonString, goTypeRef cg.GoType
 type GoSingletonImpl struct {
 	def  def.Type
 	ref  cg.GoTypeRef
-	data singletonBlueprintData
+	blue singletonBlueprint
 }
 
 func (g GoSingletonImpl) Def() def.Type {
@@ -124,10 +124,12 @@ func (g GoSingletonImpl) GoTypeRef() cg.GoTypeRef {
 	return g.ref
 }
 
-func (g GoSingletonImpl) WriteDef(w io.Writer) (int, error) {
-	panic("XXX")
+func (g GoSingletonImpl) WriteDef(ctx cg.GoFileContext, w io.Writer) error {
+	g.blue.IPLDPkgAlias = ctx.RequireImport("github.com/ipld/go-ipld-prime").Alias
+	g.blue.DatamodelPkgAlias = ctx.RequireImport("github.com/ipld/go-ipld-prime/datamodel").Alias
+	return singletonTemplateCompiled.Execute(w, g.blue)
 }
 
-func (g GoSingletonImpl) WriteRef(w io.Writer) (int, error) {
-	return g.ref.WriteRef(w)
+func (g GoSingletonImpl) WriteRef(ctx cg.GoFileContext, w io.Writer) error {
+	return g.ref.WriteRef(ctx, w)
 }

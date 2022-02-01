@@ -1,6 +1,7 @@
 package codegen
 
 import (
+	"fmt"
 	"io"
 
 	"github.com/ipld/edelweiss/def"
@@ -11,13 +12,14 @@ type GoTypeRef struct {
 	TypeName string // go type name
 }
 
-func (g GoTypeRef) WriteRef(w io.Writer) (int, error) {
-	panic("XXX")
+func (g GoTypeRef) WriteRef(ctx GoFileContext, w io.Writer) error {
+	_, err := fmt.Fprintf(w, "%s.%s", ctx.RequireImport(g.PkgPath).Alias, g.TypeName)
+	return err
 }
 
 type GoTypeImpl interface {
 	Def() def.Type
 	GoTypeRef() GoTypeRef
-	WriteDef(io.Writer) (int, error)
-	WriteRef(io.Writer) (int, error)
+	WriteDef(GoFileContext, io.Writer) error
+	WriteRef(GoFileContext, io.Writer) error
 }
