@@ -8,6 +8,12 @@ import (
 	"github.com/ipld/edelweiss/def"
 )
 
+type Compilation struct {
+	GenPkgDirPath string
+	GenPkgName    string
+	Defs          def.Types
+}
+
 func Compile(defs def.Types) error {
 	nameToDef, err := ComputeNameToDef(defs)
 	if err != nil {

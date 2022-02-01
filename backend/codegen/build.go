@@ -1,35 +1,20 @@
 package codegen
 
 import (
-	"io"
+	"fmt"
 )
 
 type Builder interface {
 	Build() error
 }
 
-type GoFileOrDir interface {
-	Builder
-}
+type Builders []Builder
 
-type GoDir struct {
-	LocalPath string
-	Children  []GoFileOrDir
-}
-
-func (x GoDir) Build() error {
-	panic("xxx")
-}
-
-type GoFile struct {
-	Name    string
-	Content Generator
-}
-
-func (x GoFile) Build() error {
-	panic("xxx")
-}
-
-type Generator interface {
-	WriteTo(io.Writer) (int64, error)
+func (bs Builders) Build() error {
+	for _, b := range bs {
+		if err := b.Build(); err != nil {
+			return fmt.Errorf("builder %#v (%w)", err)
+		}
+	}
+	return nil
 }
