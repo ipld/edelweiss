@@ -21,7 +21,7 @@ func Compile(defs def.Types) error {
 	if err != nil {
 		return err
 	}
-	plan := GoTypeImplPlan{
+	plan := cg.GoTypeImplPlan{
 		DefToGoTypeRef: defToGoTypeRef,
 		RefToGoTypeRef: refToGoTypeRef,
 	}
@@ -35,10 +35,8 @@ func Compile(defs def.Types) error {
 
 // def name -> def
 
-type NameToDef map[string]def.Type
-
-func ComputeNameToDef(defs def.Types) (NameToDef, error) {
-	nameToDef := NameToDef{}
+func ComputeNameToDef(defs def.Types) (cg.NameToDef, error) {
+	nameToDef := cg.NameToDef{}
 	for _, d := range defs {
 		switch x := d.(type) {
 		case def.Named:
@@ -56,11 +54,9 @@ func ComputeNameToDef(defs def.Types) (NameToDef, error) {
 
 // assign go names to defs: def -> go type ref
 
-type DefToGoTypeRef map[def.Type]cg.GoTypeRef
-
-func AssignGoTypeRefToDef(defs def.Types) (DefToGoTypeRef, def.Refs, error) {
-	defToGo := DefToGoTypeRef{} // all defs that must be named and implemented in go
-	refs := def.Refs{}          // references found throughout type definitions
+func AssignGoTypeRefToDef(defs def.Types) (cg.DefToGoTypeRef, def.Refs, error) {
+	defToGo := cg.DefToGoTypeRef{} // all defs that must be named and implemented in go
+	refs := def.Refs{}             // references found throughout type definitions
 	for _, typeDef := range defs {
 		switch t := typeDef.(type) {
 		case def.Named:
@@ -77,7 +73,7 @@ func AssignGoTypeRefToDef(defs def.Types) (DefToGoTypeRef, def.Refs, error) {
 	return defToGo, refs, nil
 }
 
-func assignGoTypeRefToDef(defToGo DefToGoTypeRef, refs def.Refs, typeDef def.Type, goTypeRef *cg.GoTypeRef) error {
+func assignGoTypeRefToDef(defToGo cg.DefToGoTypeRef, refs def.Refs, typeDef def.Type, goTypeRef *cg.GoTypeRef) error {
 	switch t := typeDef.(type) {
 	case def.Named:
 		return fmt.Errorf("named types must be at the top level")
@@ -104,16 +100,14 @@ func assignGoTypeRefToDef(defToGo DefToGoTypeRef, refs def.Refs, typeDef def.Typ
 	return nil
 }
 
-func makeTypeName(defToGo DefToGoTypeRef, typeDef def.Type) string {
+func makeTypeName(defToGo cg.DefToGoTypeRef, typeDef def.Type) string {
 	return fmt.Sprintf("Anon%s%d", typeDef.Kind(), len(defToGo))
 }
 
 // link refs to go type refs: ref -> go type ref
 
-type RefToGoTypeRef map[def.Ref]cg.GoTypeRef
-
-func LinkRefToGoTypeRef(refs def.Refs, nameToDef NameToDef, defToGoTypeRef DefToGoTypeRef) (RefToGoTypeRef, error) {
-	refToGoTypeRef := RefToGoTypeRef{}
+func LinkRefToGoTypeRef(refs def.Refs, nameToDef cg.NameToDef, defToGoTypeRef cg.DefToGoTypeRef) (cg.RefToGoTypeRef, error) {
+	refToGoTypeRef := cg.RefToGoTypeRef{}
 	for _, ref := range refs {
 		refDef, ok := nameToDef[ref.Name]
 		if !ok {
@@ -130,15 +124,8 @@ func LinkRefToGoTypeRef(refs def.Refs, nameToDef NameToDef, defToGoTypeRef DefTo
 
 // build go implementations for each def: def -> go type impl
 
-type GoTypeImplPlan struct {
-	DefToGoTypeRef // definitions that must be code-generated
-	RefToGoTypeRef // references used throughout definitions
-}
-
-type DefToGoTypeImpl map[def.Type]cg.GoTypeImpl
-
-func BuildGoTypeImpl(plan GoTypeImplPlan) (DefToGoTypeImpl, error) {
-	defToGoTypeImpl := DefToGoTypeImpl{}
+func BuildGoTypeImpl(plan cg.GoTypeImplPlan) (cg.DefToGoTypeImpl, error) {
+	defToGoTypeImpl := cg.DefToGoTypeImpl{}
 	for typeDef, goTypeRef := range plan.DefToGoTypeRef {
 		if goTypeImpl, err := buildGoTypeImpl(plan, typeDef, goTypeRef); err != nil {
 			return nil, err
@@ -149,7 +136,7 @@ func BuildGoTypeImpl(plan GoTypeImplPlan) (DefToGoTypeImpl, error) {
 	return defToGoTypeImpl, nil
 }
 
-func buildGoTypeImpl(plan GoTypeImplPlan, typeDef def.Type, goTypeRef cg.GoTypeRef) (cg.GoTypeImpl, error) {
+func buildGoTypeImpl(plan cg.GoTypeImplPlan, typeDef def.Type, goTypeRef cg.GoTypeRef) (cg.GoTypeImpl, error) {
 	switch d := typeDef.(type) {
 	case def.SingletonBool:
 		return blue.BuildSingletonBoolGoImpl(d, goTypeRef)
