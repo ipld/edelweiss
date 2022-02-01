@@ -6,19 +6,18 @@ import (
 	"github.com/ipld/edelweiss/def"
 )
 
-type GoTypeImpl interface {
-	Def() GoTypeDef
-	WriteDef(io.Writer)
-	WriteRef(io.Writer) // XXX: import context for aliases
-}
-
-type GoTypeDef struct {
-	Def  def.Type
-	Ref  GoTypeRef
-	Deps []GoTypeImpl
-}
-
 type GoTypeRef struct {
 	PkgPath  string // go pkg path
 	TypeName string // go type name
+}
+
+func (g GoTypeRef) WriteRef(w io.Writer) (int, error) {
+	panic("XXX")
+}
+
+type GoTypeImpl interface {
+	Def() def.Type
+	GoTypeRef() GoTypeRef
+	WriteDef(io.Writer) (int, error)
+	WriteRef(io.Writer) (int, error)
 }
