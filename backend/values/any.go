@@ -31,6 +31,10 @@ func (v *Any) Parse(n datamodel.Node) error {
 		v.Value = x
 		return nil
 	}
+	if x, err := TryParseLink(n); err == nil {
+		v.Value = x
+		return nil
+	}
 	// composite
 	if x, err := TryParseList(n); err == nil {
 		v.Value = x
