@@ -2,30 +2,31 @@ package compile
 
 import (
 	"fmt"
+	"path"
 
 	blue "github.com/ipld/edelweiss/backend/blueprint"
 	cg "github.com/ipld/edelweiss/backend/codegen"
 	"github.com/ipld/edelweiss/def"
 )
 
-type Compilation struct {
-	GenPkgDirPath string
-	GenPkgName    string
-	Defs          def.Types
+type GoPkgCodegen struct {
+	GoPkgDirPath string
+	GoPkgName    string
+	Defs         def.Types
 }
 
-func Compile(defs def.Types) error {
-	nameToDef, err := ComputeNameToDef(defs)
+func (x *GoPkgCodegen) Compile() (*cg.GoFile, error) {
+	nameToDef, err := ComputeNameToDef(x.Defs)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	defToGoTypeRef, refs, err := AssignGoTypeRefToDef(defs)
+	defToGoTypeRef, refs, err := AssignGoTypeRefToDef(x.Defs)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	refToGoTypeRef, err := LinkRefToGoTypeRef(refs, nameToDef, defToGoTypeRef)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	plan := cg.GoTypeImplPlan{
 		DefToGoTypeRef: defToGoTypeRef,
@@ -33,10 +34,16 @@ func Compile(defs def.Types) error {
 	}
 	defToGoTypeImpl, err := BuildGoTypeImpl(plan)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	_ = defToGoTypeImpl
-	panic("XXX")
+	file := &cg.GoFile{
+		FilePath: path.Join(x.GoPkgDirPath, fmt.Sprintf("%s_edelweiss.go", x.GoPkgName)),
+		PkgName:  x.GoPkgName,
+	}
+	for _, goTypeImpl := range defToGoTypeImpl {
+		file.Types = append(file.Types, goTypeImpl)
+	}
+	return file, nil
 }
 
 // def name -> def

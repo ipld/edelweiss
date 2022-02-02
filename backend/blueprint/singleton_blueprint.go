@@ -20,6 +20,8 @@ type singletonBlueprint struct {
 var singletonTemplateCompiled = template.Must(template.New("singleton").Parse(singletonTemplateSrc))
 
 const singletonTemplateSrc = `
+// -- protocol type {{.TypeName}} --
+
 type {{.TypeName}} struct{}
 
 func ({{.TypeName}}) Parse(n {{.DatamodelPkgAlias}}.Node) error {

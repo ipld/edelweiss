@@ -11,21 +11,21 @@ import (
 type GoFile struct {
 	FilePath string
 	PkgName  string
-	Types    []GoTypeImpl
+	Types    GoTypeImpls
 }
 
 func (f *GoFile) Build() error {
 	if err := os.MkdirAll(path.Dir(f.FilePath), 0755); err != nil {
 		return err
 	}
-	body, err := f.generate()
+	body, err := f.Generate()
 	if err != nil {
 		return err
 	}
 	return ioutil.WriteFile(f.FilePath, body, 0644)
 }
 
-func (f *GoFile) generate() ([]byte, error) {
+func (f *GoFile) Generate() ([]byte, error) {
 	// generate types
 	var typeDefBuf bytes.Buffer
 	fctx := &goFileContext{}

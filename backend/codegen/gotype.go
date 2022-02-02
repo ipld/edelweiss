@@ -23,3 +23,5 @@ type GoTypeImpl interface {
 	WriteDef(GoFileContext, io.Writer) error
 	WriteRef(GoFileContext, io.Writer) error
 }
+
+type GoTypeImpls []GoTypeImpl
