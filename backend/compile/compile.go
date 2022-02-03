@@ -10,9 +10,13 @@ import (
 )
 
 type GoPkgCodegen struct {
-	GoPkgDirPath string
-	GoPkgName    string
+	GoPkgDirPath string // local directory for the package
+	GoPkgPath    string // global package name
 	Defs         def.Types
+}
+
+func (x *GoPkgCodegen) GoPkgName() string {
+	return path.Base(x.GoPkgPath)
 }
 
 func (x *GoPkgCodegen) Compile() (*cg.GoFile, error) {
@@ -20,7 +24,7 @@ func (x *GoPkgCodegen) Compile() (*cg.GoFile, error) {
 	if err != nil {
 		return nil, err
 	}
-	defToGoTypeRef, refs, err := AssignGoTypeRefToDef(x.Defs)
+	defToGoTypeRef, refs, err := AssignGoTypeRefToDef(x.GoPkgPath, x.Defs)
 	if err != nil {
 		return nil, err
 	}
@@ -37,8 +41,8 @@ func (x *GoPkgCodegen) Compile() (*cg.GoFile, error) {
 		return nil, err
 	}
 	file := &cg.GoFile{
-		FilePath: path.Join(x.GoPkgDirPath, fmt.Sprintf("%s_edelweiss.go", x.GoPkgName)),
-		PkgName:  x.GoPkgName,
+		FilePath: path.Join(x.GoPkgDirPath, fmt.Sprintf("%s_edelweiss.go", x.GoPkgName())),
+		PkgPath:  x.GoPkgPath,
 	}
 	for _, goTypeImpl := range defToGoTypeImpl {
 		file.Types = append(file.Types, goTypeImpl)
@@ -67,14 +71,14 @@ func ComputeNameToDef(defs def.Types) (cg.NameToDef, error) {
 
 // assign go names to defs: def -> go type ref
 
-func AssignGoTypeRefToDef(defs def.Types) (cg.DefToGoTypeRef, def.Refs, error) {
+func AssignGoTypeRefToDef(goPkgPath string, defs def.Types) (cg.DefToGoTypeRef, def.Refs, error) {
 	defToGo := cg.DefToGoTypeRef{} // all defs that must be named and implemented in go
 	refs := def.Refs{}             // references found throughout type definitions
 	for _, typeDef := range defs {
 		switch t := typeDef.(type) {
 		case def.Named:
-			if err := assignGoTypeRefToDef(defToGo, refs, t.Type, &cg.GoTypeRef{
-				PkgPath:  "", // for now everything lives in one package
+			if err := assignGoTypeRefToDef(goPkgPath, defToGo, refs, t.Type, &cg.GoTypeRef{
+				PkgPath:  goPkgPath,
 				TypeName: t.Name,
 			}); err != nil {
 				return nil, nil, err
@@ -86,7 +90,13 @@ func AssignGoTypeRefToDef(defs def.Types) (cg.DefToGoTypeRef, def.Refs, error) {
 	return defToGo, refs, nil
 }
 
-func assignGoTypeRefToDef(defToGo cg.DefToGoTypeRef, refs def.Refs, typeDef def.Type, goTypeRef *cg.GoTypeRef) error {
+func assignGoTypeRefToDef(
+	goPkgPath string,
+	defToGo cg.DefToGoTypeRef,
+	refs def.Refs,
+	typeDef def.Type,
+	goTypeRef *cg.GoTypeRef,
+) error {
 	switch t := typeDef.(type) {
 	case def.Named:
 		return fmt.Errorf("named types must be at the top level")
@@ -100,13 +110,13 @@ func assignGoTypeRefToDef(defToGo cg.DefToGoTypeRef, refs def.Refs, typeDef def.
 		case def.Ref: // don't name anonymous references
 		default:
 			defToGo[typeDef] = cg.GoTypeRef{
-				PkgPath:  "", // for now everything lives in one package
+				PkgPath:  goPkgPath,
 				TypeName: makeTypeName(defToGo, typeDef),
 			}
 		}
 	}
 	for _, d := range typeDef.Deps() {
-		if err := assignGoTypeRefToDef(defToGo, refs, d, nil); err != nil {
+		if err := assignGoTypeRefToDef(goPkgPath, defToGo, refs, d, nil); err != nil {
 			return err
 		}
 	}

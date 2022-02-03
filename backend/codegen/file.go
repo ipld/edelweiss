@@ -10,8 +10,12 @@ import (
 
 type GoFile struct {
 	FilePath string
-	PkgName  string
+	PkgPath  string
 	Types    GoTypeImpls
+}
+
+func (f *GoFile) PkgName() string {
+	return path.Base(f.PkgPath)
 }
 
 func (f *GoFile) Build() error {
@@ -36,7 +40,7 @@ func (f *GoFile) Generate() ([]byte, error) {
 	}
 	// generate go file header
 	var headerBuf bytes.Buffer
-	fmt.Fprintf(&headerBuf, "package %s\n\n", f.PkgName)
+	fmt.Fprintf(&headerBuf, "package %s\n\n", f.PkgName())
 	if len(fctx.imported) > 0 {
 		fmt.Fprintf(&headerBuf, "import(\n")
 		for _, imp := range fctx.imported {

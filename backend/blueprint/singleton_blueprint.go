@@ -15,6 +15,7 @@ type singletonBlueprint struct {
 	// file context dependent
 	IPLDPkgAlias      string
 	DatamodelPkgAlias string
+	ValuesPkgAlias    string
 }
 
 var singletonTemplateCompiled = template.Must(template.New("singleton").Parse(singletonTemplateSrc))
@@ -26,10 +27,10 @@ type {{.TypeName}} struct{}
 
 func ({{.TypeName}}) Parse(n {{.DatamodelPkgAlias}}.Node) error {
 	if n.Kind() != {{.IPLDPkgAlias}}.{{.IPLDKindName}} {
-		return ErrNA
+		return {{.ValuesPkgAlias}}.ErrNA
 	}
 	if n.{{.IPLDAsMethodName}}() != {{.IPLDValueLiteral}} {
-		return ErrNA
+		return {{.ValuesPkgAlias}}.ErrNA
 	}
 	return nil
 }
@@ -43,19 +44,19 @@ func ({{.TypeName}}) Kind() {{.DatamodelPkgAlias}}.Kind {
 }
 
 func ({{.TypeName}}) LookupByString(string) ({{.DatamodelPkgAlias}}.Node, error) {
-	return nil, ErrNA
+	return nil, {{.ValuesPkgAlias}}.ErrNA
 }
 
 func ({{.TypeName}}) LookupByNode(key {{.DatamodelPkgAlias}}.Node) ({{.DatamodelPkgAlias}}.Node, error) {
-	return nil, ErrNA
+	return nil, {{.ValuesPkgAlias}}.ErrNA
 }
 
 func ({{.TypeName}}) LookupByIndex(idx int64) ({{.DatamodelPkgAlias}}.Node, error) {
-	return nil, ErrNA
+	return nil, {{.ValuesPkgAlias}}.ErrNA
 }
 
 func ({{.TypeName}}) LookupBySegment(seg {{.DatamodelPkgAlias}}.PathSegment) ({{.DatamodelPkgAlias}}.Node, error) {
-	return nil, ErrNA
+	return nil, {{.ValuesPkgAlias}}.ErrNA
 }
 
 func ({{.TypeName}}) MapIterator() {{.DatamodelPkgAlias}}.MapIterator {
@@ -95,11 +96,11 @@ func ({{.TypeName}}) AsString() (string, error) {
 }
 
 func ({{.TypeName}}) AsBytes() ([]byte, error) {
-	return nil, ErrNA
+	return nil, {{.ValuesPkgAlias}}.ErrNA
 }
 
 func ({{.TypeName}}) AsLink() ({{.DatamodelPkgAlias}}.Link, error) {
-	return nil, ErrNA
+	return nil, {{.ValuesPkgAlias}}.ErrNA
 }
 
 func ({{.TypeName}}) Prototype() {{.DatamodelPkgAlias}}.NodePrototype {

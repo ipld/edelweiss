@@ -1,4 +1,2 @@
 - propagate go pkg path to go type impl
 - ensure that importing self package does not produce import statements or aliases
-
-- move errors in common package
