@@ -23,6 +23,7 @@ type GoTypeImplPlan struct {
 
 type GoFileContext interface {
 	RequireImport(pkgPath string) *GoFileImport
+	ReferTo(pkgPath string, symbol string) string
 }
 
 type GoFileImport struct {

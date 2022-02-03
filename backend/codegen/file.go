@@ -32,9 +32,9 @@ func (f *GoFile) Build() error {
 func (f *GoFile) Generate() ([]byte, error) {
 	// generate types
 	var typeDefBuf bytes.Buffer
-	fctx := &goFileContext{}
+	fctx := &goFileContext{file: f}
 	for _, t := range f.Types {
-		if err := t.WriteDef(fctx, &typeDefBuf); err != nil {
+		if err := t.GoDef().Write(fctx, &typeDefBuf); err != nil {
 			return nil, fmt.Errorf("generating type %#v (%w)", t, err)
 		}
 	}
@@ -52,10 +52,23 @@ func (f *GoFile) Generate() ([]byte, error) {
 }
 
 type goFileContext struct {
+	file     *GoFile
 	imported []*GoFileImport
 }
 
+func (fctx *goFileContext) ReferTo(pkgPath string, symbol string) string {
+	imp := fctx.RequireImport(pkgPath)
+	if imp.Alias != "" {
+		return fmt.Sprintf("%s.%s", imp.Alias, symbol)
+	} else {
+		return symbol
+	}
+}
+
 func (fctx *goFileContext) RequireImport(pkgPath string) *GoFileImport {
+	if pkgPath == fctx.file.PkgPath { // if importing self, return empty alias
+		return &GoFileImport{PkgPath: pkgPath, Alias: ""}
+	}
 	if imp := fctx.lookup(pkgPath); imp != nil {
 		return imp
 	} else {

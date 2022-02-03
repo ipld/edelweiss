@@ -1,4 +1,4 @@
-package blueprint
+package blueprints
 
 import (
 	"fmt"
@@ -125,9 +125,9 @@ func (g GoSingletonImpl) GoTypeRef() cg.GoTypeRef {
 }
 
 func (g GoSingletonImpl) WriteDef(ctx cg.GoFileContext, w io.Writer) error {
-	g.blue.IPLDPkgAlias = ctx.RequireImport("github.com/ipld/go-ipld-prime").Alias
-	g.blue.DatamodelPkgAlias = ctx.RequireImport("github.com/ipld/go-ipld-prime/datamodel").Alias
-	g.blue.ValuesPkgAlias = ctx.RequireImport("github.com/ipld/edelweiss/backend/values").Alias
+	g.blue.IPLDPkgAlias = ctx.RequireImport(IPLDPrimePkg).Alias
+	g.blue.DatamodelPkgAlias = ctx.RequireImport(IPLDPrimeDatamodelPkg).Alias
+	g.blue.ValuesPkgAlias = ctx.RequireImport(EdelweissValuesPkg).Alias
 	return singletonTemplateCompiled.Execute(w, g.blue)
 }
 
