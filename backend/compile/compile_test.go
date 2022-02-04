@@ -14,7 +14,7 @@ func TestSingleton(t *testing.T) {
 	}
 	x := &GoPkgCodegen{
 		GoPkgDirPath: "",
-		GoPkgName:    "test",
+		GoPkgPath:    "test",
 		Defs:         defs,
 	}
 	goFile, err := x.Compile()

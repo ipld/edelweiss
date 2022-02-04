@@ -12,7 +12,7 @@ type GoRef struct {
 }
 
 func (g GoRef) Write(ctx GoFileContext, w io.Writer) error {
-	return V{ctx.ReferTo(g.PkgPath, g.Name)}.Write(ctx, w)
+	return V(ctx.ReferTo(g.PkgPath, g.Name)).Write(ctx, w)
 }
 
 type GoTypeRef struct {
@@ -25,10 +25,9 @@ func (g GoTypeRef) Write(ctx GoFileContext, w io.Writer) error {
 }
 
 type GoTypeImpl interface {
-	Def() def.Type
+	ProtoDef() def.Type
 	GoTypeRef() GoTypeRef
 	GoDef() Blueprint
-	GoRef() Blueprint
 }
 
 type GoTypeImpls []GoTypeImpl

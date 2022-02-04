@@ -161,18 +161,8 @@ func BuildGoTypeImpl(plan cg.GoTypeImplPlan) (cg.DefToGoTypeImpl, error) {
 
 func buildGoTypeImpl(plan cg.GoTypeImplPlan, typeDef def.Type, goTypeRef cg.GoTypeRef) (cg.GoTypeImpl, error) {
 	switch d := typeDef.(type) {
-	case def.SingletonBool:
-		return blue.BuildSingletonBoolGoImpl(d, goTypeRef)
-	case def.SingletonFloat:
-		return blue.BuildSingletonFloatGoImpl(d, goTypeRef)
-	case def.SingletonInt:
-		return blue.BuildSingletonIntGoImpl(d, goTypeRef)
-	case def.SingletonByte:
-		return blue.BuildSingletonByteGoImpl(d, goTypeRef)
-	case def.SingletonChar:
-		return blue.BuildSingletonCharGoImpl(d, goTypeRef)
-	case def.SingletonString:
-		return blue.BuildSingletonStringGoImpl(d, goTypeRef)
+	case def.SingletonBool, def.SingletonFloat, def.SingletonInt, def.SingletonByte, def.SingletonChar, def.SingletonString:
+		return blue.BuildSingletonImpl(d, goTypeRef)
 	default:
 		return nil, fmt.Errorf("unsupported user type definition %#v", typeDef)
 	}

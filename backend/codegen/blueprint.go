@@ -1,8 +1,10 @@
 package codegen
 
 import (
+	"bytes"
 	"fmt"
 	"io"
+	"text/template"
 
 	"github.com/ipld/edelweiss/util/indent"
 )
@@ -11,102 +13,64 @@ type Blueprint interface {
 	Write(GoFileContext, io.Writer) error
 }
 
+type Blueprints []Blueprint
+
 func Indent(w io.Writer) io.Writer {
 	return indent.NewWriter(w, "\t")
 }
 
 // V stands for verbatim.
-type V struct {
-	String string
-}
+type V string
 
 func (x V) Write(_ GoFileContext, w io.Writer) error {
-	_, err := fmt.Fprint(w, x.String)
+	_, err := fmt.Fprint(w, x)
 	return err
 }
 
-type VarDef struct {
-	Var  Blueprint
-	Type Blueprint
+func Printf(f string, a ...interface{}) Blueprint {
+	return V(fmt.Sprintf(f, a...))
 }
 
-func (x VarDef) Write(ctx GoFileContext, w io.Writer) error {
-	if err := x.Var.Write(ctx, w); err != nil {
-		return err
-	}
-	if _, err := fmt.Fprint(w, " "); err != nil {
-		return err
-	}
-	if err := x.Type.Write(ctx, w); err != nil {
-		return err
-	}
-	return nil
+// T stands for template.
+type T struct {
+	Src  string
+	Data map[string]Blueprint
 }
 
-type Return struct {
-	Values []Blueprint
+type BlueMap map[string]Blueprint
+
+func MergeBlueMaps(x, y BlueMap) BlueMap {
+	xy := BlueMap{}
+	for k, v := range x {
+		xy[k] = v
+	}
+	for k, v := range y {
+		xy[k] = v
+	}
+	return xy
 }
 
-func (x Return) Write(ctx GoFileContext, w io.Writer) error {
-	if _, err := fmt.Fprint(w, "return "); err != nil {
-		return err
+var cachedTemplates = map[string]*template.Template{}
+
+func compileTemplate(src string) *template.Template {
+	if t, ok := cachedTemplates[src]; ok {
+		return t
+	} else {
+		t = template.Must(template.New("").Parse(src))
+		cachedTemplates[src] = t
+		return t
 	}
-	for _, v := range x.Values {
-		if err := v.Write(ctx, w); err != nil {
+}
+
+func (x T) Write(ctx GoFileContext, w io.Writer) error {
+	data := map[string]interface{}{}
+	for k, v := range x.Data {
+		var buf bytes.Buffer
+		if err := v.Write(ctx, &buf); err != nil {
 			return err
 		}
+		data[k] = buf.String()
 	}
-	return nil
-}
-
-type MethodDef struct {
-	Receiver   VarDef
-	MethodName string
-	Args       []VarDef
-	Returns    []Blueprint
-	Body       Blueprint
-}
-
-func (x MethodDef) Write(ctx GoFileContext, w io.Writer) error {
-	if _, err := fmt.Fprint(w, "func ("); err != nil {
-		return err
-	}
-	if err := x.Receiver.Write(ctx, w); err != nil {
-		return err
-	}
-	if _, err := fmt.Fprintf(w, ") %s(", x.MethodName); err != nil {
-		return err
-	}
-	for _, v := range x.Args {
-		if err := v.Write(ctx, w); err != nil {
-			return err
-		}
-		if _, err := fmt.Fprint(w, ", "); err != nil {
-			return err
-		}
-	}
-	if _, err := fmt.Fprint(w, ") {\n", x.MethodName); err != nil {
-		return err
-	}
-	if err := x.Body.Write(ctx, Indent(w)); err != nil {
-		return err
-	}
-	if _, err := fmt.Fprint(w, "}"); err != nil {
-		return err
-	}
-	return nil
-}
-
-type Block []Blueprint
-
-func (x Block) Write(ctx GoFileContext, w io.Writer) error {
-	for _, b := range x {
-		if err := b.Write(ctx, w); err != nil {
-			return err
-		}
-		if _, err := fmt.Fprintln(w, ""); err != nil {
-			return err
-		}
-	}
+	compileTemplate(x.Src).Execute(w, data)
 	return nil
 }
