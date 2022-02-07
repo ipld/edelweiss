@@ -33,16 +33,59 @@ func (x *GoStructureImpl) GoTypeRef() cg.GoTypeRef {
 
 func (x *GoStructureImpl) GoDef() cg.Blueprint {
 	fields := def.FlattenFieldList(x.Def.Fields)
+	fieldData := make([]cg.BlueMap, len(fields))
+	for i := range fields {
+		fieldData[i] = cg.BlueMap{
+			"FieldIndex":   cg.IntLiteral(i),
+			"FieldName":    cg.V(fields[i].Name),
+			"FieldLiteral": cg.StringLiteral(fields[i].Name),
+			// XXX: check go type refs of primitive/non-generated types are implemented correctly
+			"FieldType":       x.Lookup.LookupDefToGoTypeRef(fields[i].Type),
+			"EdelweissString": EdelweissString,
+		}
+	}
+	// build field declarations
 	fieldDecls := make(cg.Blueprints, len(fields))
 	for i := range fields {
 		fieldDecls[i] = cg.T{
-			Data: cg.BlueMap{
-				"FieldName": cg.V(fields[i].Name),
-				"FieldType": XXX,
-			},
+			Data: fieldData[i],
 			Src: "	{{.FieldName}} {{.FieldType}}\n",
 		}
 	}
+	// build field parse cases
+	fieldParseCases := make(cg.Blueprints, len(fields))
+	for i := range fields {
+		fieldParseCases[i] = cg.T{
+			Data: fieldData[i],
+			Src: `		case {{.FieldLiteral}}:
+			if err := x.{{.FieldName}}.Parse(vn); err != nil {
+				return err
+			}
+			nfields++
+`,
+		}
+	}
+	// build field next cases
+	fieldNextCases := make(cg.Blueprints, len(fields))
+	for i := range fields {
+		fieldNextCases[i] = cg.T{
+			Data: fieldData[i],
+			Src: `		case {{.FieldIndex}}:
+			return {{.EdelweissString}}({{.FieldLiteral}}), x.s.{{.FieldName}}.Node(), nil
+`,
+		}
+	}
+	// build field lookup by string cases
+	fieldLookupByStringCases := make(cg.Blueprints, len(fields))
+	for i := range fields {
+		fieldLookupByStringCases[i] = cg.T{
+			Data: fieldData[i],
+			Src: `		case {{.FieldLiteral}}:
+			return x.{{.FieldName}}.Node(), nil
+`,
+		}
+	}
+	// build type definition
 	data := cg.BlueMap{
 		"Type":            x.Ref,
 		"Node":            IPLDNodeType,
@@ -57,8 +100,12 @@ func (x *GoStructureImpl) GoDef() cg.Blueprint {
 		"Link":            IPLDLinkType,
 		"NodePrototype":   IPLDNodePrototypeType,
 		"Length":          cg.IntLiteral(len(fields)),
-		"FieldDecls":      fieldDecls,
 		"EdelweissString": EdelweissString,
+		//
+		"FieldDecls":               fieldDecls,
+		"FieldParseCases":          fieldParseCases,
+		"FieldNextCases":           fieldNextCases,
+		"FieldLookupByStringCases": fieldLookupByStringCases,
 	}
 	return cg.T{
 		Data: data,
@@ -83,21 +130,12 @@ func (x *{{.Type}}) Parse(n {{.Node}}) error {
 				return fmt.Errorf("structure map key is not a string")
 			} else {
 				switch k {
-				case "f1_XXX":
-					if err := x.F1XXX.Parse(vn); err != nil {
-						return err
-					}
-					nfields++
-				case "f2_XXX":
-					if err := x.F2XXX.Parse(vn); err != nil {
-						return err
-					}
-					nfields++
+{{.FieldParseCases}}
 				}
 			}
 		}
 	}
-	if nfields != 2 /*XXX*/ {
+	if nfields != {{.Length}} {
 		return {{.ErrNA}}
 	} else {
 		return nil
@@ -112,10 +150,7 @@ type {{.Type}}_MapIterator struct {
 func (x *{{.Type}}_MapIterator) Next() (key {{.Node}}, value {{.Node}}, err error) {
 	x.i++
 	switch x.i {
-	case 0:
-		return {{.EdelweissString}}("f1_XXX"), x.s.F1XXX.Node(), nil
-	case 1:
-		return {{.EdelweissString}}("f2_XXX"), x.s.F2XXX.Node(), nil
+{{.FieldNextCases}}
 	}
 	return nil, nil, {{.ErrNA}}
 }
@@ -130,10 +165,7 @@ func (x {{.Type}}) Kind() {{.KindType}} {
 
 func (x {{.Type}}) LookupByString(key string) ({{.Node}}, error) {
 	switch key {
-	case "f1_XXX":
-		return x.F1XXX.Node(), nil
-	case "f2_XXX":
-		return x.F2XXX.Node(), nil
+{{.FieldLookupByStringCases}}
 	}
 	return nil, {{.ErrNA}}
 }
