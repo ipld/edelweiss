@@ -124,6 +124,7 @@ func (x *GoSingletonImpl) GoDef() cg.Blueprint {
 		panic("unrecognized singleton type")
 	}
 	return cg.T{
+		Data: cg.MergeBlueMaps(common, specific),
 		Src: `
 // -- protocol type {{.Type}} --
 
@@ -215,6 +216,5 @@ func ({{.Type}}) Prototype() {{.NodePrototype}} {
 	return nil
 }
 `,
-		Data: cg.MergeBlueMaps(common, specific),
 	}
 }

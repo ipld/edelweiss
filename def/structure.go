@@ -54,3 +54,13 @@ func makeFields(fields []Field) FieldListOrNone {
 		}
 	}
 }
+
+func FlattenFieldList(x FieldListOrNone) []Field {
+	r, cur := []Field{}, x
+	for cur != nil {
+		l := cur.(FieldList)
+		r = append(r, l.Field)
+		cur = l.Rest
+	}
+	return r
+}

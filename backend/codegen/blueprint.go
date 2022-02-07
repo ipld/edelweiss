@@ -15,6 +15,15 @@ type Blueprint interface {
 
 type Blueprints []Blueprint
 
+func (x Blueprints) Write(ctx GoFileContext, w io.Writer) error {
+	for _, b := range x {
+		if err := b.Write(ctx, w); err != nil {
+			return nil
+		}
+	}
+	return nil
+}
+
 func Indent(w io.Writer) io.Writer {
 	return indent.NewWriter(w, "\t")
 }
@@ -38,6 +47,15 @@ type T struct {
 }
 
 type BlueMap map[string]Blueprint
+
+func (x BlueMap) Write(ctx GoFileContext, w io.Writer) error {
+	for _, b := range x {
+		if err := b.Write(ctx, w); err != nil {
+			return nil
+		}
+	}
+	return nil
+}
 
 func MergeBlueMaps(x, y BlueMap) BlueMap {
 	xy := BlueMap{}
