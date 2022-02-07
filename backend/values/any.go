@@ -14,6 +14,10 @@ func (Any) Def() def.Type {
 }
 
 func (v *Any) Parse(n datamodel.Node) error {
+	if x, err := TryParseNothing(n); err == nil {
+		v.Value = x
+		return nil
+	}
 	// primitives
 	if x, err := TryParseBool(n); err == nil {
 		v.Value = x
