@@ -42,9 +42,8 @@ func (x *GoStructureImpl) GoDef() cg.Blueprint {
 			"FieldIndexString": cg.StringLiteral(strconv.Itoa(i)),
 			"FieldName":        cg.V(fields[i].Name),
 			"FieldNameString":  cg.StringLiteral(fields[i].Name),
-			// XXX: check go type refs of primitive/non-generated types are implemented correctly
-			"FieldType":       x.Lookup.LookupDefToGoTypeRef(fields[i].Type),
-			"EdelweissString": EdelweissString,
+			"FieldType":        x.Lookup.LookupDefToGoTypeRef(fields[i].Type),
+			"EdelweissString":  EdelweissString,
 		}
 	}
 	// build field declarations

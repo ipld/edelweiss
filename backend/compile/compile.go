@@ -110,21 +110,23 @@ func assignGoTypeRefToDef(
 		switch t := typeDef.(type) {
 		case def.Ref: // don't name anonymous references
 
-		case def.Bool: // non-codegen types refer to static implementations
+		// non-parametric types have static/non-codegen implementation
+		// whenever we encounter a non-parametric type, we refer to its static implementation
+		case def.Bool: // non-parametric type
 			defToGo[t] = cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "Bool"}
-		case def.Int: // non-codegen types refer to static implementations
+		case def.Int: // non-parametric type
 			defToGo[t] = cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "Int"}
-		case def.Float: // non-codegen types refer to static implementations
+		case def.Float: // non-parametric type
 			defToGo[t] = cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "Float"}
-		case def.String: // non-codegen types refer to static implementations
+		case def.String: // non-parametric type
 			defToGo[t] = cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "String"}
-		case def.Byte: // non-codegen types refer to static implementations
+		case def.Byte: // non-parametric type
 			defToGo[t] = cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "Byte"}
-		case def.Char: // non-codegen types refer to static implementations
+		case def.Char: // non-parametric type
 			defToGo[t] = cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "Char"}
-		case def.Any: // non-codegen types refer to static implementations
+		case def.Any: // non-parametric type
 			defToGo[t] = cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "Any"}
-		case def.Nothing: // non-codegen types refer to static implementations
+		case def.Nothing: // non-parametric type
 			defToGo[t] = cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "Nothing"}
 
 		default:
