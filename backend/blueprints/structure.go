@@ -1,6 +1,8 @@
 package blueprints
 
 import (
+	"strconv"
+
 	cg "github.com/ipld/edelweiss/backend/codegen"
 	"github.com/ipld/edelweiss/def"
 )
@@ -36,9 +38,10 @@ func (x *GoStructureImpl) GoDef() cg.Blueprint {
 	fieldData := make([]cg.BlueMap, len(fields))
 	for i := range fields {
 		fieldData[i] = cg.BlueMap{
-			"FieldIndex":   cg.IntLiteral(i),
-			"FieldName":    cg.V(fields[i].Name),
-			"FieldLiteral": cg.StringLiteral(fields[i].Name),
+			"FieldIndex":       cg.IntLiteral(i),
+			"FieldIndexString": cg.StringLiteral(strconv.Itoa(i)),
+			"FieldName":        cg.V(fields[i].Name),
+			"FieldNameString":  cg.StringLiteral(fields[i].Name),
 			// XXX: check go type refs of primitive/non-generated types are implemented correctly
 			"FieldType":       x.Lookup.LookupDefToGoTypeRef(fields[i].Type),
 			"EdelweissString": EdelweissString,
@@ -57,7 +60,7 @@ func (x *GoStructureImpl) GoDef() cg.Blueprint {
 	for i := range fields {
 		fieldParseCases[i] = cg.T{
 			Data: fieldData[i],
-			Src: `		case {{.FieldLiteral}}:
+			Src: `		case {{.FieldNameString}}:
 			if err := x.{{.FieldName}}.Parse(vn); err != nil {
 				return err
 			}
@@ -71,7 +74,7 @@ func (x *GoStructureImpl) GoDef() cg.Blueprint {
 		fieldNextCases[i] = cg.T{
 			Data: fieldData[i],
 			Src: `		case {{.FieldIndex}}:
-			return {{.EdelweissString}}({{.FieldLiteral}}), x.s.{{.FieldName}}.Node(), nil
+			return {{.EdelweissString}}({{.FieldNameString}}), x.s.{{.FieldName}}.Node(), nil
 `,
 		}
 	}
@@ -80,8 +83,28 @@ func (x *GoStructureImpl) GoDef() cg.Blueprint {
 	for i := range fields {
 		fieldLookupByStringCases[i] = cg.T{
 			Data: fieldData[i],
-			Src: `		case {{.FieldLiteral}}:
-			return x.{{.FieldName}}.Node(), nil
+			Src: `	case {{.FieldNameString}}:
+		return x.{{.FieldName}}.Node(), nil
+`,
+		}
+	}
+	// build field lookup by index cases
+	fieldLookupByIndexCases := make(cg.Blueprints, len(fields))
+	for i := range fields {
+		fieldLookupByIndexCases[i] = cg.T{
+			Data: fieldData[i],
+			Src: `	case {{.FieldIndex}}:
+		return x.{{.FieldName}}.Node(), nil
+`,
+		}
+	}
+	// build field lookup by segment cases
+	fieldLookupBySegmentCases := make(cg.Blueprints, len(fields))
+	for i := range fields {
+		fieldLookupBySegmentCases[i] = cg.T{
+			Data: fieldData[i],
+			Src: `	case {{.FieldIndexString}}, {{.FieldNameString}}:
+		return x.{{.FieldName}}.Node(), nil
 `,
 		}
 	}
@@ -102,10 +125,12 @@ func (x *GoStructureImpl) GoDef() cg.Blueprint {
 		"Length":          cg.IntLiteral(len(fields)),
 		"EdelweissString": EdelweissString,
 		//
-		"FieldDecls":               fieldDecls,
-		"FieldParseCases":          fieldParseCases,
-		"FieldNextCases":           fieldNextCases,
-		"FieldLookupByStringCases": fieldLookupByStringCases,
+		"FieldDecls":                fieldDecls,
+		"FieldParseCases":           fieldParseCases,
+		"FieldNextCases":            fieldNextCases,
+		"FieldLookupByStringCases":  fieldLookupByStringCases,
+		"FieldLookupByIndexCases":   fieldLookupByIndexCases,
+		"FieldLookupBySegmentCases": fieldLookupBySegmentCases,
 	}
 	return cg.T{
 		Data: data,
@@ -190,20 +215,14 @@ func (x {{.Type}}) LookupByNode(key {{.Node}}) ({{.Node}}, error) {
 
 func (x {{.Type}}) LookupByIndex(idx int64) ({{.Node}}, error) {
 	switch idx {
-	case 0:
-		return x.F1XXX.Node(), nil
-	case 1:
-		return x.F2XXX.Node(), nil
+{{.FieldLookupByIndexCases}}
 	}
 	return nil, {{.ErrNA}}
 }
 
 func (x {{.Type}}) LookupBySegment(seg {{.PathSegment}}) ({{.Node}}, error) {
 	switch seg.String() {
-	case "0", "f1_XXX":
-		return x.F1XXX.Node(), nil
-	case "1", "f2_XXX":
-		return x.F2XXX.Node(), nil
+{{.FieldLookupBySegmentCases}}
 	}
 	return nil, {{.ErrNA}}
 }
