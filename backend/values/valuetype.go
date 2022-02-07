@@ -7,6 +7,9 @@ import (
 	"github.com/ipld/go-ipld-prime/datamodel"
 )
 
+// PkgPath is the fully-qualified name of this package.
+const PkgPath = "github.com/ipld/edelweiss/backend/values"
+
 // [x] primitives:
 //	[x] bool (lib)
 //	[x] int (lib)

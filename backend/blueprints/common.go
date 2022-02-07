@@ -2,12 +2,13 @@ package blueprints
 
 import (
 	cg "github.com/ipld/edelweiss/backend/codegen"
+	"github.com/ipld/edelweiss/backend/values"
 )
 
 const (
 	IPLDPkg            = "github.com/ipld/go-ipld-prime"
 	IPLDDatamodelPkg   = "github.com/ipld/go-ipld-prime/datamodel"
-	EdelweissValuesPkg = "github.com/ipld/edelweiss/backend/values"
+	EdelweissValuesPkg = values.PkgPath
 )
 
 var (

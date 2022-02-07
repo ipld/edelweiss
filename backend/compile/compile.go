@@ -6,6 +6,7 @@ import (
 
 	blue "github.com/ipld/edelweiss/backend/blueprints"
 	cg "github.com/ipld/edelweiss/backend/codegen"
+	"github.com/ipld/edelweiss/backend/values"
 	"github.com/ipld/edelweiss/def"
 )
 
@@ -106,8 +107,26 @@ func assignGoTypeRefToDef(
 	if goTypeRef != nil {
 		defToGo[typeDef] = *goTypeRef
 	} else {
-		switch typeDef.(type) {
+		switch t := typeDef.(type) {
 		case def.Ref: // don't name anonymous references
+
+		case def.Bool: // non-codegen types refer to static implementations
+			defToGo[t] = cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "Bool"}
+		case def.Int: // non-codegen types refer to static implementations
+			defToGo[t] = cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "Int"}
+		case def.Float: // non-codegen types refer to static implementations
+			defToGo[t] = cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "Float"}
+		case def.String: // non-codegen types refer to static implementations
+			defToGo[t] = cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "String"}
+		case def.Byte: // non-codegen types refer to static implementations
+			defToGo[t] = cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "Byte"}
+		case def.Char: // non-codegen types refer to static implementations
+			defToGo[t] = cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "Char"}
+		case def.Any: // non-codegen types refer to static implementations
+			defToGo[t] = cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "Any"}
+		case def.Nothing: // non-codegen types refer to static implementations
+			defToGo[t] = cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "Nothing"}
+
 		default:
 			defToGo[typeDef] = cg.GoTypeRef{
 				PkgPath:  goPkgPath,
