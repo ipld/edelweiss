@@ -5,13 +5,22 @@ import (
 	"github.com/ipld/edelweiss/def"
 )
 
-func BuildStructureImpl(typeDef def.Structure, goTypeRef cg.GoTypeRef) (cg.GoTypeImpl, error) {
-	return &GoStructureImpl{Def: typeDef, Ref: goTypeRef}, nil
+func BuildStructureImpl(
+	lookup cg.LookupDefToGoTypeRef,
+	typeDef def.Structure,
+	goTypeRef cg.GoTypeRef,
+) (cg.GoTypeImpl, error) {
+	return &GoStructureImpl{
+		Lookup: lookup,
+		Def:    typeDef,
+		Ref:    goTypeRef,
+	}, nil
 }
 
 type GoStructureImpl struct {
-	Def def.Structure
-	Ref cg.GoTypeRef
+	Lookup cg.LookupDefToGoTypeRef
+	Def    def.Structure
+	Ref    cg.GoTypeRef
 }
 
 func (x *GoStructureImpl) ProtoDef() def.Type {
@@ -157,7 +166,7 @@ func (x {{.Type}}) LookupByIndex(idx int64) ({{.Node}}, error) {
 	return nil, {{.ErrNA}}
 }
 
-func (x {{.Type}}) LookupBySegment(seg datamodel.PathSegment) ({{.Node}}, error) {
+func (x {{.Type}}) LookupBySegment(seg {{.PathSegment}}) ({{.Node}}, error) {
 	switch seg.String() {
 	case "0", "f1_XXX":
 		return x.F1XXX.Node(), nil

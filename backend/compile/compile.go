@@ -163,6 +163,8 @@ func buildGoTypeImpl(plan cg.GoTypeImplPlan, typeDef def.Type, goTypeRef cg.GoTy
 	switch d := typeDef.(type) {
 	case def.SingletonBool, def.SingletonFloat, def.SingletonInt, def.SingletonByte, def.SingletonChar, def.SingletonString:
 		return blue.BuildSingletonImpl(d, goTypeRef)
+	case def.Structure:
+		return blue.BuildStructureImpl(plan.DefToGoTypeRef, d, goTypeRef)
 	default:
 		return nil, fmt.Errorf("unsupported user type definition %#v", typeDef)
 	}

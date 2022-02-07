@@ -8,7 +8,15 @@ import (
 
 type NameToDef map[string]def.Type
 
+type LookupDefToGoTypeRef interface {
+	LookupDefToGoTypeRef(def.Type) GoTypeRef
+}
+
 type DefToGoTypeRef map[def.Type]GoTypeRef
+
+func (m DefToGoTypeRef) LookupDefToGoTypeRef(t def.Type) GoTypeRef {
+	return m[t]
+}
 
 type RefToGoTypeRef map[def.Ref]GoTypeRef
 
