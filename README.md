@@ -67,3 +67,11 @@ if err := build.Build(); err != nil {
 }
 // ...
 ```
+
+### Generated code
+
+The generated code will be entirely static — no use of Go reflection.
+
+The generated code will supports IPLD serialization by implementing the native `Node` interface. Due to the lack of reflection, we expect this to be the fastest IPLD encoder to date.
+
+For the MVP stage, the generated code will support IPLD deserialization by parsing from a deserialized IPLD data model format, rather than implementing the native `NodeAssembler` interface. Following the MVP, we expect to transition to implementing `NodeAssembler` relatively easily — due to the novel code generation framework we are utilizing. At this point, we expect that the generated code will be the fastest IPLD decoder yet.
