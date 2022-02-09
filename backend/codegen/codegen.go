@@ -6,25 +6,14 @@ import (
 
 // compilation structures
 
-type NameToDef map[string]def.Type
-
-type LookupDefToGoTypeRef interface {
-	LookupDefToGoTypeRef(def.Type) GoTypeRef
+type LookupDepGoRef interface {
+	LookupDepGoRef(def.Type) GoTypeRef
 }
 
 type DefToGoTypeRef map[def.Type]GoTypeRef
 
-func (m DefToGoTypeRef) LookupDefToGoTypeRef(t def.Type) GoTypeRef {
+func (m DefToGoTypeRef) LookupDepGoRef(t def.Type) GoTypeRef {
 	return m[t]
-}
-
-type RefToGoTypeRef map[def.Ref]GoTypeRef
-
-type DefToGoTypeImpl map[def.Type]GoTypeImpl
-
-type GoTypeImplPlan struct {
-	DefToGoTypeRef // definitions that must be code-generated
-	RefToGoTypeRef // references used throughout definitions
 }
 
 // file generation

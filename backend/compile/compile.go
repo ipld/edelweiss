@@ -20,172 +20,126 @@ func (x *GoPkgCodegen) GoPkgName() string {
 	return path.Base(x.GoPkgPath)
 }
 
+type genPlan struct {
+	depToRef  cg.DefToGoTypeRef // deps = (builtin) non-parametric types + anonymous/inline types + references
+	typeToGen typesToGen        // types to generate = named types
+	names     map[string]bool
+	refs      map[string]bool
+}
+
+type typeToGen struct {
+	Name  string
+	Def   def.Type
+	GoRef cg.GoTypeRef
+}
+
+type typesToGen []typeToGen
+
 func (x *GoPkgCodegen) Compile() (*cg.GoFile, error) {
-	nameToDef, err := ComputeNameToDef(x.Defs)
+	p, err := processDefs(x.GoPkgPath, x.Defs)
 	if err != nil {
 		return nil, err
 	}
-	defToGoTypeRef, refs, err := AssignGoTypeRefToDef(x.GoPkgPath, x.Defs)
-	if err != nil {
-		return nil, err
-	}
-	refToGoTypeRef, err := LinkRefToGoTypeRef(refs, nameToDef, defToGoTypeRef)
-	if err != nil {
-		return nil, err
-	}
-	plan := cg.GoTypeImplPlan{
-		DefToGoTypeRef: defToGoTypeRef,
-		RefToGoTypeRef: refToGoTypeRef,
-	}
-	defToGoTypeImpl, err := BuildGoTypeImpl(plan)
+	goTypeImpls, err := buildGoTypeImpls(p.typeToGen, p.depToRef)
 	if err != nil {
 		return nil, err
 	}
 	file := &cg.GoFile{
 		FilePath: path.Join(x.GoPkgDirPath, fmt.Sprintf("%s_edelweiss.go", x.GoPkgName())),
 		PkgPath:  x.GoPkgPath,
-	}
-	for _, goTypeImpl := range defToGoTypeImpl {
-		file.Types = append(file.Types, goTypeImpl)
+		Types:    goTypeImpls,
 	}
 	return file, nil
 }
 
-// def name -> def
-
-func ComputeNameToDef(defs def.Types) (cg.NameToDef, error) {
-	nameToDef := cg.NameToDef{}
+func processDefs(goPkgPath string, defs def.Types) (*genPlan, error) {
+	p := &genPlan{
+		depToRef:  cg.DefToGoTypeRef{},
+		typeToGen: typesToGen{},
+		names:     map[string]bool{},
+		refs:      map[string]bool{},
+	}
 	for _, d := range defs {
-		switch x := d.(type) {
+		switch t := d.(type) {
 		case def.Named:
-			if _, ok := nameToDef[x.Name]; ok {
-				return nil, fmt.Errorf("type %s already defined", x.Name)
-			} else {
-				nameToDef[x.Name] = x
+			goRef := cg.GoTypeRef{PkgPath: goPkgPath, TypeName: t.Name}
+			p.depToRef[def.Ref{Name: t.Name}] = goRef
+			p.typeToGen = append(p.typeToGen, typeToGen{Name: t.Name, Def: t.Type, GoRef: goRef})
+			p.names[t.Name] = true
+			if err := processDeps(goPkgPath, p, t.Type); err != nil {
+				return nil, err
 			}
 		default:
-			return nil, fmt.Errorf("anonymous top-level type")
+			return nil, fmt.Errorf("anonymous type at top level")
 		}
 	}
-	return nameToDef, nil
+	for r := range p.refs {
+		if !p.names[r] {
+			return nil, fmt.Errorf("reference %s cannot be resolved", r)
+		}
+	}
+	return p, nil
 }
 
-// assign go names to defs: def -> go type ref
-
-func AssignGoTypeRefToDef(goPkgPath string, defs def.Types) (cg.DefToGoTypeRef, def.Refs, error) {
-	defToGo := cg.DefToGoTypeRef{} // all defs that must be named and implemented in go
-	refs := def.Refs{}             // references found throughout type definitions
-	for _, typeDef := range defs {
-		switch t := typeDef.(type) {
+func processDeps(goPkgPath string, p *genPlan, t def.Type) error {
+	for _, dep := range t.Deps() {
+		switch t := dep.(type) {
 		case def.Named:
-			if err := assignGoTypeRefToDef(goPkgPath, defToGo, refs, t.Type, &cg.GoTypeRef{
-				PkgPath:  goPkgPath,
-				TypeName: t.Name,
-			}); err != nil {
-				return nil, nil, err
-			}
-		default:
-			return nil, nil, fmt.Errorf("anonymous top-level type")
-		}
-	}
-	return defToGo, refs, nil
-}
-
-func assignGoTypeRefToDef(
-	goPkgPath string,
-	defToGo cg.DefToGoTypeRef,
-	refs def.Refs,
-	typeDef def.Type,
-	goTypeRef *cg.GoTypeRef,
-) error {
-	switch t := typeDef.(type) {
-	case def.Named:
-		return fmt.Errorf("named types must be at the top level")
-	case def.Ref:
-		refs = append(refs, t)
-	}
-	if goTypeRef != nil {
-		defToGo[typeDef] = *goTypeRef
-	} else {
-		switch t := typeDef.(type) {
-		case def.Ref: // don't name anonymous references
-
+			return fmt.Errorf("named types must be at the top level")
+		case def.Ref:
+			p.refs[t.Name] = true
 		// non-parametric types have static/non-codegen implementation
 		// whenever we encounter a non-parametric type, we refer to its static implementation
-		case def.Bool: // non-parametric type
-			defToGo[t] = cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "Bool"}
-		case def.Int: // non-parametric type
-			defToGo[t] = cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "Int"}
-		case def.Float: // non-parametric type
-			defToGo[t] = cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "Float"}
-		case def.String: // non-parametric type
-			defToGo[t] = cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "String"}
-		case def.Byte: // non-parametric type
-			defToGo[t] = cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "Byte"}
-		case def.Char: // non-parametric type
-			defToGo[t] = cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "Char"}
-		case def.Any: // non-parametric type
-			defToGo[t] = cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "Any"}
-		case def.Nothing: // non-parametric type
-			defToGo[t] = cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "Nothing"}
-
+		case def.Bool:
+			p.depToRef[t] = cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "Bool"}
+		case def.Int:
+			p.depToRef[t] = cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "Int"}
+		case def.Float:
+			p.depToRef[t] = cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "Float"}
+		case def.String:
+			p.depToRef[t] = cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "String"}
+		case def.Byte:
+			p.depToRef[t] = cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "Byte"}
+		case def.Char:
+			p.depToRef[t] = cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "Char"}
+		case def.Any:
+			p.depToRef[t] = cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "Any"}
+		case def.Nothing:
+			p.depToRef[t] = cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "Nothing"}
+		// all other types are anonymous inline parametric types
 		default:
-			defToGo[typeDef] = cg.GoTypeRef{
-				PkgPath:  goPkgPath,
-				TypeName: makeTypeName(defToGo, typeDef),
+			name := fmt.Sprintf("Anon%s%d", t.Kind(), len(p.typeToGen))
+			goRef := cg.GoTypeRef{PkgPath: goPkgPath, TypeName: name}
+			p.depToRef[def.Ref{Name: name}] = goRef
+			p.typeToGen = append(p.typeToGen, typeToGen{Name: name, Def: t, GoRef: goRef})
+			p.names[name] = true
+			// process the dependencies of the dependency
+			if err := processDeps(goPkgPath, p, dep); err != nil {
+				return err
 			}
-		}
-	}
-	for _, d := range typeDef.Deps() {
-		if err := assignGoTypeRefToDef(goPkgPath, defToGo, refs, d, nil); err != nil {
-			return err
 		}
 	}
 	return nil
 }
 
-func makeTypeName(defToGo cg.DefToGoTypeRef, typeDef def.Type) string {
-	return fmt.Sprintf("Anon%s%d", typeDef.Kind(), len(defToGo))
-}
-
-// link refs to go type refs: ref -> go type ref
-
-func LinkRefToGoTypeRef(refs def.Refs, nameToDef cg.NameToDef, defToGoTypeRef cg.DefToGoTypeRef) (cg.RefToGoTypeRef, error) {
-	refToGoTypeRef := cg.RefToGoTypeRef{}
-	for _, ref := range refs {
-		refDef, ok := nameToDef[ref.Name]
-		if !ok {
-			return nil, fmt.Errorf("reference to undefined user type %s", ref.Name)
-		}
-		goRef, ok := defToGoTypeRef[refDef]
-		if !ok {
-			return nil, fmt.Errorf("missing go reference for definition %v", refDef)
-		}
-		refToGoTypeRef[ref] = goRef
-	}
-	return refToGoTypeRef, nil
-}
-
-// build go implementations for each def: def -> go type impl
-
-func BuildGoTypeImpl(plan cg.GoTypeImplPlan) (cg.DefToGoTypeImpl, error) {
-	defToGoTypeImpl := cg.DefToGoTypeImpl{}
-	for typeDef, goTypeRef := range plan.DefToGoTypeRef {
-		if goTypeImpl, err := buildGoTypeImpl(plan, typeDef, goTypeRef); err != nil {
+func buildGoTypeImpls(typeToGen typesToGen, depToGo cg.DefToGoTypeRef) (cg.GoTypeImpls, error) {
+	goTypeImpls := cg.GoTypeImpls{}
+	for _, ttg := range typeToGen {
+		if goTypeImpl, err := buildGoTypeImpl(depToGo, ttg.Def, ttg.GoRef); err != nil {
 			return nil, err
 		} else {
-			defToGoTypeImpl[typeDef] = goTypeImpl
+			goTypeImpls = append(goTypeImpls, goTypeImpl)
 		}
 	}
-	return defToGoTypeImpl, nil
+	return goTypeImpls, nil
 }
 
-func buildGoTypeImpl(plan cg.GoTypeImplPlan, typeDef def.Type, goTypeRef cg.GoTypeRef) (cg.GoTypeImpl, error) {
+func buildGoTypeImpl(depToGo cg.DefToGoTypeRef, typeDef def.Type, goTypeRef cg.GoTypeRef) (cg.GoTypeImpl, error) {
 	switch d := typeDef.(type) {
 	case def.SingletonBool, def.SingletonFloat, def.SingletonInt, def.SingletonByte, def.SingletonChar, def.SingletonString:
 		return blue.BuildSingletonImpl(d, goTypeRef)
 	case def.Structure:
-		return blue.BuildStructureImpl(plan.DefToGoTypeRef, d, goTypeRef)
+		return blue.BuildStructureImpl(depToGo, d, goTypeRef)
 	default:
 		return nil, fmt.Errorf("unsupported user type definition %#v", typeDef)
 	}

@@ -8,7 +8,7 @@ import (
 )
 
 func BuildStructureImpl(
-	lookup cg.LookupDefToGoTypeRef,
+	lookup cg.LookupDepGoRef,
 	typeDef def.Structure,
 	goTypeRef cg.GoTypeRef,
 ) (cg.GoTypeImpl, error) {
@@ -20,7 +20,7 @@ func BuildStructureImpl(
 }
 
 type GoStructureImpl struct {
-	Lookup cg.LookupDefToGoTypeRef
+	Lookup cg.LookupDepGoRef
 	Def    def.Structure
 	Ref    cg.GoTypeRef
 }
@@ -42,7 +42,7 @@ func (x *GoStructureImpl) GoDef() cg.Blueprint {
 			"FieldIndexString": cg.StringLiteral(strconv.Itoa(i)),
 			"FieldName":        cg.V(fields[i].Name),
 			"FieldNameString":  cg.StringLiteral(fields[i].Name),
-			"FieldType":        x.Lookup.LookupDefToGoTypeRef(fields[i].Type),
+			"FieldType":        x.Lookup.LookupDepGoRef(fields[i].Type),
 			"EdelweissString":  EdelweissString,
 		}
 	}
