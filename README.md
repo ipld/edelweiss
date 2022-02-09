@@ -59,8 +59,8 @@ defs = Types{
 ```go
 build := GenerateGo{
      Defs: defs,
-     PkgPath: "",
-     PkgDir: "",
+     PkgPath: "github.com/ipfs/go-delegated-routing", // go package path
+     PkgDir: "/home/petar/src/github.com/ipfs/go-delegated-routing", // local directory
 }
 if err := build.Build(); err != nil {
      // ...
