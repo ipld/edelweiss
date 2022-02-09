@@ -123,6 +123,7 @@ func (x *GoStructureImpl) GoDef() cg.Blueprint {
 		"NodePrototype":   IPLDNodePrototypeType,
 		"Length":          cg.IntLiteral(len(fields)),
 		"EdelweissString": EdelweissString,
+		"Errorf":          Errorf,
 		//
 		"FieldDecls":                fieldDecls,
 		"FieldParseCases":           fieldParseCases,
@@ -151,7 +152,7 @@ func (x *{{.Type}}) Parse(n {{.Node}}) error {
 			return err
 		} else {
 			if k, err := kn.AsString(); err != nil {
-				return fmt.Errorf("structure map key is not a string")
+				return {{.Errorf}}("structure map key is not a string")
 			} else {
 				switch k {
 {{.FieldParseCases}}
