@@ -15,6 +15,17 @@ func TestGenTest(t *testing.T) {
 	RunGenTest(t, def.Types{def.Named{Name: "T", Type: def.SingletonInt{Int: 23}}}, "")
 }
 
+func TestSingletonAtRunTime(t *testing.T) {
+	defs := def.Types{
+		def.Named{Name: "T1", Type: def.SingletonBool{Bool: true}},
+		def.Named{Name: "T2", Type: def.SingletonInt{Int: 23}},
+	}
+	testSrc := `
+	XXX
+`
+	RunGenTest(t, defs, testSrc)
+}
+
 func RunGenTest(t *testing.T, defs def.Types, testSrc string) {
 
 	// create tmp dir

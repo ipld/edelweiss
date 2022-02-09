@@ -7,7 +7,7 @@ import (
 	"github.com/ipld/edelweiss/def"
 )
 
-func TestSingleton(t *testing.T) {
+func TestSingletonAtCompileTime(t *testing.T) {
 	defs := def.Types{
 		def.Named{Name: "T1", Type: def.SingletonBool{Bool: true}},
 		def.Named{Name: "T2", Type: def.SingletonInt{Int: 23}},
@@ -28,7 +28,7 @@ func TestSingleton(t *testing.T) {
 	fmt.Println(string(fileBuf))
 }
 
-func TestStructure(t *testing.T) {
+func TestStructureAtCompileTime(t *testing.T) {
 	defs := def.Types{
 		def.Named{
 			Name: "S1",
