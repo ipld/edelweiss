@@ -16,14 +16,35 @@ func TestGenTest(t *testing.T) {
 }
 
 func TestSingletonAtRunTime(t *testing.T) {
-	defs := def.Types{
-		def.Named{Name: "T1", Type: def.SingletonBool{Bool: true}},
-		def.Named{Name: "T2", Type: def.SingletonInt{Int: 23}},
+	defs := []def.Types{
+		{def.Named{Name: "UserSingleton", Type: def.SingletonBool{Bool: true}}},
+		{def.Named{Name: "UserSingleton", Type: def.SingletonInt{Int: 23}}},
+		{def.Named{Name: "UserSingleton", Type: def.SingletonFloat{Float: 2.3}}},
+		{def.Named{Name: "UserSingleton", Type: def.SingletonByte{Byte: 2}}},
+		{def.Named{Name: "UserSingleton", Type: def.SingletonChar{Char: 'a'}}},
+		{def.Named{Name: "UserSingleton", Type: def.SingletonString{String: "abc"}}},
 	}
 	testSrc := `
-	XXX
+	var x1 UserSingleton
+	buf, err := ipld.Encode(x1, dagjson.Encode)
+	if err != nil {
+		t.Fatalf("encoding (%v)", err)
+	}
+	var x2 UserSingleton
+	n, err := ipld.Decode(buf, dagjson.Decode)
+	if err != nil {
+		t.Fatalf("decoding (%v)", err)
+	}
+	if err = x2.Parse(n); err != nil {
+		t.Fatalf("parsing (%v)", err)
+	}
+	if !ipld.DeepEqual(x1, x2) {
+		t.Errorf("ipld values are not equal")
+	}
 `
-	RunGenTest(t, defs, testSrc)
+	for _, d := range defs {
+		RunGenTest(t, d, testSrc)
+	}
 }
 
 func RunGenTest(t *testing.T, defs def.Types, testSrc string) {
@@ -73,11 +94,22 @@ import (
 	"fmt"
 	"os"
 	"testing"
+	ipld "github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/node/basicnode"
+	"github.com/ipld/go-ipld-prime/codec/dagjson"
+	"github.com/ipld/go-ipld-prime/codec/dagcbor"
+	"github.com/ipld/edelweiss/backend/values"
 )
 
+// silence pkg import errors
 var (
 	_ = fmt.Printf
 	_ = os.Exit
+	_ = ipld.Encode
+	_ = values.Any{}
+	_ = dagjson.Encode
+	_ = dagcbor.Encode
+	_ = basicnode.Prototype
 )
 
 func TestMain(t *testing.T) {
