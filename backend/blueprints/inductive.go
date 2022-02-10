@@ -47,11 +47,54 @@ func (x *GoInductiveImpl) GoDef() cg.Blueprint {
 	for i := range cases {
 		caseDecls[i] = cg.T{
 			Data: caseData[i],
-			Src: "	{{.CaseName}} *{{.FieldType}}\n",
+			Src: "	{{.CaseName}} *{{.CaseType}}\n",
 		}
 	}
-	//
-	XXX
+	// build case parse cases
+	caseParseCases := make(cg.Blueprints, len(cases))
+	for i := range cases {
+		caseParseCases[i] = cg.T{
+			Data: caseData[i],
+			Src: `case {{.CaseNameString}}:
+		var y {{.CaseType}}
+		if err := y.Parse(vn); err != nil {
+			return err
+		}
+		x.{{.CaseName}} = &y
+		return nil
+`,
+		}
+	}
+	// build case next cases
+	caseNextCases := make(cg.Blueprints, len(cases))
+	for i := range cases {
+		caseNextCases[i] = cg.T{
+			Data: caseData[i],
+			Src: `		case x.{{.CaseName}} != nil:
+			return {{.EdelweissString}}({{.CaseNameString}}), x.s.{{.CaseName}}.Node(), nil
+`,
+		}
+	}
+	// build case lookup by string cases
+	caseLookupByStringCases := make(cg.Blueprints, len(cases))
+	for i := range cases {
+		caseLookupByStringCases[i] = cg.T{
+			Data: caseData[i],
+			Src: `	case x.{{.CaseName}} != nil && key == {{.CaseNameString}}:
+		return x.{{.CaseName}}.Node(), nil
+`,
+		}
+	}
+	// build case lookup by segment cases
+	caseLookupBySegmentCases := make(cg.Blueprints, len(cases))
+	for i := range cases {
+		caseLookupBySegmentCases[i] = cg.T{
+			Data: caseData[i],
+			Src: `	case {{.CaseNameString}}:
+		return x.{{.CaseName}}.Node(), nil
+`,
+		}
+	}
 	// build type definition
 	data := cg.BlueMap{
 		"Type":            cg.V(x.Ref.TypeName),
@@ -69,7 +112,11 @@ func (x *GoInductiveImpl) GoDef() cg.Blueprint {
 		"EdelweissString": EdelweissString,
 		"Errorf":          Errorf,
 		//
-		"CaseDecls": caseDecls,
+		"CaseDecls":                caseDecls,
+		"CaseParseCases":           caseParseCases,
+		"CaseNextCases":            caseNextCases,
+		"CaseLookupByStringCases":  caseLookupByStringCases,
+		"CaseLookupBySegmentCases": caseLookupBySegmentCases,
 	}
 	return cg.T{
 		Data: data,
@@ -95,14 +142,9 @@ func (x *{{.Type}}) Parse(n {{.Node}}) error {
 		return {{.Errorf}}("inductive map key is not a string")
 	}
 	switch k {
-	case "c1_XXX":
-		var y T1XXX
-		if err := y.Parse(vn); err != nil {
-			return err
-		}
-		x.C1XXX = &y
+{{.CaseParseCases}}
 	}
-	return nil
+	return {{.Errorf}}("inductive map has no applicable keys")
 }
 
 type {{.Type}}_MapIterator struct {
@@ -116,8 +158,7 @@ func (x *{{.Type}}_MapIterator) Next() (key {{.Node}}, value {{.Node}}, err erro
 	} else {
 		x.done = true
 		switch {
-		case x.C1XXX != nil:
-			return values.String("c1_XXX"), x.s.C1XXX.Node(), nil
+{{.CaseNextCases}}
 		default:
 			return nil, nil, fmt.Errorf("no inductive cases are set")
 		}
@@ -134,8 +175,7 @@ func (x {{.Type}}) Kind() {{.KindType}} {
 
 func (x {{.Type}}) LookupByString(key string) ({{.Node}}, error) {
 	switch key {
-	case x.C1XXX != nil && key == "c1_XXX":
-		return x.C1XXX.Node(), nil
+{{.CaseLookupByStringCases}}
 	}
 	return nil, {{.ErrNA}}
 }
@@ -157,8 +197,7 @@ func (x {{.Type}}) LookupByIndex(idx int64) ({{.Node}}, error) {
 
 func (x {{.Type}}) LookupBySegment(seg {{.PathSegment}}) ({{.Node}}, error) {
 	switch seg.String() {
-	case "c1_XXX":
-		return x.C1XXX.Node(), nil
+{{.CaseLookupBySegmentCases}}
 	}
 	return nil, {{.ErrNA}}
 }
