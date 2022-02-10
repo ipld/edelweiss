@@ -8,63 +8,56 @@ import (
 )
 
 type InductiveXXX struct {
-	C1XXX values.Int
-	C2XXX values.Any
+	C1XXX *values.Int
+	C2XXX *values.Any
 }
 
 func (x *InductiveXXX) Parse(n datamodel.Node) error {
+	*x = InductiveXXX{}
 	if n.Kind() != datamodel.Kind_Map {
 		return values.ErrNA
 	}
 	iter := n.MapIterator()
-	nfields := 0
-	for !iter.Done() {
-		if kn, vn, err := iter.Next(); err != nil {
+	kn, vn, err := iter.Next()
+	if err != nil {
+		return err
+	}
+	k, err := kn.AsString()
+	if err != nil {
+		return fmt.Errorf("inductive map key is not a string")
+	}
+	switch k {
+	case "c1_XXX":
+		var y T1XXX
+		if err := y.Parse(vn); err != nil {
 			return err
-		} else {
-			if k, err := kn.AsString(); err != nil {
-				return fmt.Errorf("structure map key is not a string")
-			} else {
-				switch k {
-				case "c1_XXX":
-					if err := x.C1XXX.Parse(vn); err != nil {
-						return err
-					}
-					nfields++
-				case "c2_XXX":
-					if err := x.C2XXX.Parse(vn); err != nil {
-						return err
-					}
-					nfields++
-				}
-			}
 		}
+		x.C1XXX = &y
 	}
-	if nfields != 2 /*XXX*/ {
-		return values.ErrNA
-	} else {
-		return nil
-	}
+	return nil
 }
 
 type InductiveXXX_MapIterator struct {
-	i int64
-	s *InductiveXXX
+	done bool
+	s    *InductiveXXX
 }
 
 func (x *InductiveXXX_MapIterator) Next() (key datamodel.Node, value datamodel.Node, err error) {
-	x.i++
-	switch x.i {
-	case 0:
-		return values.String("c1_XXX"), x.s.C1XXX.Node(), nil
-	case 1:
-		return values.String("c2_XXX"), x.s.C2XXX.Node(), nil
+	if x.done {
+		return nil, nil, values.ErrNA
+	} else {
+		x.done = true
+		switch {
+		case x.C1XXX != nil:
+			return values.String("c1_XXX"), x.s.C1XXX.Node(), nil
+		default:
+			return nil, nil, fmt.Errorf("no inductive cases are set")
+		}
 	}
-	return nil, nil, values.ErrNA
 }
 
 func (x *InductiveXXX_MapIterator) Done() bool {
-	return x.i < 2 /*XXX*/
+	return x.done
 }
 
 func (x InductiveXXX) Kind() datamodel.Kind {
@@ -73,54 +66,37 @@ func (x InductiveXXX) Kind() datamodel.Kind {
 
 func (x InductiveXXX) LookupByString(key string) (datamodel.Node, error) {
 	switch key {
-	case "c1_XXX":
+	case x.C1XXX != nil && key == "c1_XXX":
 		return x.C1XXX.Node(), nil
-	case "c2_XXX":
-		return x.C2XXX.Node(), nil
 	}
 	return nil, values.ErrNA
 }
 
 func (x InductiveXXX) LookupByNode(key datamodel.Node) (datamodel.Node, error) {
-	switch key.Kind() {
-	case datamodel.Kind_String:
-		if s, err := key.AsString(); err != nil {
-			return nil, err
-		} else {
-			return x.LookupByString(s)
-		}
-	case datamodel.Kind_Int:
-		if i, err := key.AsInt(); err != nil {
-			return nil, err
-		} else {
-			return x.LookupByIndex(i)
-		}
+	if key.Kind() != datamodel.Kind_String {
+		return nil, values.ErrNA
 	}
-	return nil, values.ErrNA
+	if s, err := key.AsString(); err != nil {
+		return nil, err
+	} else {
+		return x.LookupByString(s)
+	}
 }
 
 func (x InductiveXXX) LookupByIndex(idx int64) (datamodel.Node, error) {
-	switch idx {
-	case 0:
-		return x.C1XXX.Node(), nil
-	case 1:
-		return x.C2XXX.Node(), nil
-	}
 	return nil, values.ErrNA
 }
 
 func (x InductiveXXX) LookupBySegment(seg datamodel.PathSegment) (datamodel.Node, error) {
 	switch seg.String() {
-	case "0", "c1_XXX":
+	case "c1_XXX":
 		return x.C1XXX.Node(), nil
-	case "1", "c2_XXX":
-		return x.C2XXX.Node(), nil
 	}
 	return nil, values.ErrNA
 }
 
 func (x InductiveXXX) MapIterator() datamodel.MapIterator {
-	return &InductiveXXX_MapIterator{-1, &x}
+	return &InductiveXXX_MapIterator{false, &x}
 }
 
 func (x InductiveXXX) ListIterator() datamodel.ListIterator {
@@ -128,7 +104,7 @@ func (x InductiveXXX) ListIterator() datamodel.ListIterator {
 }
 
 func (x InductiveXXX) Length() int64 {
-	return 2 //XXX
+	return 1
 }
 
 func (x InductiveXXX) IsAbsent() bool {
