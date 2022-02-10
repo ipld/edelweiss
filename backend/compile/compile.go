@@ -140,6 +140,8 @@ func buildGoTypeImpl(depToGo cg.DefToGoTypeRef, typeDef def.Type, goTypeRef cg.G
 		return blue.BuildSingletonImpl(d, goTypeRef)
 	case def.Structure:
 		return blue.BuildStructureImpl(depToGo, d, goTypeRef)
+	case def.Inductive:
+		return blue.BuildInductiveImpl(depToGo, d, goTypeRef)
 	default:
 		return nil, fmt.Errorf("unsupported user type definition %#v", typeDef)
 	}

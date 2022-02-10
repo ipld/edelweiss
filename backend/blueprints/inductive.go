@@ -70,7 +70,7 @@ func (x *GoInductiveImpl) GoDef() cg.Blueprint {
 	for i := range cases {
 		caseNextCases[i] = cg.T{
 			Data: caseData[i],
-			Src: `		case x.{{.CaseName}} != nil:
+			Src: `		case x.s.{{.CaseName}} != nil:
 			return {{.EdelweissString}}({{.CaseNameString}}), x.s.{{.CaseName}}.Node(), nil
 `,
 		}
@@ -160,7 +160,7 @@ func (x *{{.Type}}_MapIterator) Next() (key {{.Node}}, value {{.Node}}, err erro
 		switch {
 {{.CaseNextCases}}
 		default:
-			return nil, nil, fmt.Errorf("no inductive cases are set")
+			return nil, nil, {{.Errorf}}("no inductive cases are set")
 		}
 	}
 }
@@ -174,7 +174,7 @@ func (x {{.Type}}) Kind() {{.KindType}} {
 }
 
 func (x {{.Type}}) LookupByString(key string) ({{.Node}}, error) {
-	switch key {
+	switch {
 {{.CaseLookupByStringCases}}
 	}
 	return nil, {{.ErrNA}}

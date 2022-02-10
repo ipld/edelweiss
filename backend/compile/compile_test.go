@@ -53,3 +53,29 @@ func TestStructureAtCompileTime(t *testing.T) {
 	}
 	fmt.Println(string(fileBuf))
 }
+
+func TestInductiveAtCompileTime(t *testing.T) {
+	defs := def.Types{
+		def.Named{
+			Name: "S1",
+			Type: def.MakeInductive(
+				def.Case{Name: "Int", Type: def.Int{}},
+				def.Case{Name: "Bool", Type: def.Bool{}},
+			),
+		},
+	}
+	x := &GoPkgCodegen{
+		GoPkgDirPath: "",
+		GoPkgPath:    "test",
+		Defs:         defs,
+	}
+	goFile, err := x.Compile()
+	if err != nil {
+		t.Fatal(err)
+	}
+	fileBuf, err := goFile.Generate()
+	if err != nil {
+		t.Fatal(err)
+	}
+	fmt.Println(string(fileBuf))
+}
