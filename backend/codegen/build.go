@@ -13,7 +13,7 @@ type Builders []Builder
 func (bs Builders) Build() error {
 	for _, b := range bs {
 		if err := b.Build(); err != nil {
-			return fmt.Errorf("builder %#v (%w)", err)
+			return fmt.Errorf("builder %#v (%w)", b, err)
 		}
 	}
 	return nil
