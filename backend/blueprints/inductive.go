@@ -32,6 +32,25 @@ func (x *GoInductiveImpl) GoTypeRef() cg.GoTypeRef {
 }
 
 func (x *GoInductiveImpl) GoDef() cg.Blueprint {
+	cases := def.FlattenCaseList(x.Def.Cases)
+	caseData := make([]cg.BlueMap, len(cases))
+	for i := range cases {
+		caseData[i] = cg.BlueMap{
+			"CaseName":        cg.V(cases[i].Name),
+			"CaseNameString":  cg.StringLiteral(cases[i].Name),
+			"CaseType":        x.Lookup.LookupDepGoRef(cases[i].Type),
+			"EdelweissString": EdelweissString,
+		}
+	}
+	// build case declarations
+	caseDecls := make(cg.Blueprints, len(cases))
+	for i := range cases {
+		caseDecls[i] = cg.T{
+			Data: caseData[i],
+			Src: "	{{.CaseName}} *{{.FieldType}}\n",
+		}
+	}
+	//
 	XXX
 	// build type definition
 	data := cg.BlueMap{
@@ -47,7 +66,6 @@ func (x *GoInductiveImpl) GoDef() cg.Blueprint {
 		"ListIterator":    IPLDListIteratorType,
 		"Link":            IPLDLinkType,
 		"NodePrototype":   IPLDNodePrototypeType,
-		"Length":          cg.IntLiteral(len(fields)),
 		"EdelweissString": EdelweissString,
 		"Errorf":          Errorf,
 		//
@@ -59,8 +77,7 @@ func (x *GoInductiveImpl) GoDef() cg.Blueprint {
 // -- protocol type {{.Type}} --
 
 type {{.Type}} struct {
-	C1XXX *values.Int
-	C2XXX *values.Any
+{{.CaseDecls}}
 }
 
 func (x *{{.Type}}) Parse(n {{.Node}}) error {
