@@ -39,7 +39,7 @@ func (x *GoListImpl) GoDef() cg.Blueprint {
 			PkgPath:  x.Ref.PkgPath,
 			TypeName: x.Ref.TypeName + "_ListIterator",
 		},
-		"ElemType":        x.Lookup.LookupDepGoRef(x.Def),
+		"ElemType":        x.Lookup.LookupDepGoRef(x.Def.Element),
 		"Node":            IPLDNodeType,
 		"KindType":        IPLDKindType,
 		"KindList":        IPLDKindList,

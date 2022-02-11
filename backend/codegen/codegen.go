@@ -1,6 +1,8 @@
 package codegen
 
 import (
+	"fmt"
+
 	"github.com/ipld/edelweiss/def"
 )
 
@@ -15,7 +17,7 @@ type DefToGoTypeRef map[def.Type]GoTypeRef
 func (m DefToGoTypeRef) LookupDepGoRef(t def.Type) GoTypeRef {
 	r, ok := m[t]
 	if !ok {
-		panic("missing dependency")
+		panic(fmt.Sprintf("missing dependency %#v", t))
 	}
 	return r
 }
