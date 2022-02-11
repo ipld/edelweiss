@@ -125,3 +125,26 @@ func TestLinkAtCompileTime(t *testing.T) {
 	}
 	fmt.Println(string(fileBuf))
 }
+
+func TestMapAtCompileTime(t *testing.T) {
+	defs := def.Types{
+		def.Named{
+			Name: "S1",
+			Type: def.Map{Key: def.Int{}, Value: def.String{}},
+		},
+	}
+	x := &GoPkgCodegen{
+		GoPkgDirPath: "",
+		GoPkgPath:    "test",
+		Defs:         defs,
+	}
+	goFile, err := x.Compile()
+	if err != nil {
+		t.Fatal(err)
+	}
+	fileBuf, err := goFile.Generate()
+	if err != nil {
+		t.Fatal(err)
+	}
+	fmt.Println(string(fileBuf))
+}

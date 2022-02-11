@@ -29,12 +29,16 @@ var (
 	IPLDPathSegment       = &cg.GoTypeRef{PkgPath: IPLDDatamodelPkg, TypeName: "PathSegment"}
 	IPLDLinkType          = &cg.GoTypeRef{PkgPath: IPLDDatamodelPkg, TypeName: "Link"}
 	IPLDNodePrototypeType = &cg.GoTypeRef{PkgPath: IPLDDatamodelPkg, TypeName: "NodePrototype"}
+
+	IPLDDeepEqual = &cg.GoRef{PkgPath: IPLDPkg, Name: "DeepEqual"}
 )
 
 var (
-	EdelweissErrNA     = &cg.GoRef{PkgPath: EdelweissValuesPkg, Name: "ErrNA"}
-	EdelweissErrBounds = &cg.GoRef{PkgPath: EdelweissValuesPkg, Name: "ErrBounds"}
-	EdelweissString    = &cg.GoRef{PkgPath: EdelweissValuesPkg, Name: "String"}
+	EdelweissErrNA       = &cg.GoRef{PkgPath: EdelweissValuesPkg, Name: "ErrNA"}
+	EdelweissErrBounds   = &cg.GoRef{PkgPath: EdelweissValuesPkg, Name: "ErrBounds"}
+	EdelweissErrNotFound = &cg.GoRef{PkgPath: EdelweissValuesPkg, Name: "ErrNotFound"}
+	EdelweissString      = &cg.GoRef{PkgPath: EdelweissValuesPkg, Name: "String"}
+	EdelweissInt         = &cg.GoRef{PkgPath: EdelweissValuesPkg, Name: "Int"}
 )
 
 var (

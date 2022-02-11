@@ -61,19 +61,28 @@ func (Map) Kind() datamodel.Kind {
 }
 
 func (v Map) LookupByString(s string) (datamodel.Node, error) {
-	return nil, ErrNotSupported
+	return v.LookupByNode(String(s))
 }
 
 func (v Map) LookupByNode(key datamodel.Node) (datamodel.Node, error) {
-	return nil, ErrNotSupported
+	for _, kv := range v {
+		if ipld.DeepEqual(kv.Key.Node(), key) {
+			return kv.Value.Node(), nil
+		}
+	}
+	return nil, ErrNotFound
 }
 
 func (v Map) LookupByIndex(i int64) (datamodel.Node, error) {
-	return nil, ErrNotSupported
+	return v.LookupByNode(Int(i))
 }
 
 func (v Map) LookupBySegment(seg datamodel.PathSegment) (datamodel.Node, error) {
-	return nil, ErrNotSupported
+	if idx, err := seg.Index(); err != nil {
+		return v.LookupByString(seg.String())
+	} else {
+		return v.LookupByIndex(idx)
+	}
 }
 
 func (v Map) MapIterator() datamodel.MapIterator {

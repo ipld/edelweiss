@@ -148,6 +148,8 @@ func buildGoTypeImpl(depToGo cg.DefToGoTypeRef, typeDef def.Type, goTypeRef cg.G
 		return blue.BuildListImpl(depToGo, d, goTypeRef)
 	case def.Link:
 		return blue.BuildLinkImpl(depToGo, d, goTypeRef)
+	case def.Map:
+		return blue.BuildMapImpl(depToGo, d, goTypeRef)
 	default:
 		return nil, fmt.Errorf("unsupported user type definition %#v", typeDef)
 	}

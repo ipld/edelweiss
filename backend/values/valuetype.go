@@ -53,4 +53,5 @@ var (
 	ErrUnexpected   = fmt.Errorf("unexpected")
 	ErrInvalid      = fmt.Errorf("invalid format")
 	ErrNotSupported = fmt.Errorf("not supported")
+	ErrNotFound     = fmt.Errorf("not found")
 )
