@@ -66,6 +66,7 @@ go 1.16
 require (
 	github.com/ipld/edelweiss v0.0.0-20220209162310-6635ef8b8859
 	github.com/ipld/go-ipld-prime v0.14.4
+	github.com/ipfs/go-cid v0.0.4
 )
 `
 	if err := ioutil.WriteFile(path.Join(dir, "go.mod"), []byte(goModSrc), 0644); err != nil {
