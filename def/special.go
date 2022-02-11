@@ -10,6 +10,16 @@ func (String) Kind() string {
 	return "String"
 }
 
+type Bytes struct{}
+
+func (Bytes) Deps() Types {
+	return nil
+}
+
+func (Bytes) Kind() string {
+	return "Bytes"
+}
+
 type Any struct{}
 
 func (Any) Deps() Types {

@@ -96,12 +96,14 @@ func processDeps(goPkgPath string, p *genPlan, t def.Type) error {
 			p.depToRef[t] = cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "Int"}
 		case def.Float:
 			p.depToRef[t] = cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "Float"}
-		case def.String:
-			p.depToRef[t] = cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "String"}
 		case def.Byte:
 			p.depToRef[t] = cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "Byte"}
 		case def.Char:
 			p.depToRef[t] = cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "Char"}
+		case def.String:
+			p.depToRef[t] = cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "String"}
+		case def.Bytes:
+			p.depToRef[t] = cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "Bytes"}
 		case def.Any:
 			p.depToRef[t] = cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "Any"}
 		case def.Nothing:
