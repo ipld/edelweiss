@@ -13,7 +13,11 @@ type LookupDepGoRef interface {
 type DefToGoTypeRef map[def.Type]GoTypeRef
 
 func (m DefToGoTypeRef) LookupDepGoRef(t def.Type) GoTypeRef {
-	return m[t]
+	r, ok := m[t]
+	if !ok {
+		panic("missing dependency")
+	}
+	return r
 }
 
 // file generation

@@ -32,8 +32,9 @@ var (
 )
 
 var (
-	EdelweissErrNA  = &cg.GoRef{PkgPath: EdelweissValuesPkg, Name: "ErrNA"}
-	EdelweissString = &cg.GoRef{PkgPath: EdelweissValuesPkg, Name: "String"}
+	EdelweissErrNA     = &cg.GoRef{PkgPath: EdelweissValuesPkg, Name: "ErrNA"}
+	EdelweissErrBounds = &cg.GoRef{PkgPath: EdelweissValuesPkg, Name: "ErrBounds"}
+	EdelweissString    = &cg.GoRef{PkgPath: EdelweissValuesPkg, Name: "String"}
 )
 
 var (
