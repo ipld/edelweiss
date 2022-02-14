@@ -1,7 +1,9 @@
 
 # Decentralized Protocol Compiler (WIP)
 
-## MVP RPC protocol compiler
+For a detailed and longer-term roadmap of this project, refer to the [Protocol Compiler Roadmap 2022](design/roadmap.md).
+
+## Target user experience for Mileston 1: MVP RPC protocol compiler
 
 The MVP for an RPC compiler targets to enable the following workflow.
 
