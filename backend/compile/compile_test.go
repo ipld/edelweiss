@@ -171,3 +171,26 @@ func TestCallAtCompileTime(t *testing.T) {
 	}
 	fmt.Println(string(fileBuf))
 }
+
+func TestReturnAtCompileTime(t *testing.T) {
+	defs := def.Types{
+		def.Named{
+			Name: "S1",
+			Type: def.Return{ID: def.Int{}, Fn: def.Fn{Arg: def.Int{}, Return: def.String{}}},
+		},
+	}
+	x := &GoPkgCodegen{
+		GoPkgDirPath: "",
+		GoPkgPath:    "test",
+		Defs:         defs,
+	}
+	goFile, err := x.Compile()
+	if err != nil {
+		t.Fatal(err)
+	}
+	fileBuf, err := goFile.Generate()
+	if err != nil {
+		t.Fatal(err)
+	}
+	fmt.Println(string(fileBuf))
+}
