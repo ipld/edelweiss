@@ -48,15 +48,6 @@ func (v *Any) Parse(n datamodel.Node) error {
 		v.Value = x
 		return nil
 	}
-	// enveloped composite
-	if x, err := TryParseStructure(n); err == nil {
-		v.Value = x
-		return nil
-	}
-	if x, err := TryParseCall(n); err == nil {
-		v.Value = x
-		return nil
-	}
 	if x, err := TryParseMap(n); err == nil {
 		v.Value = x
 		return nil

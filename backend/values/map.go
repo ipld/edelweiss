@@ -21,19 +21,6 @@ func (v Map) Node() datamodel.Node {
 	return v
 }
 
-func mapEqual(x, y Map) bool {
-	if len(x) != len(y) {
-		return false
-	} else {
-		for i := range x {
-			if x[i] != y[i] {
-				return false
-			}
-		}
-		return true
-	}
-}
-
 func (v *Map) Parse(n datamodel.Node) error {
 	if n.Kind() != ipld.Kind_Map {
 		return ErrNA
