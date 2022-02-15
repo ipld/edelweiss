@@ -130,7 +130,9 @@ func buildGoTypeImpls(typeToGen typesToGen, depToGo cg.DefToGoTypeRef) (cg.GoTyp
 		if goTypeImpl, err := buildGoTypeImpl(depToGo, ttg.Def, ttg.GoRef); err != nil {
 			return nil, err
 		} else {
-			goTypeImpls = append(goTypeImpls, goTypeImpl)
+			if goTypeImpl != nil {
+				goTypeImpls = append(goTypeImpls, goTypeImpl)
+			}
 		}
 	}
 	return goTypeImpls, nil
@@ -150,6 +152,11 @@ func buildGoTypeImpl(depToGo cg.DefToGoTypeRef, typeDef def.Type, goTypeRef cg.G
 		return blue.BuildLinkImpl(depToGo, d, goTypeRef)
 	case def.Map:
 		return blue.BuildMapImpl(depToGo, d, goTypeRef)
+	case def.Fn:
+		// fn types define functional signatures. they don't have a corresponding value type.
+		return nil, nil
+	case def.Call:
+		return blue.BuildCallImpl(depToGo, d, goTypeRef)
 	default:
 		return nil, fmt.Errorf("unsupported user type definition %#v", typeDef)
 	}
