@@ -54,7 +54,7 @@ func RunGenTest(t *testing.T, defs def.Types, testSrc string) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	// defer os.RemoveAll(dir)
+	defer os.RemoveAll(dir)
 	fmt.Printf("generating test in %s\n", dir)
 
 	// create go.mod
