@@ -1,6 +1,7 @@
 package blueprints
 
 import (
+	"github.com/ipld/edelweiss/blueprints/base"
 	cg "github.com/ipld/edelweiss/codegen"
 	"github.com/ipld/edelweiss/def"
 )
@@ -40,20 +41,20 @@ func (x *GoListImpl) GoDef() cg.Blueprint {
 			TypeName: x.Ref.TypeName + "_ListIterator",
 		},
 		"ElemType":        x.Lookup.LookupDepGoRef(x.Def.Element),
-		"Node":            IPLDNodeType,
-		"KindType":        IPLDKindType,
-		"KindList":        IPLDKindList,
-		"KindString":      IPLDKindString,
-		"KindInt":         IPLDKindInt,
-		"ErrNA":           EdelweissErrNA,
-		"ErrBounds":       EdelweissErrBounds,
-		"PathSegment":     IPLDPathSegment,
-		"MapIterator":     IPLDMapIteratorType,
-		"ListIterator":    IPLDListIteratorType,
-		"Link":            IPLDLinkType,
-		"NodePrototype":   IPLDNodePrototypeType,
-		"EdelweissString": EdelweissString,
-		"Errorf":          Errorf,
+		"Node":            base.IPLDNodeType,
+		"KindType":        base.IPLDKindType,
+		"KindList":        base.IPLDKindList,
+		"KindString":      base.IPLDKindString,
+		"KindInt":         base.IPLDKindInt,
+		"ErrNA":           base.EdelweissErrNA,
+		"ErrBounds":       base.EdelweissErrBounds,
+		"PathSegment":     base.IPLDPathSegment,
+		"MapIterator":     base.IPLDMapIteratorType,
+		"ListIterator":    base.IPLDListIteratorType,
+		"Link":            base.IPLDLinkType,
+		"NodePrototype":   base.IPLDNodePrototypeType,
+		"EdelweissString": base.EdelweissString,
+		"Errorf":          base.Errorf,
 		//
 	}
 	return cg.T{

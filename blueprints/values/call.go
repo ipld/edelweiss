@@ -1,37 +1,38 @@
 package blueprints
 
 import (
+	"github.com/ipld/edelweiss/blueprints/base"
 	cg "github.com/ipld/edelweiss/codegen"
 	"github.com/ipld/edelweiss/def"
 )
 
-func BuildReturnImpl(
+func BuildCallImpl(
 	lookup cg.LookupDepGoRef,
-	typeDef def.Return,
+	typeDef def.Call,
 	goTypeRef cg.GoTypeRef,
 ) (cg.GoTypeImpl, error) {
-	return &GoReturnImpl{
+	return &GoCallImpl{
 		Lookup: lookup,
 		Def:    typeDef,
 		Ref:    goTypeRef,
 	}, nil
 }
 
-type GoReturnImpl struct {
+type GoCallImpl struct {
 	Lookup cg.LookupDepGoRef
-	Def    def.Return
+	Def    def.Call
 	Ref    cg.GoTypeRef
 }
 
-func (x *GoReturnImpl) ProtoDef() def.Type {
+func (x *GoCallImpl) ProtoDef() def.Type {
 	return x.Def
 }
 
-func (x *GoReturnImpl) GoTypeRef() cg.GoTypeRef {
+func (x *GoCallImpl) GoTypeRef() cg.GoTypeRef {
 	return x.Ref
 }
 
-func (x *GoReturnImpl) GoDef() cg.Blueprint {
+func (x *GoCallImpl) GoDef() cg.Blueprint {
 	// build type definition
 	data := cg.BlueMap{
 		"Type": x.Ref,
@@ -40,23 +41,23 @@ func (x *GoReturnImpl) GoDef() cg.Blueprint {
 			TypeName: x.Ref.TypeName + "_MapIterator",
 		},
 		"IDType":          x.Lookup.LookupDepGoRef(x.Def.ID),
-		"ReturnType":      x.Lookup.LookupDepGoRef(x.Def.Fn.Return),
-		"Node":            IPLDNodeType,
-		"KindType":        IPLDKindType,
-		"KindMap":         IPLDKindMap,
-		"KindString":      IPLDKindString,
-		"KindInt":         IPLDKindInt,
-		"ErrNA":           EdelweissErrNA,
-		"ErrBounds":       EdelweissErrBounds,
-		"ErrNotFound":     EdelweissErrNotFound,
-		"PathSegment":     IPLDPathSegment,
-		"MapIterator":     IPLDMapIteratorType,
-		"ListIterator":    IPLDListIteratorType,
-		"Link":            IPLDLinkType,
-		"NodePrototype":   IPLDNodePrototypeType,
-		"EdelweissString": EdelweissString,
-		"EdelweissInt":    EdelweissInt,
-		"Errorf":          Errorf,
+		"ArgType":         x.Lookup.LookupDepGoRef(x.Def.Fn.Arg),
+		"Node":            base.IPLDNodeType,
+		"KindType":        base.IPLDKindType,
+		"KindMap":         base.IPLDKindMap,
+		"KindString":      base.IPLDKindString,
+		"KindInt":         base.IPLDKindInt,
+		"ErrNA":           base.EdelweissErrNA,
+		"ErrBounds":       base.EdelweissErrBounds,
+		"ErrNotFound":     base.EdelweissErrNotFound,
+		"PathSegment":     base.IPLDPathSegment,
+		"MapIterator":     base.IPLDMapIteratorType,
+		"ListIterator":    base.IPLDListIteratorType,
+		"Link":            base.IPLDLinkType,
+		"NodePrototype":   base.IPLDNodePrototypeType,
+		"EdelweissString": base.EdelweissString,
+		"EdelweissInt":    base.EdelweissInt,
+		"Errorf":          base.Errorf,
 	}
 	return cg.T{
 		Data: data,
@@ -65,7 +66,7 @@ func (x *GoReturnImpl) GoDef() cg.Blueprint {
 
 type {{.Type}} struct {
 	ID {{.IDType}}
-	Return {{.ReturnType}}
+	Arg {{.ArgType}}
 }
 
 func (v {{.Type}}) Node() {{.Node}} {
@@ -90,8 +91,8 @@ func (v *{{.Type}}) Parse(n {{.Node}}) error {
 					return {{.Errorf}}("call id (%v)", err)
 				}
 				idParsed = true
-			case "Return":
-				if err := v.Return.Parse(vn); err != nil {
+			case "Arg":
+				if err := v.Arg.Parse(vn); err != nil {
 					return {{.Errorf}}("call argument (%v)", err)
 				}
 				argParsed = true
@@ -116,8 +117,8 @@ func (v {{.Type}}) LookupByString(s string) ({{.Node}}, error) {
 	switch s {
 	case "ID":
 		return v.ID.Node(), nil
-	case "Return":
-		return v.Return.Node(), nil
+	case "Arg":
+		return v.Arg.Node(), nil
 	}
 	return nil, {{.ErrNA}}
 }
@@ -208,7 +209,7 @@ func (iter *{{.TypeMapIterator}}) Next() ({{.Node}}, {{.Node}}, error) {
 		return {{.EdelweissString}}("ID"), iter.m.ID.Node(), nil
 	case 1:
 		iter.at++
-		return {{.EdelweissString}}("Return"), iter.m.Return.Node(), nil
+		return {{.EdelweissString}}("Arg"), iter.m.Arg.Node(), nil
 	}
 	return nil, nil, {{.ErrBounds}}
 }

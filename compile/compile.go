@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"path"
 
-	blue "github.com/ipld/edelweiss/backend/blueprints"
+	blue "github.com/ipld/edelweiss/blueprints/values"
 	cg "github.com/ipld/edelweiss/codegen"
 	"github.com/ipld/edelweiss/def"
 	"github.com/ipld/edelweiss/values"

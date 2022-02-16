@@ -1,6 +1,7 @@
 package blueprints
 
 import (
+	"github.com/ipld/edelweiss/blueprints/base"
 	cg "github.com/ipld/edelweiss/codegen"
 	"github.com/ipld/edelweiss/def"
 )
@@ -36,20 +37,20 @@ func (x *GoLinkImpl) GoDef() cg.Blueprint {
 	data := cg.BlueMap{
 		"Type":            x.Ref,
 		"ToType":          x.Lookup.LookupDepGoRef(x.Def.To),
-		"Node":            IPLDNodeType,
-		"KindType":        IPLDKindType,
-		"KindLink":        IPLDKindLink,
-		"KindString":      IPLDKindString,
-		"KindInt":         IPLDKindInt,
-		"ErrNA":           EdelweissErrNA,
-		"ErrBounds":       EdelweissErrBounds,
-		"PathSegment":     IPLDPathSegment,
-		"MapIterator":     IPLDMapIteratorType,
-		"ListIterator":    IPLDListIteratorType,
-		"Link":            IPLDLinkType,
-		"NodePrototype":   IPLDNodePrototypeType,
-		"EdelweissString": EdelweissString,
-		"Errorf":          Errorf,
+		"Node":            base.IPLDNodeType,
+		"KindType":        base.IPLDKindType,
+		"KindLink":        base.IPLDKindLink,
+		"KindString":      base.IPLDKindString,
+		"KindInt":         base.IPLDKindInt,
+		"ErrNA":           base.EdelweissErrNA,
+		"ErrBounds":       base.EdelweissErrBounds,
+		"PathSegment":     base.IPLDPathSegment,
+		"MapIterator":     base.IPLDMapIteratorType,
+		"ListIterator":    base.IPLDListIteratorType,
+		"Link":            base.IPLDLinkType,
+		"NodePrototype":   base.IPLDNodePrototypeType,
+		"EdelweissString": base.EdelweissString,
+		"Errorf":          base.Errorf,
 		//
 		"Cid":         cg.GoTypeRef{PkgPath: "github.com/ipfs/go-cid", TypeName: "Cid"},
 		"IPLDCidLink": cg.GoTypeRef{PkgPath: "github.com/ipld/go-ipld-prime/linking/cid", TypeName: "Link"},

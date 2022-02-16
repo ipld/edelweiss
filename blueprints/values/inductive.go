@@ -1,6 +1,7 @@
 package blueprints
 
 import (
+	"github.com/ipld/edelweiss/blueprints/base"
 	cg "github.com/ipld/edelweiss/codegen"
 	"github.com/ipld/edelweiss/def"
 )
@@ -39,7 +40,7 @@ func (x *GoInductiveImpl) GoDef() cg.Blueprint {
 			"CaseName":        cg.V(cases[i].Name),
 			"CaseNameString":  cg.StringLiteral(cases[i].Name),
 			"CaseType":        x.Lookup.LookupDepGoRef(cases[i].Type),
-			"EdelweissString": EdelweissString,
+			"EdelweissString": base.EdelweissString,
 		}
 	}
 	// build case declarations
@@ -98,19 +99,19 @@ func (x *GoInductiveImpl) GoDef() cg.Blueprint {
 	// build type definition
 	data := cg.BlueMap{
 		"Type":            cg.V(x.Ref.TypeName),
-		"Node":            IPLDNodeType,
-		"KindType":        IPLDKindType,
-		"KindMap":         IPLDKindMap,
-		"KindString":      IPLDKindString,
-		"KindInt":         IPLDKindInt,
-		"ErrNA":           EdelweissErrNA,
-		"PathSegment":     IPLDPathSegment,
-		"MapIterator":     IPLDMapIteratorType,
-		"ListIterator":    IPLDListIteratorType,
-		"Link":            IPLDLinkType,
-		"NodePrototype":   IPLDNodePrototypeType,
-		"EdelweissString": EdelweissString,
-		"Errorf":          Errorf,
+		"Node":            base.IPLDNodeType,
+		"KindType":        base.IPLDKindType,
+		"KindMap":         base.IPLDKindMap,
+		"KindString":      base.IPLDKindString,
+		"KindInt":         base.IPLDKindInt,
+		"ErrNA":           base.EdelweissErrNA,
+		"PathSegment":     base.IPLDPathSegment,
+		"MapIterator":     base.IPLDMapIteratorType,
+		"ListIterator":    base.IPLDListIteratorType,
+		"Link":            base.IPLDLinkType,
+		"NodePrototype":   base.IPLDNodePrototypeType,
+		"EdelweissString": base.EdelweissString,
+		"Errorf":          base.Errorf,
 		//
 		"CaseDecls":                caseDecls,
 		"CaseParseCases":           caseParseCases,

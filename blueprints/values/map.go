@@ -1,6 +1,7 @@
 package blueprints
 
 import (
+	"github.com/ipld/edelweiss/blueprints/base"
 	cg "github.com/ipld/edelweiss/codegen"
 	"github.com/ipld/edelweiss/def"
 )
@@ -45,24 +46,24 @@ func (x *GoMapImpl) GoDef() cg.Blueprint {
 		},
 		"KeyType":         x.Lookup.LookupDepGoRef(x.Def.Key),
 		"ValueType":       x.Lookup.LookupDepGoRef(x.Def.Value),
-		"Node":            IPLDNodeType,
-		"KindType":        IPLDKindType,
-		"KindMap":         IPLDKindMap,
-		"KindString":      IPLDKindString,
-		"KindInt":         IPLDKindInt,
-		"ErrNA":           EdelweissErrNA,
-		"ErrBounds":       EdelweissErrBounds,
-		"ErrNotFound":     EdelweissErrNotFound,
-		"PathSegment":     IPLDPathSegment,
-		"MapIterator":     IPLDMapIteratorType,
-		"ListIterator":    IPLDListIteratorType,
-		"Link":            IPLDLinkType,
-		"NodePrototype":   IPLDNodePrototypeType,
-		"EdelweissString": EdelweissString,
-		"EdelweissInt":    EdelweissInt,
-		"Errorf":          Errorf,
+		"Node":            base.IPLDNodeType,
+		"KindType":        base.IPLDKindType,
+		"KindMap":         base.IPLDKindMap,
+		"KindString":      base.IPLDKindString,
+		"KindInt":         base.IPLDKindInt,
+		"ErrNA":           base.EdelweissErrNA,
+		"ErrBounds":       base.EdelweissErrBounds,
+		"ErrNotFound":     base.EdelweissErrNotFound,
+		"PathSegment":     base.IPLDPathSegment,
+		"MapIterator":     base.IPLDMapIteratorType,
+		"ListIterator":    base.IPLDListIteratorType,
+		"Link":            base.IPLDLinkType,
+		"NodePrototype":   base.IPLDNodePrototypeType,
+		"EdelweissString": base.EdelweissString,
+		"EdelweissInt":    base.EdelweissInt,
+		"Errorf":          base.Errorf,
 		//
-		"IPLDDeepEqual": IPLDDeepEqual,
+		"IPLDDeepEqual": base.IPLDDeepEqual,
 	}
 	return cg.T{
 		Data: data,

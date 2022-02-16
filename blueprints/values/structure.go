@@ -3,6 +3,7 @@ package blueprints
 import (
 	"strconv"
 
+	"github.com/ipld/edelweiss/blueprints/base"
 	cg "github.com/ipld/edelweiss/codegen"
 	"github.com/ipld/edelweiss/def"
 )
@@ -43,7 +44,7 @@ func (x *GoStructureImpl) GoDef() cg.Blueprint {
 			"FieldName":        cg.V(fields[i].Name),
 			"FieldNameString":  cg.StringLiteral(fields[i].Name),
 			"FieldType":        x.Lookup.LookupDepGoRef(fields[i].Type),
-			"EdelweissString":  EdelweissString,
+			"EdelweissString":  base.EdelweissString,
 		}
 	}
 	// build field declarations
@@ -110,20 +111,20 @@ func (x *GoStructureImpl) GoDef() cg.Blueprint {
 	// build type definition
 	data := cg.BlueMap{
 		"Type":            x.Ref,
-		"Node":            IPLDNodeType,
-		"KindType":        IPLDKindType,
-		"KindMap":         IPLDKindMap,
-		"KindString":      IPLDKindString,
-		"KindInt":         IPLDKindInt,
-		"ErrNA":           EdelweissErrNA,
-		"PathSegment":     IPLDPathSegment,
-		"MapIterator":     IPLDMapIteratorType,
-		"ListIterator":    IPLDListIteratorType,
-		"Link":            IPLDLinkType,
-		"NodePrototype":   IPLDNodePrototypeType,
+		"Node":            base.IPLDNodeType,
+		"KindType":        base.IPLDKindType,
+		"KindMap":         base.IPLDKindMap,
+		"KindString":      base.IPLDKindString,
+		"KindInt":         base.IPLDKindInt,
+		"ErrNA":           base.EdelweissErrNA,
+		"PathSegment":     base.IPLDPathSegment,
+		"MapIterator":     base.IPLDMapIteratorType,
+		"ListIterator":    base.IPLDListIteratorType,
+		"Link":            base.IPLDLinkType,
+		"NodePrototype":   base.IPLDNodePrototypeType,
 		"Length":          cg.IntLiteral(len(fields)),
-		"EdelweissString": EdelweissString,
-		"Errorf":          Errorf,
+		"EdelweissString": base.EdelweissString,
+		"Errorf":          base.Errorf,
 		//
 		"FieldDecls":                fieldDecls,
 		"FieldParseCases":           fieldParseCases,

@@ -1,6 +1,7 @@
 package blueprints
 
 import (
+	"github.com/ipld/edelweiss/blueprints/base"
 	cg "github.com/ipld/edelweiss/codegen"
 	"github.com/ipld/edelweiss/def"
 )
@@ -25,100 +26,100 @@ func (x *GoSingletonImpl) GoTypeRef() cg.GoTypeRef {
 func (x *GoSingletonImpl) GoDef() cg.Blueprint {
 	common := cg.BlueMap{
 		"Type":          x.Ref,
-		"Node":          IPLDNodeType,
-		"KindType":      IPLDKindType,
-		"ErrNA":         EdelweissErrNA,
-		"PathSegment":   IPLDPathSegment,
-		"MapIterator":   IPLDMapIteratorType,
-		"ListIterator":  IPLDListIteratorType,
-		"Link":          IPLDLinkType,
-		"NodePrototype": IPLDNodePrototypeType,
+		"Node":          base.IPLDNodeType,
+		"KindType":      base.IPLDKindType,
+		"ErrNA":         base.EdelweissErrNA,
+		"PathSegment":   base.IPLDPathSegment,
+		"MapIterator":   base.IPLDMapIteratorType,
+		"ListIterator":  base.IPLDListIteratorType,
+		"Link":          base.IPLDLinkType,
+		"NodePrototype": base.IPLDNodePrototypeType,
 	}
 	var specific cg.BlueMap
 	switch t := x.Def.(type) {
 	case def.SingletonBool:
 		specific = cg.BlueMap{
-			"KindValue":             IPLDKindBool,
+			"KindValue":             base.IPLDKindBool,
 			"AsMethod":              cg.V("AsBool"),
 			"ValueLiteral":          cg.BoolLiteral(t.Bool),
 			"AsBoolReturnsResult":   cg.BoolLiteral(t.Bool),
-			"AsBoolReturnsError":    Nil,
+			"AsBoolReturnsError":    base.Nil,
 			"AsIntReturnsResult":    cg.IntLiteral(0),
-			"AsIntReturnsError":     EdelweissErrNA,
+			"AsIntReturnsError":     base.EdelweissErrNA,
 			"AsFloatReturnsResult":  cg.FloatLiteral(0),
-			"AsFloatReturnsError":   EdelweissErrNA,
+			"AsFloatReturnsError":   base.EdelweissErrNA,
 			"AsStringReturnsResult": cg.StringLiteral(""),
-			"AsStringReturnsError":  EdelweissErrNA,
+			"AsStringReturnsError":  base.EdelweissErrNA,
 		}
 	case def.SingletonInt:
 		specific = cg.BlueMap{
-			"KindValue":             IPLDKindInt,
+			"KindValue":             base.IPLDKindInt,
 			"AsMethod":              cg.V("AsInt"),
 			"ValueLiteral":          cg.IntLiteral(t.Int),
 			"AsBoolReturnsResult":   cg.BoolLiteral(false),
-			"AsBoolReturnsError":    EdelweissErrNA,
+			"AsBoolReturnsError":    base.EdelweissErrNA,
 			"AsIntReturnsResult":    cg.IntLiteral(t.Int),
-			"AsIntReturnsError":     Nil,
+			"AsIntReturnsError":     base.Nil,
 			"AsFloatReturnsResult":  cg.FloatLiteral(0),
-			"AsFloatReturnsError":   EdelweissErrNA,
+			"AsFloatReturnsError":   base.EdelweissErrNA,
 			"AsStringReturnsResult": cg.StringLiteral(""),
-			"AsStringReturnsError":  EdelweissErrNA,
+			"AsStringReturnsError":  base.EdelweissErrNA,
 		}
 	case def.SingletonFloat:
 		specific = cg.BlueMap{
-			"KindValue":             IPLDKindFloat,
+			"KindValue":             base.IPLDKindFloat,
 			"AsMethod":              cg.V("AsFloat"),
 			"ValueLiteral":          cg.FloatLiteral(t.Float),
 			"AsBoolReturnsResult":   cg.BoolLiteral(false),
-			"AsBoolReturnsError":    EdelweissErrNA,
+			"AsBoolReturnsError":    base.EdelweissErrNA,
 			"AsIntReturnsResult":    cg.IntLiteral(0),
-			"AsIntReturnsError":     EdelweissErrNA,
+			"AsIntReturnsError":     base.EdelweissErrNA,
 			"AsFloatReturnsResult":  cg.FloatLiteral(t.Float),
-			"AsFloatReturnsError":   Nil,
+			"AsFloatReturnsError":   base.Nil,
 			"AsStringReturnsResult": cg.StringLiteral(""),
-			"AsStringReturnsError":  EdelweissErrNA,
+			"AsStringReturnsError":  base.EdelweissErrNA,
 		}
 	case def.SingletonString:
 		specific = cg.BlueMap{
-			"KindValue":             IPLDKindString,
+			"KindValue":             base.IPLDKindString,
 			"AsMethod":              cg.V("AsString"),
 			"ValueLiteral":          cg.StringLiteral(t.String),
 			"AsBoolReturnsResult":   cg.BoolLiteral(false),
-			"AsBoolReturnsError":    EdelweissErrNA,
+			"AsBoolReturnsError":    base.EdelweissErrNA,
 			"AsIntReturnsResult":    cg.IntLiteral(0),
-			"AsIntReturnsError":     EdelweissErrNA,
+			"AsIntReturnsError":     base.EdelweissErrNA,
 			"AsFloatReturnsResult":  cg.FloatLiteral(0),
-			"AsFloatReturnsError":   EdelweissErrNA,
+			"AsFloatReturnsError":   base.EdelweissErrNA,
 			"AsStringReturnsResult": cg.StringLiteral(t.String),
-			"AsStringReturnsError":  Nil,
+			"AsStringReturnsError":  base.Nil,
 		}
 	case def.SingletonChar:
 		specific = cg.BlueMap{
-			"KindValue":             IPLDKindInt,
+			"KindValue":             base.IPLDKindInt,
 			"AsMethod":              cg.V("AsInt"),
 			"ValueLiteral":          cg.IntLiteral(t.Char),
 			"AsBoolReturnsResult":   cg.BoolLiteral(false),
-			"AsBoolReturnsError":    EdelweissErrNA,
+			"AsBoolReturnsError":    base.EdelweissErrNA,
 			"AsIntReturnsResult":    cg.IntLiteral(t.Char),
-			"AsIntReturnsError":     Nil,
+			"AsIntReturnsError":     base.Nil,
 			"AsFloatReturnsResult":  cg.FloatLiteral(0),
-			"AsFloatReturnsError":   EdelweissErrNA,
+			"AsFloatReturnsError":   base.EdelweissErrNA,
 			"AsStringReturnsResult": cg.StringLiteral(""),
-			"AsStringReturnsError":  EdelweissErrNA,
+			"AsStringReturnsError":  base.EdelweissErrNA,
 		}
 	case def.SingletonByte:
 		specific = cg.BlueMap{
-			"KindValue":             IPLDKindInt,
+			"KindValue":             base.IPLDKindInt,
 			"AsMethod":              cg.V("AsInt"),
 			"ValueLiteral":          cg.IntLiteral(t.Byte),
 			"AsBoolReturnsResult":   cg.BoolLiteral(false),
-			"AsBoolReturnsError":    EdelweissErrNA,
+			"AsBoolReturnsError":    base.EdelweissErrNA,
 			"AsIntReturnsResult":    cg.IntLiteral(t.Byte),
-			"AsIntReturnsError":     Nil,
+			"AsIntReturnsError":     base.Nil,
 			"AsFloatReturnsResult":  cg.FloatLiteral(0),
-			"AsFloatReturnsError":   EdelweissErrNA,
+			"AsFloatReturnsError":   base.EdelweissErrNA,
 			"AsStringReturnsResult": cg.StringLiteral(""),
-			"AsStringReturnsError":  EdelweissErrNA,
+			"AsStringReturnsError":  base.EdelweissErrNA,
 		}
 	default:
 		panic("unrecognized singleton type")

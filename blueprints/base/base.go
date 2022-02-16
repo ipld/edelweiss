@@ -1,4 +1,4 @@
-package blueprints
+package base
 
 import (
 	cg "github.com/ipld/edelweiss/codegen"
