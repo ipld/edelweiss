@@ -1,7 +1,7 @@
 package blueprints
 
 import (
-	cg "github.com/ipld/edelweiss/backend/codegen"
+	cg "github.com/ipld/edelweiss/codegen"
 	"github.com/ipld/edelweiss/values"
 )
 
