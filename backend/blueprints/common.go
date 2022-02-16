@@ -2,7 +2,7 @@ package blueprints
 
 import (
 	cg "github.com/ipld/edelweiss/backend/codegen"
-	"github.com/ipld/edelweiss/backend/values"
+	"github.com/ipld/edelweiss/values"
 )
 
 const (

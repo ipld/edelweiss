@@ -6,8 +6,8 @@ import (
 
 	blue "github.com/ipld/edelweiss/backend/blueprints"
 	cg "github.com/ipld/edelweiss/backend/codegen"
-	"github.com/ipld/edelweiss/backend/values"
 	"github.com/ipld/edelweiss/def"
+	"github.com/ipld/edelweiss/values"
 )
 
 type GoPkgCodegen struct {

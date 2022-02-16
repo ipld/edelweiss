@@ -99,7 +99,7 @@ import (
 	"github.com/ipld/go-ipld-prime/node/basicnode"
 	"github.com/ipld/go-ipld-prime/codec/dagjson"
 	"github.com/ipld/go-ipld-prime/codec/dagcbor"
-	"github.com/ipld/edelweiss/backend/values"
+	"github.com/ipld/edelweiss/values"
 )
 
 // silence pkg import errors
