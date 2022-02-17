@@ -100,3 +100,50 @@ func TryParseString(n datamodel.Node) (String, error) {
 	var b String
 	return b, b.Parse(n)
 }
+
+// datamodel.NodeAssembler implementation
+
+func (x *String) BeginMap(sizeHint int64) (datamodel.MapAssembler, error) {
+	return nil, ErrNA
+}
+
+func (x *String) BeginList(sizeHint int64) (datamodel.ListAssembler, error) {
+	return nil, ErrNA
+}
+
+func (x *String) AssignNull() error {
+	return ErrNA
+}
+
+func (x *String) AssignBool(bool) error {
+	return ErrNA
+}
+
+func (x *String) AssignInt(int64) error {
+	return ErrNA
+}
+
+func (x *String) AssignFloat(float64) error {
+	return ErrNA
+}
+
+func (x *String) AssignString(v string) error {
+	*(*string)(x) = v
+	return nil
+}
+
+func (x *String) AssignBytes([]byte) error {
+	return ErrNA
+}
+
+func (x *String) AssignLink(datamodel.Link) error {
+	return ErrNA
+}
+
+func (x *String) AssignNode(n datamodel.Node) error {
+	if v, err := n.AsString(); err != nil {
+		return ErrNA
+	} else {
+		return x.AssignString(v)
+	}
+}
