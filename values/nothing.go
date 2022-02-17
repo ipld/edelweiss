@@ -98,3 +98,49 @@ func TryParseNothing(n datamodel.Node) (Nothing, error) {
 	var nth Nothing
 	return nth, nth.Parse(n)
 }
+
+// datamodel.NodeAssembler implementation
+
+func (x *Nothing) BeginMap(sizeHint int64) (datamodel.MapAssembler, error) {
+	return nil, ErrNA
+}
+
+func (x *Nothing) BeginList(sizeHint int64) (datamodel.ListAssembler, error) {
+	return nil, ErrNA
+}
+
+func (x *Nothing) AssignNull() error {
+	return nil
+}
+
+func (x *Nothing) AssignBool(bool) error {
+	return ErrNA
+}
+
+func (x *Nothing) AssignInt(v int64) error {
+	return ErrNA
+}
+
+func (x *Nothing) AssignFloat(float64) error {
+	return ErrNA
+}
+
+func (x *Nothing) AssignString(string) error {
+	return ErrNA
+}
+
+func (x *Nothing) AssignBytes([]byte) error {
+	return ErrNA
+}
+
+func (x *Nothing) AssignLink(datamodel.Link) error {
+	return ErrNA
+}
+
+func (x *Nothing) AssignNode(n datamodel.Node) error {
+	if n.IsNull() {
+		return nil
+	} else {
+		return ErrNA
+	}
+}
