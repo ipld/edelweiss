@@ -1,4 +1,4 @@
-package blueprints
+package values
 
 import (
 	"github.com/ipld/edelweiss/blueprints/base"
