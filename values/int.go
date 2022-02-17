@@ -99,3 +99,50 @@ func TryParseInt(n datamodel.Node) (Int, error) {
 	var x Int
 	return x, x.Parse(n)
 }
+
+// datamodel.NodeAssembler implementation
+
+func (x *Int) BeginMap(sizeHint int64) (datamodel.MapAssembler, error) {
+	return nil, ErrNA
+}
+
+func (x *Int) BeginList(sizeHint int64) (datamodel.ListAssembler, error) {
+	return nil, ErrNA
+}
+
+func (x *Int) AssignNull() error {
+	return ErrNA
+}
+
+func (x *Int) AssignBool(bool) error {
+	return ErrNA
+}
+
+func (x *Int) AssignInt(v int64) error {
+	*(*int64)(x) = v
+	return nil
+}
+
+func (x *Int) AssignFloat(float64) error {
+	return ErrNA
+}
+
+func (x *Int) AssignString(string) error {
+	return ErrNA
+}
+
+func (x *Int) AssignBytes([]byte) error {
+	return ErrNA
+}
+
+func (x *Int) AssignLink(datamodel.Link) error {
+	return ErrNA
+}
+
+func (x *Int) AssignNode(n datamodel.Node) error {
+	if v, err := n.AsInt(); err != nil {
+		return ErrNA
+	} else {
+		return x.AssignInt(v)
+	}
+}

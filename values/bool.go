@@ -99,3 +99,50 @@ func TryParseBool(n datamodel.Node) (Bool, error) {
 	var b Bool
 	return b, b.Parse(n)
 }
+
+// datamodel.NodeAssembler implementation
+
+func (x *Bool) BeginMap(sizeHint int64) (datamodel.MapAssembler, error) {
+	return nil, ErrNA
+}
+
+func (x *Bool) BeginList(sizeHint int64) (datamodel.ListAssembler, error) {
+	return nil, ErrNA
+}
+
+func (x *Bool) AssignNull() error {
+	return ErrNA
+}
+
+func (x *Bool) AssignBool(v bool) error {
+	*(*bool)(x) = v
+	return nil
+}
+
+func (x *Bool) AssignInt(int64) error {
+	return ErrNA
+}
+
+func (x *Bool) AssignFloat(float64) error {
+	return ErrNA
+}
+
+func (x *Bool) AssignString(string) error {
+	return ErrNA
+}
+
+func (x *Bool) AssignBytes([]byte) error {
+	return ErrNA
+}
+
+func (x *Bool) AssignLink(datamodel.Link) error {
+	return ErrNA
+}
+
+func (x *Bool) AssignNode(n datamodel.Node) error {
+	if v, err := n.AsBool(); err != nil {
+		return ErrNA
+	} else {
+		return x.AssignBool(v)
+	}
+}
