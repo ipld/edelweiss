@@ -103,3 +103,54 @@ func TryParseChar(n datamodel.Node) (Char, error) {
 	var x Char
 	return x, x.Parse(n)
 }
+
+// datamodel.NodeAssembler implementation
+
+func (x *Char) BeginMap(sizeHint int64) (datamodel.MapAssembler, error) {
+	return nil, ErrNA
+}
+
+func (x *Char) BeginList(sizeHint int64) (datamodel.ListAssembler, error) {
+	return nil, ErrNA
+}
+
+func (x *Char) AssignNull() error {
+	return ErrNA
+}
+
+func (x *Char) AssignBool(bool) error {
+	return ErrNA
+}
+
+func (x *Char) AssignInt(v int64) error {
+	if int64(rune(v)) != v {
+		return ErrBounds
+	} else {
+		*(*rune)(x) = rune(v)
+		return nil
+	}
+}
+
+func (x *Char) AssignFloat(float64) error {
+	return ErrNA
+}
+
+func (x *Char) AssignString(string) error {
+	return ErrNA
+}
+
+func (x *Char) AssignBytes([]byte) error {
+	return ErrNA
+}
+
+func (x *Char) AssignLink(datamodel.Link) error {
+	return ErrNA
+}
+
+func (x *Char) AssignNode(n datamodel.Node) error {
+	if v, err := n.AsInt(); err != nil {
+		return ErrNA
+	} else {
+		return x.AssignInt(v)
+	}
+}

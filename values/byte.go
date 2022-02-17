@@ -103,3 +103,54 @@ func TryParseByte(n datamodel.Node) (Byte, error) {
 	var x Byte
 	return x, x.Parse(n)
 }
+
+// datamodel.NodeAssembler implementation
+
+func (x *Byte) BeginMap(sizeHint int64) (datamodel.MapAssembler, error) {
+	return nil, ErrNA
+}
+
+func (x *Byte) BeginList(sizeHint int64) (datamodel.ListAssembler, error) {
+	return nil, ErrNA
+}
+
+func (x *Byte) AssignNull() error {
+	return ErrNA
+}
+
+func (x *Byte) AssignBool(bool) error {
+	return ErrNA
+}
+
+func (x *Byte) AssignInt(v int64) error {
+	if int64(byte(v)) != v {
+		return ErrBounds
+	} else {
+		*(*byte)(x) = byte(v)
+		return nil
+	}
+}
+
+func (x *Byte) AssignFloat(float64) error {
+	return ErrNA
+}
+
+func (x *Byte) AssignString(string) error {
+	return ErrNA
+}
+
+func (x *Byte) AssignBytes([]byte) error {
+	return ErrNA
+}
+
+func (x *Byte) AssignLink(datamodel.Link) error {
+	return ErrNA
+}
+
+func (x *Byte) AssignNode(n datamodel.Node) error {
+	if v, err := n.AsInt(); err != nil {
+		return ErrNA
+	} else {
+		return x.AssignInt(v)
+	}
+}
