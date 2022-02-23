@@ -39,7 +39,7 @@ func (testTypeImpl) GoTypeRef() GoTypeRef {
 }
 
 func (testTypeImpl) GoDef() Blueprint {
-	return Blueprints{
+	return BlueSlice{
 		V("var _ = "),
 		GoRef{PkgPath: "fmt", Name: "Errorf"},
 	}

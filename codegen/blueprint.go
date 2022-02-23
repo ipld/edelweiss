@@ -13,9 +13,9 @@ type Blueprint interface {
 	Write(GoFileContext, io.Writer) error
 }
 
-type Blueprints []Blueprint
+type BlueSlice []Blueprint
 
-func (x Blueprints) Write(ctx GoFileContext, w io.Writer) error {
+func (x BlueSlice) Write(ctx GoFileContext, w io.Writer) error {
 	for _, b := range x {
 		if err := b.Write(ctx, w); err != nil {
 			return nil
@@ -43,7 +43,7 @@ func Printf(f string, a ...interface{}) Blueprint {
 // T stands for template.
 type T struct {
 	Src  string
-	Data map[string]Blueprint
+	Data BlueMap
 }
 
 type BlueMap map[string]Blueprint

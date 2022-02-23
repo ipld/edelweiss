@@ -48,7 +48,7 @@ func (x *GoStructureImpl) GoDef() cg.Blueprint {
 		}
 	}
 	// build field declarations
-	fieldDecls := make(cg.Blueprints, len(fields))
+	fieldDecls := make(cg.BlueSlice, len(fields))
 	for i := range fields {
 		fieldDecls[i] = cg.T{
 			Data: fieldData[i],
@@ -56,7 +56,7 @@ func (x *GoStructureImpl) GoDef() cg.Blueprint {
 		}
 	}
 	// build field parse cases
-	fieldParseCases := make(cg.Blueprints, len(fields))
+	fieldParseCases := make(cg.BlueSlice, len(fields))
 	for i := range fields {
 		fieldParseCases[i] = cg.T{
 			Data: fieldData[i],
@@ -69,7 +69,7 @@ func (x *GoStructureImpl) GoDef() cg.Blueprint {
 		}
 	}
 	// build field next cases
-	fieldNextCases := make(cg.Blueprints, len(fields))
+	fieldNextCases := make(cg.BlueSlice, len(fields))
 	for i := range fields {
 		fieldNextCases[i] = cg.T{
 			Data: fieldData[i],
@@ -79,7 +79,7 @@ func (x *GoStructureImpl) GoDef() cg.Blueprint {
 		}
 	}
 	// build field lookup by string cases
-	fieldLookupByStringCases := make(cg.Blueprints, len(fields))
+	fieldLookupByStringCases := make(cg.BlueSlice, len(fields))
 	for i := range fields {
 		fieldLookupByStringCases[i] = cg.T{
 			Data: fieldData[i],
@@ -89,7 +89,7 @@ func (x *GoStructureImpl) GoDef() cg.Blueprint {
 		}
 	}
 	// build field lookup by index cases
-	fieldLookupByIndexCases := make(cg.Blueprints, len(fields))
+	fieldLookupByIndexCases := make(cg.BlueSlice, len(fields))
 	for i := range fields {
 		fieldLookupByIndexCases[i] = cg.T{
 			Data: fieldData[i],
@@ -99,7 +99,7 @@ func (x *GoStructureImpl) GoDef() cg.Blueprint {
 		}
 	}
 	// build field lookup by segment cases
-	fieldLookupBySegmentCases := make(cg.Blueprints, len(fields))
+	fieldLookupBySegmentCases := make(cg.BlueSlice, len(fields))
 	for i := range fields {
 		fieldLookupBySegmentCases[i] = cg.T{
 			Data: fieldData[i],

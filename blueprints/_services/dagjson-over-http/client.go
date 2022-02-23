@@ -36,8 +36,8 @@ func (x GoClientImpl) GoTypeRef() cg.GoTypeRef {
 
 func (x GoClientImpl) GoDef() cg.Blueprint {
 	methods := def.FlattenMethodList(x.Def.Methods)
-	methodSyncDecls, methodAsyncDecls := make(cg.Blueprints, len(methods)), make(cg.Blueprints, len(methods))
-	methodAsyncResultDefs := make(cg.Blueprints, len(methods))
+	methodSyncDecls, methodAsyncDecls := make(cg.BlueSlice, len(methods)), make(cg.BlueSlice, len(methods))
+	methodAsyncResultDefs := make(cg.BlueSlice, len(methods))
 	for i, m := range methods {
 		asyncResultRef := &cg.GoTypeRef{PkgPath: x.Ref.PkgPath, TypeName: m.Name + "_AsyncResult"}
 		bm := cg.BlueMap{

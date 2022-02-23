@@ -71,7 +71,7 @@ type MethodDef struct {
 	Receiver   VarDef
 	MethodName string
 	Args       []VarDef
-	Returns    Blueprints
+	Returns    BlueSlice
 	Body       Blueprint
 }
 
@@ -105,7 +105,7 @@ func (x MethodDef) Write(ctx GoFileContext, w io.Writer) error {
 	return nil
 }
 
-type Block Blueprints
+type Block BlueSlice
 
 func (x Block) Write(ctx GoFileContext, w io.Writer) error {
 	for _, b := range x {
@@ -128,7 +128,7 @@ func (x StructDef) Write(ctx GoFileContext, w io.Writer) error {
 	if _, err := fmt.Fprintf(w, "type %s struct {\n", x.Name); err != nil {
 		return err
 	}
-	b := make(Blueprints, len(x.Fields))
+	b := make(BlueSlice, len(x.Fields))
 	for i := range x.Fields {
 		b[i] = x.Fields[i]
 	}

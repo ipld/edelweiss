@@ -44,7 +44,7 @@ func (x *GoInductiveImpl) GoDef() cg.Blueprint {
 		}
 	}
 	// build case declarations
-	caseDecls := make(cg.Blueprints, len(cases))
+	caseDecls := make(cg.BlueSlice, len(cases))
 	for i := range cases {
 		caseDecls[i] = cg.T{
 			Data: caseData[i],
@@ -52,7 +52,7 @@ func (x *GoInductiveImpl) GoDef() cg.Blueprint {
 		}
 	}
 	// build case parse cases
-	caseParseCases := make(cg.Blueprints, len(cases))
+	caseParseCases := make(cg.BlueSlice, len(cases))
 	for i := range cases {
 		caseParseCases[i] = cg.T{
 			Data: caseData[i],
@@ -67,7 +67,7 @@ func (x *GoInductiveImpl) GoDef() cg.Blueprint {
 		}
 	}
 	// build case next cases
-	caseNextCases := make(cg.Blueprints, len(cases))
+	caseNextCases := make(cg.BlueSlice, len(cases))
 	for i := range cases {
 		caseNextCases[i] = cg.T{
 			Data: caseData[i],
@@ -77,7 +77,7 @@ func (x *GoInductiveImpl) GoDef() cg.Blueprint {
 		}
 	}
 	// build case lookup by string cases
-	caseLookupByStringCases := make(cg.Blueprints, len(cases))
+	caseLookupByStringCases := make(cg.BlueSlice, len(cases))
 	for i := range cases {
 		caseLookupByStringCases[i] = cg.T{
 			Data: caseData[i],
@@ -87,7 +87,7 @@ func (x *GoInductiveImpl) GoDef() cg.Blueprint {
 		}
 	}
 	// build case lookup by segment cases
-	caseLookupBySegmentCases := make(cg.Blueprints, len(cases))
+	caseLookupBySegmentCases := make(cg.BlueSlice, len(cases))
 	for i := range cases {
 		caseLookupBySegmentCases[i] = cg.T{
 			Data: caseData[i],
