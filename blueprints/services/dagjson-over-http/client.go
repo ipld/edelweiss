@@ -39,7 +39,7 @@ func (x GoClientImpl) GoDef() cg.Blueprint {
 	methodSyncDecls, methodAsyncDecls := make(cg.BlueSlice, len(methods)), make(cg.BlueSlice, len(methods))
 	methodAsyncResultDefs := make(cg.BlueSlice, len(methods))
 	for i, m := range methods {
-		asyncResultRef := &cg.GoTypeRef{PkgPath: x.Ref.PkgPath, TypeName: m.Name + "_AsyncResult"}
+		asyncResultRef := &cg.GoTypeRef{PkgPath: x.Ref.PkgPath, TypeName: x.Ref.TypeName + "_" + m.Name + "_AsyncResult"}
 		bm := cg.BlueMap{
 			"Context":           base.Context,
 			"MethodName":        cg.V(m.Name),
@@ -81,9 +81,10 @@ func (x GoClientImpl) GoDef() cg.Blueprint {
 		"LoggerName": cg.StringLiteral(fmt.Sprintf("service/client/%s", x.Ref.TypeName)),
 		"LoggerVar":  cg.GoRef{PkgPath: x.Ref.PkgPath, Name: fmt.Sprintf("logger_client_%s", x.Ref.TypeName)},
 		//
-		"MethodSyncDecls":  XXX,
-		"MethodAsyncDecls": XXX,
-		"MethodImpls":      XXX,
+		"MethodSyncDecls":       methodSyncDecls,
+		"MethodAsyncDecls":      methodAsyncDecls,
+		"MethodAsyncResultDefs": methodAsyncResultDefs,
+		// "MethodImpls":      XXX,
 	}
 	return cg.T{Data: data, Src: goClientTemplate}
 }
@@ -92,16 +93,17 @@ const goClientTemplate = `
 var {{.LoggerVar}} = {{.Logger}}({{.LoggerName}})
 
 type {{.Interface}} interface {
-{{.MethodDecls}} //XXX
-	GetP2PProvide(ctx context.Context, req *proto.GetP2PProvideRequest) ([]*proto.GetP2PProvideResponse, error)
-	GetP2PProvide_Async(ctx context.Context, req *proto.GetP2PProvideRequest) (<-chan GetP2PProvide_Async_Response, error)
+{{range .MethodSyncDecls}}
+{{.}}
+{{end}}
+{{range .MethodAsyncDecls}}
+{{.}}
+{{end}}
 }
 
-//XXX
-type GetP2PProvide_Async_Response struct {
-	Resp *proto.GetP2PProvideResponse
-	Err  error
-}
+{{range .MethodAsyncResultDefs}}
+{{.}}
+{{end}}
 
 type {{.Option}} func(*{{.Type}}) error
 

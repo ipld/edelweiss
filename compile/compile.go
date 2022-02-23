@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"path"
 
-	blue "github.com/ipld/edelweiss/blueprints/values"
+	blue_services "github.com/ipld/edelweiss/blueprints/services/dagjson-over-http"
+	blue_values "github.com/ipld/edelweiss/blueprints/values"
 	cg "github.com/ipld/edelweiss/codegen"
 	"github.com/ipld/edelweiss/def"
 	"github.com/ipld/edelweiss/values"
@@ -141,24 +142,26 @@ func buildGoTypeImpls(typeToGen typesToGen, depToGo cg.DefToGoTypeRef) (cg.GoTyp
 func buildGoTypeImpl(depToGo cg.DefToGoTypeRef, typeDef def.Type, goTypeRef cg.GoTypeRef) (cg.GoTypeImpl, error) {
 	switch d := typeDef.(type) {
 	case def.SingletonBool, def.SingletonFloat, def.SingletonInt, def.SingletonByte, def.SingletonChar, def.SingletonString:
-		return blue.BuildSingletonImpl(d, goTypeRef)
+		return blue_values.BuildSingletonImpl(d, goTypeRef)
 	case def.Structure:
-		return blue.BuildStructureImpl(depToGo, d, goTypeRef)
+		return blue_values.BuildStructureImpl(depToGo, d, goTypeRef)
 	case def.Inductive:
-		return blue.BuildInductiveImpl(depToGo, d, goTypeRef)
+		return blue_values.BuildInductiveImpl(depToGo, d, goTypeRef)
 	case def.List:
-		return blue.BuildListImpl(depToGo, d, goTypeRef)
+		return blue_values.BuildListImpl(depToGo, d, goTypeRef)
 	case def.Link:
-		return blue.BuildLinkImpl(depToGo, d, goTypeRef)
+		return blue_values.BuildLinkImpl(depToGo, d, goTypeRef)
 	case def.Map:
-		return blue.BuildMapImpl(depToGo, d, goTypeRef)
+		return blue_values.BuildMapImpl(depToGo, d, goTypeRef)
 	case def.Fn:
 		// fn types define functional signatures. they don't have a corresponding value type.
 		return nil, nil
 	case def.Call:
-		return blue.BuildCallImpl(depToGo, d, goTypeRef)
+		return blue_values.BuildCallImpl(depToGo, d, goTypeRef)
 	case def.Return:
-		return blue.BuildReturnImpl(depToGo, d, goTypeRef)
+		return blue_values.BuildReturnImpl(depToGo, d, goTypeRef)
+	case def.Service:
+		return blue_services.BuildClientImpl(depToGo, d, goTypeRef)
 	default:
 		return nil, fmt.Errorf("unsupported user type definition %#v", typeDef)
 	}

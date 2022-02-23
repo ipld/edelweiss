@@ -194,3 +194,28 @@ func TestReturnAtCompileTime(t *testing.T) {
 	}
 	fmt.Println(string(fileBuf))
 }
+
+func TestServiceAtCompileTime(t *testing.T) {
+	defs := def.Types{
+		def.Named{Name: "TestService",
+			Type: def.MakeService(
+				def.Method{Name: "Method1", Type: def.Fn{Arg: def.Int{}, Return: def.Bool{}}},
+				def.Method{Name: "Method2", Type: def.Fn{Arg: def.String{}, Return: def.Float{}}},
+			),
+		},
+	}
+	x := &GoPkgCodegen{
+		GoPkgDirPath: "",
+		GoPkgPath:    "test",
+		Defs:         defs,
+	}
+	goFile, err := x.Compile()
+	if err != nil {
+		t.Fatal(err)
+	}
+	fileBuf, err := goFile.Generate()
+	if err != nil {
+		t.Fatal(err)
+	}
+	fmt.Println(string(fileBuf))
+}
