@@ -81,14 +81,50 @@ func compileTemplate(src string) *template.Template {
 }
 
 func (x T) Write(ctx GoFileContext, w io.Writer) error {
-	data := map[string]interface{}{}
-	for k, v := range x.Data {
-		var buf bytes.Buffer
-		if err := v.Write(ctx, &buf); err != nil {
-			return err
-		}
-		data[k] = buf.String()
+	data, err := flattenBlueMap(ctx, x.Data)
+	if err != nil {
+		return err
 	}
 	compileTemplate(x.Src).Execute(w, data)
 	return nil
+}
+
+func flattenBlueprint(ctx GoFileContext, b Blueprint) (Blueprint, error) {
+	switch t := b.(type) {
+	case BlueMap:
+		return flattenBlueMap(ctx, t)
+	case BlueSlice:
+		return flattenBlueSlice(ctx, t)
+	case Blueprint:
+		var buf bytes.Buffer
+		if err := t.Write(ctx, &buf); err != nil {
+			return nil, err
+		}
+		return V(buf.String()), nil
+	}
+	panic("not a blue value")
+}
+
+func flattenBlueMap(ctx GoFileContext, bm BlueMap) (BlueMap, error) {
+	r := BlueMap{}
+	for k, v := range bm {
+		f, err := flattenBlueprint(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+		r[k] = f
+	}
+	return r, nil
+}
+
+func flattenBlueSlice(ctx GoFileContext, bs BlueSlice) (BlueSlice, error) {
+	r := make(BlueSlice, len(bs))
+	for k, v := range bs {
+		f, err := flattenBlueprint(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+		r[k] = f
+	}
+	return r, nil
 }
