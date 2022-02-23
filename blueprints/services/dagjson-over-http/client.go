@@ -42,13 +42,18 @@ func (x *GoClientImpl) GoDef() cg.Blueprint {
 		"URL":               base.URL,
 		"URLParse":          base.URLParse,
 		//
-		"Interface": x.Ref.Append("_Client"),
-		"Type":      x.Ref.Prepend("client_"),
-		"Option":    x.Ref.Append("_ClientOption"),
+		"Interface":      x.Ref.Append("_Client"),
+		"Type":           x.Ref.Prepend("client_"),
+		"Option":         x.Ref.Append("_ClientOption"),
+		"New":            x.Ref.Prepend("New_").Append("_Client"),
+		"WithHTTPClient": x.Ref.Append("_Client").Append("_WithHTTPClient"),
 		//
 		"Logger":     cg.GoRef{PkgPath: "github.com/ipfs/go-log", Name: "Logger"},
 		"LoggerName": cg.StringLiteral(fmt.Sprintf("service/client/%s", x.Ref.TypeName)),
 		"LoggerVar":  cg.GoRef{PkgPath: x.Ref.PkgPath, Name: fmt.Sprintf("logger_client_%s", x.Ref.TypeName)},
+		//
+		"MethodDecls": XXX,
+		"MethodImpls": XXX,
 	}
 	return cg.T{Data: data, Src: goClientTemplate}
 }
@@ -57,7 +62,7 @@ const goClientTemplate = `
 var {{.LoggerVar}} = {{.Logger}}({{.LoggerName}})
 
 type {{.Interface}} interface {
-	//XXX
+{{.MethodDecls}} //XXX
 	GetP2PProvide(ctx context.Context, req *proto.GetP2PProvideRequest) ([]*proto.GetP2PProvideResponse, error)
 	GetP2PProvide_Async(ctx context.Context, req *proto.GetP2PProvideRequest) (<-chan GetP2PProvide_Async_Response, error)
 }
@@ -75,14 +80,14 @@ type {{.Type}} struct {
 	endpoint     *{{.URL}}
 }
 
-func WithHTTPClient(hc *{{.HTTPClient}}) {{.Option}} {
+func {{.WithHTTPClient}}(hc *{{.HTTPClient}}) {{.Option}} {
 	return func(c *{{.Type}}) error {
 		c.httpClient = hc
 		return nil
 	}
 }
 
-func New(endpoint string, opts ...{{.Option}}) (*{{.Type}}, error) {
+func {{.New}}(endpoint string, opts ...{{.Option}}) (*{{.Type}}, error) {
 	u, err := {{.URLParse}}(endpoint)
 	if err != nil {
 		return nil, err
@@ -95,4 +100,6 @@ func New(endpoint string, opts ...{{.Option}}) (*{{.Type}}, error) {
 	}
 	return c, nil
 }
+
+{{.MethodImpls}} //XXX
 `

@@ -55,3 +55,13 @@ func makeMethods(fields []Method) MethodListOrNone {
 		}
 	}
 }
+
+func FlattenMethodList(x MethodListOrNone) []Method {
+	r, cur := []Method{}, x
+	for cur != nil {
+		l := cur.(MethodList)
+		r = append(r, l.Method)
+		cur = l.Rest
+	}
+	return r
+}
