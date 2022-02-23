@@ -36,7 +36,7 @@ func (ml MethodList) Deps() Types {
 
 type Method struct {
 	Name string
-	Type Type
+	Type Fn
 }
 
 func MakeService(fields ...Method) Service {

@@ -26,15 +26,44 @@ type GoClientImpl struct {
 	Ref    cg.GoTypeRef
 }
 
-func (x *GoClientImpl) ProtoDef() def.Type {
+func (x GoClientImpl) ProtoDef() def.Type {
 	return x.Def
 }
 
-func (x *GoClientImpl) GoTypeRef() cg.GoTypeRef {
+func (x GoClientImpl) GoTypeRef() cg.GoTypeRef {
 	return x.Ref
 }
 
-func (x *GoClientImpl) GoDef() cg.Blueprint {
+func (x GoClientImpl) GoDef() cg.Blueprint {
+	methods := def.FlattenMethodList(x.Def.Methods)
+	methodSyncDecls, methodAsyncDecls := make(cg.Blueprints, len(methods)), make(cg.Blueprints, len(methods))
+	methodAsyncResultDefs := make(cg.Blueprints, len(methods))
+	for i, m := range methods {
+		asyncResultRef := &cg.GoTypeRef{PkgPath: x.Ref.PkgPath, TypeName: m.Name + "_AsyncResult"}
+		bm := cg.BlueMap{
+			"Context":           base.Context,
+			"MethodName":        cg.V(m.Name),
+			"MethodArg":         x.Lookup.LookupDepGoRef(m.Type.Arg),
+			"MethodReturn":      x.Lookup.LookupDepGoRef(m.Type.Arg),
+			"MethodReturnAsync": asyncResultRef,
+		}
+		methodAsyncResultDefs[i] = cg.T{
+			Data: bm,
+			Src: `type {{.MethodReturnAsync}} struct {
+	Resp *{{.MethodReturn}}
+	Err  error
+}`,
+		}
+		methodSyncDecls[i] = cg.T{
+			Data: bm,
+			Src:  `{{.MethodName}}(ctx {{.Context}}, req *{{.MethodArg}}) ([]{{.MethodReturn}}, error)`,
+		}
+		methodAsyncDecls[i] = cg.T{
+			Data: bm,
+			Src:  `{{.MethodName}}_Async(ctx {{.Context}}, req *{{.MethodArg}}) (<-chan {{.MethodReturnAsync}}, error)`,
+		}
+	}
+	//
 	data := cg.BlueMap{
 		"Errorf":            base.Errorf,
 		"HTTPClient":        base.HTTPClient,
@@ -52,8 +81,9 @@ func (x *GoClientImpl) GoDef() cg.Blueprint {
 		"LoggerName": cg.StringLiteral(fmt.Sprintf("service/client/%s", x.Ref.TypeName)),
 		"LoggerVar":  cg.GoRef{PkgPath: x.Ref.PkgPath, Name: fmt.Sprintf("logger_client_%s", x.Ref.TypeName)},
 		//
-		"MethodDecls": XXX,
-		"MethodImpls": XXX,
+		"MethodSyncDecls":  XXX,
+		"MethodAsyncDecls": XXX,
+		"MethodImpls":      XXX,
 	}
 	return cg.T{Data: data, Src: goClientTemplate}
 }

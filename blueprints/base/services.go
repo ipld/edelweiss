@@ -5,6 +5,7 @@ import (
 )
 
 var (
+	Context           = cg.GoTypeRef{PkgPath: "context", TypeName: "Context"}
 	HTTPClient        = cg.GoTypeRef{PkgPath: "http", TypeName: "Client"}
 	HTTPDefaultClient = cg.GoTypeRef{PkgPath: "http", TypeName: "DefaultClient"}
 	URL               = cg.GoTypeRef{PkgPath: "url", TypeName: "URL"}
