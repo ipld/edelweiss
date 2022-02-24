@@ -7,10 +7,7 @@ type Fn struct {
 }
 
 func (fn Fn) Deps() Types {
-	return Types{
-		fn.Arg,
-		fn.Return,
-	}
+	return Types{fn.Arg, fn.Return}
 }
 
 func (Fn) Kind() string {

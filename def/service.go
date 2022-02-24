@@ -28,7 +28,7 @@ type MethodList struct {
 
 func (ml MethodList) Deps() Types {
 	if ml.Rest == nil {
-		return Types{ml.Method.Type}
+		return ml.Method.Deps()
 	} else {
 		return append(Types{ml.Method.Type}, ml.Rest.Deps()...)
 	}
@@ -37,6 +37,18 @@ func (ml MethodList) Deps() Types {
 type Method struct {
 	Name string
 	Type Fn
+}
+
+func (m Method) Deps() Types {
+	return Types{m.Type /*, XXX, XXX*/}
+}
+
+func (m Method) Call() Call {
+	return Call{ID: String{}, Fn: m.Type}
+}
+
+func (m Method) Return() Return {
+	return Return{ID: String{}, Fn: m.Type}
 }
 
 func MakeService(fields ...Method) Service {

@@ -26,7 +26,7 @@ func (x *GoPkgCodegen) Compile() (*cg.GoFile, error) {
 	if err != nil {
 		return nil, err
 	}
-	goTypeImpls, err := buildGoTypeImpls(p.typeToGen, p.depToRef)
+	goTypeImpls, err := buildGoTypeImpls(p.Plan(), p.DefToGo())
 	if err != nil {
 		return nil, err
 	}
@@ -39,27 +39,25 @@ func (x *GoPkgCodegen) Compile() (*cg.GoFile, error) {
 }
 
 func processDefs(goPkgPath string, defs def.Types) (*genPlan, error) {
-	p := newGenPlan()
+	p := newGenPlan(goPkgPath)
 	for _, d := range defs {
 		switch t := d.(type) {
 		case def.Named:
-			p.AddNamed(goPkgPath, t.Name, t.Type)
-			if err := processDeps(goPkgPath, p, t.Type); err != nil {
+			p.AddNamed(t.Name, t.Type)
+			if err := processDeps(p, t.Type); err != nil {
 				return nil, err
 			}
 		default:
 			return nil, fmt.Errorf("anonymous type at top level")
 		}
 	}
-	for r := range p.refs {
-		if !p.names[r] {
-			return nil, fmt.Errorf("reference %s cannot be resolved", r)
-		}
+	if err := p.VerifyCompleteness(); err != nil {
+		return nil, err
 	}
 	return p, nil
 }
 
-func processDeps(goPkgPath string, p *genPlan, t def.Type) error {
+func processDeps(p *genPlan, t def.Type) error {
 	for _, dep := range t.Deps() {
 		if p.IsKnown(dep) {
 			continue
@@ -91,10 +89,9 @@ func processDeps(goPkgPath string, p *genPlan, t def.Type) error {
 			p.AddBuiltin(t, cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "Nothing"})
 		// all other types are anonymous inline parametric types
 		default:
-			name := fmt.Sprintf("Anon%s%d", t.Kind(), len(p.typeToGen))
-			p.AddNamed(goPkgPath, name, t)
+			p.AddAnonymous(t)
 			// process the dependencies of the dependency
-			if err := processDeps(goPkgPath, p, dep); err != nil {
+			if err := processDeps(p, dep); err != nil {
 				return err
 			}
 		}
@@ -102,7 +99,7 @@ func processDeps(goPkgPath string, p *genPlan, t def.Type) error {
 	return nil
 }
 
-func buildGoTypeImpls(typeToGen typesToGen, depToGo cg.DefToGoTypeRef) (cg.GoTypeImpls, error) {
+func buildGoTypeImpls(typeToGen []typePlan, depToGo cg.DefToGoTypeRef) (cg.GoTypeImpls, error) {
 	goTypeImpls := cg.GoTypeImpls{}
 	for _, ttg := range typeToGen {
 		if goTypeImpl, err := buildGoTypeImpl(depToGo, ttg.Def, ttg.GoRef); err != nil {

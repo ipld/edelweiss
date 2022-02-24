@@ -1,50 +1,82 @@
 package compile
 
 import (
+	"fmt"
+
 	cg "github.com/ipld/edelweiss/codegen"
 	"github.com/ipld/edelweiss/def"
 )
 
 type genPlan struct {
-	depToRef  cg.DefToGoTypeRef // deps = (builtin) non-parametric types + anonymous/inline types + references
-	typeToGen typesToGen        // types to generate = named types
-	names     map[string]bool
+	goPkgPath string
+	defToGo   map[def.Type]cg.GoTypeRef
+	nameToDef map[string]def.Type
 	refs      map[string]bool
+	plan      []typePlan
 }
 
-type typeToGen struct {
+type typePlan struct {
 	Name  string
 	Def   def.Type
 	GoRef cg.GoTypeRef
 }
 
-type typesToGen []typeToGen
-
-func newGenPlan() *genPlan {
+func newGenPlan(goPkgPath string) *genPlan {
 	return &genPlan{
-		depToRef:  cg.DefToGoTypeRef{},
-		typeToGen: typesToGen{},
-		names:     map[string]bool{},
+		goPkgPath: goPkgPath,
+		defToGo:   cg.DefToGoTypeRef{},
+		plan:      []typePlan{},
+		nameToDef: map[string]def.Type{},
 		refs:      map[string]bool{},
 	}
 }
 
-func (p *genPlan) AddNamed(goPkgPath string, name string, d def.Type) {
-	goTypeRef := cg.GoTypeRef{PkgPath: goPkgPath, TypeName: name}
-	p.depToRef[def.Ref{Name: name}] = goTypeRef
-	p.typeToGen = append(p.typeToGen, typeToGen{Name: name, Def: d, GoRef: goTypeRef})
-	p.names[name] = true
+func (p *genPlan) DefToGo() cg.DefToGoTypeRef {
+	return p.defToGo
+}
+
+func (p *genPlan) Plan() []typePlan {
+	return p.plan
+}
+
+// XXX: support multiple names for same def
+
+func (p *genPlan) AddNamed(name string, d def.Type) {
+	// if p.IsKnown(d) {
+	// 	XXX
+	// }
+	//
+	goTypeRef := cg.GoTypeRef{PkgPath: p.goPkgPath, TypeName: name}
+	p.defToGo[d] = goTypeRef
+	p.defToGo[def.Ref{Name: name}] = goTypeRef
+	p.plan = append(p.plan, typePlan{Name: name, Def: d, GoRef: goTypeRef})
+	p.nameToDef[name] = d
+}
+
+func (p *genPlan) AddAnonymous(t def.Type) def.Ref {
+	name := fmt.Sprintf("Anon%s%d", t.Kind(), len(p.plan))
+	p.AddNamed(name, t)
+	return def.Ref{Name: name}
 }
 
 func (p *genPlan) AddBuiltin(t def.Type, goTypeRef cg.GoTypeRef) {
-	p.depToRef[t] = goTypeRef
+	p.defToGo[t] = goTypeRef
 }
 
 func (p *genPlan) IsKnown(t def.Type) bool {
-	_, known := p.depToRef[t]
+	_, known := p.defToGo[t]
 	return known
 }
 
 func (p *genPlan) AddRef(to string) {
 	p.refs[to] = true
+}
+
+func (p *genPlan) VerifyCompleteness() error {
+	for r := range p.refs {
+		if _, ok := p.nameToDef[r]; !ok {
+			return fmt.Errorf("reference %s cannot be resolved", r)
+		}
+	}
+	return nil
 }
