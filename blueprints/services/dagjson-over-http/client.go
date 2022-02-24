@@ -67,8 +67,8 @@ func (x GoClientImpl) GoDef() cg.Blueprint {
 			Src:  `{{.MethodName}}_Async(ctx {{.Context}}, req *{{.MethodArg}}) (<-chan {{.MethodReturnAsync}}, error)`,
 		}
 		methodAsyncDecls[i] = asyncMethodDecl
-		bm["SyncMethodDecl"] = syncMethodDecl
-		bm["AsyncMethodDecl"] = asyncMethodDecl
+		// bm["SyncMethodDecl"] = syncMethodDecl //XXX: causes cycle in the bluemap
+		// bm["AsyncMethodDecl"] = asyncMethodDecl //XXX: causes cycle in the bluemap
 		methodImpls[i] = cg.T{Data: bm, Src: goClientMethodImplTemplate}
 	}
 	//
