@@ -39,15 +39,9 @@ func (p *genPlan) Plan() []typePlan {
 	return p.plan
 }
 
-// XXX: support multiple names for same def
-
 func (p *genPlan) AddNamed(name string, d def.Type) {
-	// if p.IsKnown(d) {
-	// 	XXX
-	// }
-	//
 	goTypeRef := cg.GoTypeRef{PkgPath: p.goPkgPath, TypeName: name}
-	p.defToGo[d] = goTypeRef
+	// p.defToGo[d] = goTypeRef
 	p.defToGo[def.Ref{Name: name}] = goTypeRef
 	p.plan = append(p.plan, typePlan{Name: name, Def: d, GoRef: goTypeRef})
 	p.nameToDef[name] = d
@@ -61,11 +55,6 @@ func (p *genPlan) AddAnonymous(t def.Type) def.Ref {
 
 func (p *genPlan) AddBuiltin(t def.Type, goTypeRef cg.GoTypeRef) {
 	p.defToGo[t] = goTypeRef
-}
-
-func (p *genPlan) IsKnown(t def.Type) bool {
-	_, known := p.defToGo[t]
-	return known
 }
 
 func (p *genPlan) AddRef(to string) {

@@ -59,9 +59,6 @@ func processDefs(goPkgPath string, defs def.Types) (*genPlan, error) {
 
 func processDeps(p *genPlan, t def.Type) error {
 	for _, dep := range t.Deps() {
-		if p.IsKnown(dep) {
-			continue
-		}
 		switch t := dep.(type) {
 		case def.Named:
 			return fmt.Errorf("named types must be at the top level")
