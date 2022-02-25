@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"path"
 
+	blue_services "github.com/ipld/edelweiss/blueprints/services/dagjson-over-http"
 	blue_values "github.com/ipld/edelweiss/blueprints/values"
 	cg "github.com/ipld/edelweiss/codegen"
 	"github.com/ipld/edelweiss/def"
@@ -75,8 +76,7 @@ func buildGoTypeImpl(depToGo cg.DefToGoTypeRef, typeDef def.Type, goTypeRef cg.G
 	case def.Return:
 		return blue_values.BuildReturnImpl(depToGo, d, goTypeRef)
 	case plans.Service:
-		panic("not implemented")
-		// return blue_services.BuildClientImpl(depToGo, d, goTypeRef)
+		return blue_services.BuildClientImpl(depToGo, d, goTypeRef)
 	default:
 		return nil, fmt.Errorf("unknown implementation plan  %#v", d)
 	}

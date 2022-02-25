@@ -6,11 +6,12 @@ import (
 	"github.com/ipld/edelweiss/blueprints/base"
 	cg "github.com/ipld/edelweiss/codegen"
 	"github.com/ipld/edelweiss/def"
+	"github.com/ipld/edelweiss/plans"
 )
 
 func BuildClientImpl(
 	lookup cg.LookupDepGoRef,
-	typeDef def.Service,
+	typeDef plans.Service,
 	goTypeRef cg.GoTypeRef,
 ) (cg.GoTypeImpl, error) {
 	return &GoClientImpl{
@@ -22,7 +23,7 @@ func BuildClientImpl(
 
 type GoClientImpl struct {
 	Lookup cg.LookupDepGoRef
-	Def    def.Service
+	Def    plans.Service
 	Ref    cg.GoTypeRef
 }
 
@@ -35,14 +36,14 @@ func (x GoClientImpl) GoTypeRef() cg.GoTypeRef {
 }
 
 func (x GoClientImpl) GoDef() cg.Blueprint {
-	methods := def.FlattenMethodList(x.Def.Methods)
+	methods := x.Def.Methods
 	methodSyncDecls, methodAsyncDecls := make(cg.BlueSlice, len(methods)), make(cg.BlueSlice, len(methods))
 	methodAsyncResultDefs := make(cg.BlueSlice, len(methods))
 	methodImpls := make(cg.BlueSlice, len(methods))
 	for i, m := range methods {
 		asyncResultRef := &cg.GoTypeRef{PkgPath: x.Ref.PkgPath, TypeName: x.Ref.TypeName + "_" + m.Name + "_AsyncResult"}
 		processAsyncResultRef := &cg.GoRef{PkgPath: x.Ref.PkgPath, Name: "process_" + x.Ref.TypeName + "_" + m.Name + "_AsyncResult"}
-		bm := cg.BlueMap{
+		bmDecl := cg.BlueMap{
 			"Context":            base.Context,
 			"MethodName":         cg.V(m.Name),
 			"MethodArg":          x.Lookup.LookupDepGoRef(m.Type.Arg),
@@ -51,25 +52,30 @@ func (x GoClientImpl) GoDef() cg.Blueprint {
 			"ProcessReturnAsync": processAsyncResultRef,
 		}
 		methodAsyncResultDefs[i] = cg.T{
-			Data: bm,
+			Data: bmDecl,
 			Src: `type {{.MethodReturnAsync}} struct {
 	Resp *{{.MethodReturn}}
 	Err  error
 }`,
 		}
 		syncMethodDecl := cg.T{
-			Data: bm,
+			Data: bmDecl,
 			Src:  `{{.MethodName}}(ctx {{.Context}}, req *{{.MethodArg}}) ([]*{{.MethodReturn}}, error)`,
 		}
 		methodSyncDecls[i] = syncMethodDecl
 		asyncMethodDecl := cg.T{
-			Data: bm,
+			Data: bmDecl,
 			Src:  `{{.MethodName}}_Async(ctx {{.Context}}, req *{{.MethodArg}}) (<-chan {{.MethodReturnAsync}}, error)`,
 		}
 		methodAsyncDecls[i] = asyncMethodDecl
-		// bm["SyncMethodDecl"] = syncMethodDecl //XXX: causes cycle in the bluemap
-		// bm["AsyncMethodDecl"] = asyncMethodDecl //XXX: causes cycle in the bluemap
-		methodImpls[i] = cg.T{Data: bm, Src: goClientMethodImplTemplate}
+		bmImpl := cg.MergeBlueMaps(bmDecl,
+			cg.BlueMap{
+				"CallEnvelope":    x.Lookup.LookupDepGoRef(x.Def.CallEnvelope),
+				"SyncMethodDecl":  syncMethodDecl,
+				"AsyncMethodDecl": asyncMethodDecl,
+			},
+		)
+		methodImpls[i] = cg.T{Data: bmImpl, Src: goClientMethodImplTemplate}
 	}
 	//
 	data := cg.BlueMap{
@@ -181,7 +187,7 @@ func (c *{{.Type}}) {{.SyncMethodDecl}} {
 
 func (c *{{.Type}}) {{.AsyncMethodDecl}} {
 	//XXX
-	envelope := &proto.ServiceEnvelope{
+	envelope := &{{.CallEnvelope}}{
 		GetP2PProvideRequest: req,
 	}
 

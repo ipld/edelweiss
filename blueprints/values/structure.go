@@ -139,7 +139,7 @@ func (x *GoStructureImpl) GoDef() cg.Blueprint {
 // -- protocol type {{.Type}} --
 
 type {{.Type}} struct {
-{{.FieldDecls}}
+{{range .FieldDecls}}	{{.}}{{end}}
 }
 
 func (x *{{.Type}}) Parse(n {{.Node}}) error {
@@ -156,7 +156,7 @@ func (x *{{.Type}}) Parse(n {{.Node}}) error {
 				return {{.Errorf}}("structure map key is not a string")
 			} else {
 				switch k {
-{{.FieldParseCases}}
+{{range .FieldParseCases}}	{{.}}{{end}}
 				}
 			}
 		}
@@ -176,7 +176,7 @@ type {{.Type}}_MapIterator struct {
 func (x *{{.Type}}_MapIterator) Next() (key {{.Node}}, value {{.Node}}, err error) {
 	x.i++
 	switch x.i {
-{{.FieldNextCases}}
+{{range .FieldNextCases}}	{{.}}{{end}}
 	}
 	return nil, nil, {{.ErrNA}}
 }
@@ -191,7 +191,7 @@ func (x {{.Type}}) Kind() {{.KindType}} {
 
 func (x {{.Type}}) LookupByString(key string) ({{.Node}}, error) {
 	switch key {
-{{.FieldLookupByStringCases}}
+{{range .FieldLookupByStringCases}}	{{.}}{{end}}
 	}
 	return nil, {{.ErrNA}}
 }
@@ -216,14 +216,14 @@ func (x {{.Type}}) LookupByNode(key {{.Node}}) ({{.Node}}, error) {
 
 func (x {{.Type}}) LookupByIndex(idx int64) ({{.Node}}, error) {
 	switch idx {
-{{.FieldLookupByIndexCases}}
+{{range .FieldLookupByIndexCases}}	{{.}}{{end}}
 	}
 	return nil, {{.ErrNA}}
 }
 
 func (x {{.Type}}) LookupBySegment(seg {{.PathSegment}}) ({{.Node}}, error) {
 	switch seg.String() {
-{{.FieldLookupBySegmentCases}}
+{{range .FieldLookupBySegmentCases}}	{{.}}{{end}}
 	}
 	return nil, {{.ErrNA}}
 }

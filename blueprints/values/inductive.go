@@ -125,7 +125,7 @@ func (x *GoInductiveImpl) GoDef() cg.Blueprint {
 // -- protocol type {{.Type}} --
 
 type {{.Type}} struct {
-{{.CaseDecls}}
+{{range .CaseDecls}}	{{.}}{{end}}
 }
 
 func (x *{{.Type}}) Parse(n {{.Node}}) error {
@@ -143,7 +143,7 @@ func (x *{{.Type}}) Parse(n {{.Node}}) error {
 		return {{.Errorf}}("inductive map key is not a string")
 	}
 	switch k {
-{{.CaseParseCases}}
+{{range .CaseParseCases}}	{{.}}{{end}}
 	}
 	return {{.Errorf}}("inductive map has no applicable keys")
 }
@@ -159,7 +159,7 @@ func (x *{{.Type}}_MapIterator) Next() (key {{.Node}}, value {{.Node}}, err erro
 	} else {
 		x.done = true
 		switch {
-{{.CaseNextCases}}
+{{range .CaseNextCases}}	{{.}}{{end}}
 		default:
 			return nil, nil, {{.Errorf}}("no inductive cases are set")
 		}
@@ -176,7 +176,7 @@ func (x {{.Type}}) Kind() {{.KindType}} {
 
 func (x {{.Type}}) LookupByString(key string) ({{.Node}}, error) {
 	switch {
-{{.CaseLookupByStringCases}}
+{{range .CaseLookupByStringCases}}	{{.}}{{end}}
 	}
 	return nil, {{.ErrNA}}
 }
@@ -198,7 +198,7 @@ func (x {{.Type}}) LookupByIndex(idx int64) ({{.Node}}, error) {
 
 func (x {{.Type}}) LookupBySegment(seg {{.PathSegment}}) ({{.Node}}, error) {
 	switch seg.String() {
-{{.CaseLookupBySegmentCases}}
+{{range .CaseLookupBySegmentCases}}	{{.}}{{end}}
 	}
 	return nil, {{.ErrNA}}
 }
