@@ -49,3 +49,13 @@ func makeSlots(slots []Type) SlotListOrNone {
 		}
 	}
 }
+
+func FlattenSlotList(x SlotListOrNone) []Type {
+	r, cur := []Type{}, x
+	for cur != nil {
+		l := cur.(SlotList)
+		r = append(r, l.Slot)
+		cur = l.Rest
+	}
+	return r
+}

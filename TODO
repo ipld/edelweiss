@@ -1,0 +1,6 @@
+
+
+- remove Deps() method from types
+- simplify structure, inductive, union, etc. (use slices)
+- rename pkg def to defs
+- rename interface def.Type to defs.Def

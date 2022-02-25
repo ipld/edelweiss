@@ -40,7 +40,7 @@ type Method struct {
 }
 
 func (m Method) Deps() Types {
-	return Types{m.Type /*, XXX, XXX*/}
+	return Types{m.Type}
 }
 
 func (m Method) Call() Call {

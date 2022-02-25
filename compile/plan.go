@@ -41,7 +41,6 @@ func (p *genPlan) Plan() []typePlan {
 
 func (p *genPlan) AddNamed(name string, d def.Type) {
 	goTypeRef := cg.GoTypeRef{PkgPath: p.goPkgPath, TypeName: name}
-	// p.defToGo[d] = goTypeRef
 	p.defToGo[def.Ref{Name: name}] = goTypeRef
 	p.plan = append(p.plan, typePlan{Name: name, Def: d, GoRef: goTypeRef})
 	p.nameToDef[name] = d
@@ -53,8 +52,9 @@ func (p *genPlan) AddAnonymous(t def.Type) def.Ref {
 	return def.Ref{Name: name}
 }
 
-func (p *genPlan) AddBuiltin(t def.Type, goTypeRef cg.GoTypeRef) {
+func (p *genPlan) AddBuiltin(t def.Type, goTypeRef cg.GoTypeRef) def.Type {
 	p.defToGo[t] = goTypeRef
+	return t
 }
 
 func (p *genPlan) AddRef(to string) {
