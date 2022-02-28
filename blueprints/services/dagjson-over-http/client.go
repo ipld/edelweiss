@@ -49,7 +49,7 @@ func (x GoClientImpl) GoDef() cg.Blueprint {
 			"Type":               typ,
 			"MethodName":         cg.V(m.Name),
 			"MethodArg":          x.Lookup.LookupDepGoRef(m.Type.Arg),
-			"MethodReturn":       x.Lookup.LookupDepGoRef(m.Type.Arg),
+			"MethodReturn":       x.Lookup.LookupDepGoRef(m.Type.Return),
 			"MethodReturnAsync":  asyncResultRef,
 			"ProcessReturnAsync": processAsyncResultRef,
 			//
