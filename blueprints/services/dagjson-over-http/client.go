@@ -40,16 +40,33 @@ func (x GoClientImpl) GoDef() cg.Blueprint {
 	methodSyncDecls, methodAsyncDecls := make(cg.BlueSlice, len(methods)), make(cg.BlueSlice, len(methods))
 	methodAsyncResultDefs := make(cg.BlueSlice, len(methods))
 	methodImpls := make(cg.BlueSlice, len(methods))
+	typ := x.Ref.Prepend("client_")
+	loggerVar := cg.GoRef{PkgPath: x.Ref.PkgPath, Name: fmt.Sprintf("logger_client_%s", x.Ref.TypeName)}
 	for i, m := range methods {
 		asyncResultRef := &cg.GoTypeRef{PkgPath: x.Ref.PkgPath, TypeName: x.Ref.TypeName + "_" + m.Name + "_AsyncResult"}
 		processAsyncResultRef := &cg.GoRef{PkgPath: x.Ref.PkgPath, Name: "process_" + x.Ref.TypeName + "_" + m.Name + "_AsyncResult"}
 		bmDecl := cg.BlueMap{
-			"Context":            base.Context,
+			"Type":               typ,
 			"MethodName":         cg.V(m.Name),
 			"MethodArg":          x.Lookup.LookupDepGoRef(m.Type.Arg),
 			"MethodReturn":       x.Lookup.LookupDepGoRef(m.Type.Arg),
 			"MethodReturnAsync":  asyncResultRef,
 			"ProcessReturnAsync": processAsyncResultRef,
+			//
+			"DAGJSONEncode":             base.DAGJSONEncode,
+			"Context":                   base.Context,
+			"ContextWithCancel":         base.ContextWithCancel,
+			"LoggerVar":                 loggerVar,
+			"IOReader":                  base.IOReader,
+			"IPLDMarshal":               base.IPLDMarshal,
+			"Errorf":                    base.Errorf,
+			"URLValues":                 base.URLValues,
+			"HTTPNewRequestWithContext": base.HTTPNewRequestWithContext,
+			"BytesNewReader":            base.BytesNewReader,
+			"DAGJSONDecode":             base.DAGJSONDecode,
+			"ErrorsIs":                  base.ErrorsIs,
+			"IOEOF":                     base.IOEOF,
+			"IOErrUnexpectedEOF":        base.IOErrUnexpectedEOF,
 		}
 		methodAsyncResultDefs[i] = cg.T{
 			Data: bmDecl,
@@ -71,6 +88,7 @@ func (x GoClientImpl) GoDef() cg.Blueprint {
 		bmImpl := cg.MergeBlueMaps(bmDecl,
 			cg.BlueMap{
 				"CallEnvelope":    x.Lookup.LookupDepGoRef(x.Def.CallEnvelope),
+				"ReturnEnvelope":  x.Lookup.LookupDepGoRef(x.Def.ReturnEnvelope),
 				"SyncMethodDecl":  syncMethodDecl,
 				"AsyncMethodDecl": asyncMethodDecl,
 			},
@@ -86,14 +104,14 @@ func (x GoClientImpl) GoDef() cg.Blueprint {
 		"URLParse":          base.URLParse,
 		//
 		"Interface":      x.Ref.Append("_Client"),
-		"Type":           x.Ref.Prepend("client_"),
+		"Type":           typ,
 		"Option":         x.Ref.Append("_ClientOption"),
 		"New":            x.Ref.Prepend("New_").Append("_Client"),
 		"WithHTTPClient": x.Ref.Append("_Client").Append("_WithHTTPClient"),
 		//
 		"Logger":     cg.GoRef{PkgPath: "github.com/ipfs/go-log", Name: "Logger"},
 		"LoggerName": cg.StringLiteral(fmt.Sprintf("service/client/%s", x.Ref.TypeName)),
-		"LoggerVar":  cg.GoRef{PkgPath: x.Ref.PkgPath, Name: fmt.Sprintf("logger_client_%s", x.Ref.TypeName)},
+		"LoggerVar":  loggerVar,
 		//
 		"MethodSyncDecls":       methodSyncDecls,
 		"MethodAsyncDecls":      methodAsyncDecls,
@@ -152,11 +170,6 @@ func {{.New}}(endpoint string, opts ...{{.Option}}) (*{{.Type}}, error) {
 {{.}}
 {{end}}
 `
-	//.Type
-	//.ContextWithCancel
-	//.LoggerVar
-	//.Context
-	//.IOReader
 	goClientMethodImplTemplate = `
 func (c *{{.Type}}) {{.SyncMethodDecl}} {
 	ctx, cancel := {{.ContextWithCancel}}(ctx)
@@ -186,29 +199,28 @@ func (c *{{.Type}}) {{.SyncMethodDecl}} {
 }
 
 func (c *{{.Type}}) {{.AsyncMethodDecl}} {
-	//XXX
 	envelope := &{{.CallEnvelope}}{
-		GetP2PProvideRequest: req,
+		{{.MethodName}}: req,
 	}
 
-	buf, err := ipld.Marshal(dagjson.Encode, envelope, proto.Prototypes.ServiceEnvelope.Type())
+	buf, err := {{.IPLDMarshal}}({{.DAGJSONEncode}}, envelope, nil)
 	if err != nil {
-		return nil, fmt.Errorf("unexpected serialization error (%w)", err)
+		return nil, {{.Errorf}}("unexpected serialization error (%v)", err)
 	}
 
 	// encode request in URL
 	u := *c.endpoint
-	q := url.Values{}
+	q := {{.URLValues}}{}
 	q.Set("q", string(buf))
 	u.RawQuery = q.Encode()
-	httpReq, err := http.NewRequestWithContext(ctx, "GET", u.String(), bytes.NewReader(buf))
+	httpReq, err := {{.HTTPNewRequestWithContext}}(ctx, "GET", u.String(), {{.BytesNewReader}}(buf))
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := c.client.Do(httpReq)
+	resp, err := c.httpClient.Do(httpReq)
 	if err != nil {
-		return nil, fmt.Errorf("sending HTTP request (%v)", err)
+		return nil, {{.Errorf}}("sending HTTP request (%v)", err)
 	}
 
 	ch := make(chan {{.MethodReturnAsync}}, 1)
@@ -223,10 +235,9 @@ func {{.ProcessReturnAsync}}(ctx {{.Context}}, ch chan<- {{.MethodReturnAsync}},
 			return
 		}
 
-		// XXX
-		env := &proto.ServiceEnvelope{}
-		_, err := ipld.UnmarshalStreaming(r, dagjson.Decode, env, proto.Prototypes.ServiceEnvelope.Type())
-		if errors.Is(err, io.EOF) || errors.Is(err, io.ErrUnexpectedEOF) {
+		env := &{{.ReturnEnvelope}}{}
+		_, err := ipld.UnmarshalStreaming(r, {{.DAGJSONDecode}}, env, nil)
+		if {{.ErrorsIs}}(err, {{.IOEOF}}) || {{.ErrorsIs}}(err, {{.IOErrUnexpectedEOF}}) {
 			return
 		}
 		if err != nil {
@@ -234,10 +245,10 @@ func {{.ProcessReturnAsync}}(ctx {{.Context}}, ch chan<- {{.MethodReturnAsync}},
 			return
 		}
 
-		if env.GetP2PProvideResponse == nil {
+		if env.{{.MethodName}} == nil {
 			continue
 		}
-		ch <- {{.MethodReturnAsync}}{Resp: env.GetP2PProvideResponse}
+		ch <- {{.MethodReturnAsync}}{Resp: env.{{.MethodName}}}
 	}
 }`
 )

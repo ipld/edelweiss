@@ -31,6 +31,9 @@ var (
 	IPLDNodePrototypeType = &cg.GoTypeRef{PkgPath: IPLDDatamodelPkg, TypeName: "NodePrototype"}
 
 	IPLDDeepEqual = &cg.GoRef{PkgPath: IPLDPkg, Name: "DeepEqual"}
+	IPLDMarshal   = &cg.GoRef{PkgPath: IPLDPkg, Name: "Marshal"}
+	DAGJSONEncode = cg.GoRef{PkgPath: "github.com/ipld/go-ipld-prime/codec/dagjson", Name: "Encode"}
+	DAGJSONDecode = cg.GoRef{PkgPath: "github.com/ipld/go-ipld-prime/codec/dagjson", Name: "Decode"}
 )
 
 var (
@@ -42,5 +45,6 @@ var (
 )
 
 var (
-	Errorf = &cg.GoRef{PkgPath: "fmt", Name: "Errorf"}
+	Errorf   = &cg.GoRef{PkgPath: "fmt", Name: "Errorf"}
+	ErrorsIs = &cg.GoRef{PkgPath: "errors", Name: "Is"}
 )
