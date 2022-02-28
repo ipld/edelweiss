@@ -10,12 +10,12 @@ func BuildReturnImpl(
 	lookup cg.LookupDepGoRef,
 	typeDef def.Return,
 	goTypeRef cg.GoTypeRef,
-) (cg.GoTypeImpl, error) {
+) cg.GoTypeImpl {
 	return &GoReturnImpl{
 		Lookup: lookup,
 		Def:    typeDef,
 		Ref:    goTypeRef,
-	}, nil
+	}
 }
 
 type GoReturnImpl struct {

@@ -13,12 +13,12 @@ func BuildClientImpl(
 	lookup cg.LookupDepGoRef,
 	typeDef plans.Service,
 	goTypeRef cg.GoTypeRef,
-) (cg.GoTypeImpl, error) {
+) cg.GoTypeImpl {
 	return &GoClientImpl{
 		Lookup: lookup,
 		Def:    typeDef,
 		Ref:    goTypeRef,
-	}, nil
+	}
 }
 
 type GoClientImpl struct {

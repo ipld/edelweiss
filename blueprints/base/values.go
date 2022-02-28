@@ -32,6 +32,7 @@ var (
 
 	IPLDDeepEqual = &cg.GoRef{PkgPath: IPLDPkg, Name: "DeepEqual"}
 	IPLDMarshal   = &cg.GoRef{PkgPath: IPLDPkg, Name: "Marshal"}
+	IPLDUnmarshal = &cg.GoRef{PkgPath: IPLDPkg, Name: "Unmarshal"}
 	DAGJSONEncode = cg.GoRef{PkgPath: "github.com/ipld/go-ipld-prime/codec/dagjson", Name: "Encode"}
 	DAGJSONDecode = cg.GoRef{PkgPath: "github.com/ipld/go-ipld-prime/codec/dagjson", Name: "Decode"}
 )

@@ -7,9 +7,13 @@ import (
 var (
 	Context                   = cg.GoTypeRef{PkgPath: "context", TypeName: "Context"}
 	ContextWithCancel         = cg.GoTypeRef{PkgPath: "context", TypeName: "WithCancel"}
+	ContextBackground         = cg.GoTypeRef{PkgPath: "context", TypeName: "Background"}
 	HTTPClient                = cg.GoTypeRef{PkgPath: "net/http", TypeName: "Client"}
 	HTTPDefaultClient         = cg.GoTypeRef{PkgPath: "net/http", TypeName: "DefaultClient"}
 	HTTPNewRequestWithContext = cg.GoRef{PkgPath: "net/http", Name: "NewRequestWithContext"}
+	HTTPHandlerFunc           = cg.GoTypeRef{PkgPath: "net/http", TypeName: "HandlerFunc"}
+	HTTPRequest               = cg.GoTypeRef{PkgPath: "net/http", TypeName: "Request"}
+	HTTPResponseWriter        = cg.GoTypeRef{PkgPath: "net/http", TypeName: "ResponseWriter"}
 	URL                       = cg.GoTypeRef{PkgPath: "net/url", TypeName: "URL"}
 	URLParse                  = cg.GoRef{PkgPath: "net/url", Name: "Parse"}
 	URLValues                 = cg.GoRef{PkgPath: "net/url", Name: "Values"}

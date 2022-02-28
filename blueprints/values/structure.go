@@ -12,12 +12,12 @@ func BuildStructureImpl(
 	lookup cg.LookupDepGoRef,
 	typeDef def.Structure,
 	goTypeRef cg.GoTypeRef,
-) (cg.GoTypeImpl, error) {
+) cg.GoTypeImpl {
 	return &GoStructureImpl{
 		Lookup: lookup,
 		Def:    typeDef,
 		Ref:    goTypeRef,
-	}, nil
+	}
 }
 
 type GoStructureImpl struct {

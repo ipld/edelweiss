@@ -10,12 +10,12 @@ func BuildCallImpl(
 	lookup cg.LookupDepGoRef,
 	typeDef def.Call,
 	goTypeRef cg.GoTypeRef,
-) (cg.GoTypeImpl, error) {
+) cg.GoTypeImpl {
 	return &GoCallImpl{
 		Lookup: lookup,
 		Def:    typeDef,
 		Ref:    goTypeRef,
-	}, nil
+	}
 }
 
 type GoCallImpl struct {

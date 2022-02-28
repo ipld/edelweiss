@@ -10,12 +10,12 @@ func BuildInductiveImpl(
 	lookup cg.LookupDepGoRef,
 	typeDef def.Inductive,
 	goTypeRef cg.GoTypeRef,
-) (cg.GoTypeImpl, error) {
+) cg.GoTypeImpl {
 	return &GoInductiveImpl{
 		Lookup: lookup,
 		Def:    typeDef,
 		Ref:    goTypeRef,
-	}, nil
+	}
 }
 
 type GoInductiveImpl struct {

@@ -10,12 +10,12 @@ func BuildListImpl(
 	lookup cg.LookupDepGoRef,
 	typeDef def.List,
 	goTypeRef cg.GoTypeRef,
-) (cg.GoTypeImpl, error) {
+) cg.GoTypeImpl {
 	return &GoListImpl{
 		Lookup: lookup,
 		Def:    typeDef,
 		Ref:    goTypeRef,
-	}, nil
+	}
 }
 
 type GoListImpl struct {

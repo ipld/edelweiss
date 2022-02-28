@@ -10,12 +10,12 @@ func BuildMapImpl(
 	lookup cg.LookupDepGoRef,
 	typeDef def.Map,
 	goTypeRef cg.GoTypeRef,
-) (cg.GoTypeImpl, error) {
+) cg.GoTypeImpl {
 	return &GoMapImpl{
 		Lookup: lookup,
 		Def:    typeDef,
 		Ref:    goTypeRef,
-	}, nil
+	}
 }
 
 type GoMapImpl struct {

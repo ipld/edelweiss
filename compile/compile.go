@@ -49,38 +49,35 @@ func (x *GoPkgCodegen) Compile() (*cg.GoFile, error) {
 func buildGoTypeImpls(typeToGen []typePlan, depToGo cg.DefToGoTypeRef) (cg.GoTypeImpls, error) {
 	goTypeImpls := cg.GoTypeImpls{}
 	for _, ttg := range typeToGen {
-		if goTypeImpl, err := buildGoTypeImpl(depToGo, ttg.Def, ttg.GoRef); err != nil {
-			return nil, err
-		} else {
-			if goTypeImpl != nil {
-				goTypeImpls = append(goTypeImpls, goTypeImpl)
-			}
-		}
+		goTypeImpls = append(goTypeImpls, buildGoTypeImpl(depToGo, ttg.Def, ttg.GoRef)...)
 	}
 	return goTypeImpls, nil
 }
 
-func buildGoTypeImpl(depToGo cg.DefToGoTypeRef, typeDef def.Type, goTypeRef cg.GoTypeRef) (cg.GoTypeImpl, error) {
+func buildGoTypeImpl(depToGo cg.DefToGoTypeRef, typeDef def.Type, goTypeRef cg.GoTypeRef) []cg.GoTypeImpl {
 	switch d := typeDef.(type) {
 	case def.SingletonBool, def.SingletonFloat, def.SingletonInt, def.SingletonByte, def.SingletonChar, def.SingletonString:
-		return blue_values.BuildSingletonImpl(d, goTypeRef)
+		return []cg.GoTypeImpl{blue_values.BuildSingletonImpl(d, goTypeRef)}
 	case def.Structure:
-		return blue_values.BuildStructureImpl(depToGo, d, goTypeRef)
+		return []cg.GoTypeImpl{blue_values.BuildStructureImpl(depToGo, d, goTypeRef)}
 	case def.Inductive:
-		return blue_values.BuildInductiveImpl(depToGo, d, goTypeRef)
+		return []cg.GoTypeImpl{blue_values.BuildInductiveImpl(depToGo, d, goTypeRef)}
 	case def.List:
-		return blue_values.BuildListImpl(depToGo, d, goTypeRef)
+		return []cg.GoTypeImpl{blue_values.BuildListImpl(depToGo, d, goTypeRef)}
 	case def.Link:
-		return blue_values.BuildLinkImpl(depToGo, d, goTypeRef)
+		return []cg.GoTypeImpl{blue_values.BuildLinkImpl(depToGo, d, goTypeRef)}
 	case def.Map:
-		return blue_values.BuildMapImpl(depToGo, d, goTypeRef)
+		return []cg.GoTypeImpl{blue_values.BuildMapImpl(depToGo, d, goTypeRef)}
 	case def.Call:
-		return blue_values.BuildCallImpl(depToGo, d, goTypeRef)
+		return []cg.GoTypeImpl{blue_values.BuildCallImpl(depToGo, d, goTypeRef)}
 	case def.Return:
-		return blue_values.BuildReturnImpl(depToGo, d, goTypeRef)
+		return []cg.GoTypeImpl{blue_values.BuildReturnImpl(depToGo, d, goTypeRef)}
 	case plans.Service:
-		return blue_services.BuildClientImpl(depToGo, d, goTypeRef)
+		return []cg.GoTypeImpl{
+			blue_services.BuildClientImpl(depToGo, d, goTypeRef),
+			blue_services.BuildServerImpl(depToGo, d, goTypeRef),
+		}
 	default:
-		return nil, fmt.Errorf("unknown implementation plan  %#v", d)
+		panic(fmt.Sprintf("unknown implementation plan  %#v", d))
 	}
 }

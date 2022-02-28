@@ -6,8 +6,8 @@ import (
 	"github.com/ipld/edelweiss/def"
 )
 
-func BuildSingletonImpl(typeDef def.Type, goTypeRef cg.GoTypeRef) (cg.GoTypeImpl, error) {
-	return &GoSingletonImpl{Def: typeDef, Ref: goTypeRef}, nil
+func BuildSingletonImpl(typeDef def.Type, goTypeRef cg.GoTypeRef) cg.GoTypeImpl {
+	return &GoSingletonImpl{Def: typeDef, Ref: goTypeRef}
 }
 
 type GoSingletonImpl struct {

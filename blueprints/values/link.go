@@ -10,12 +10,12 @@ func BuildLinkImpl(
 	lookup cg.LookupDepGoRef,
 	typeDef def.Link,
 	goTypeRef cg.GoTypeRef,
-) (cg.GoTypeImpl, error) {
+) cg.GoTypeImpl {
 	return &GoLinkImpl{
 		Lookup: lookup,
 		Def:    typeDef,
 		Ref:    goTypeRef,
-	}, nil
+	}
 }
 
 type GoLinkImpl struct {
