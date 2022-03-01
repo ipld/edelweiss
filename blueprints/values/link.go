@@ -82,7 +82,7 @@ func (v {{.Type}}) Node() {{.Node}} {
 	return v
 }
 
-func ({{.Type}}) Kind() datamodel.Kind {
+func ({{.Type}}) Kind() {{.KindType}} {
 	return {{.KindLink}}
 }
 
@@ -143,7 +143,7 @@ func ({{.Type}}) AsBytes() ([]byte, error) {
 }
 
 func (v {{.Type}}) AsLink() ({{.Link}}, error) {
-	return {{.IPLDCidLink}}{Cid: cid.Cid(v)}, nil
+	return {{.IPLDCidLink}}{Cid: {{.Cid}}(v)}, nil
 }
 
 func ({{.Type}}) Prototype() {{.NodePrototype}} {

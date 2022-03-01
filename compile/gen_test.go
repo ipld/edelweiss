@@ -154,6 +154,36 @@ func TestListAtRunTime(t *testing.T) {
 	}
 }
 
+func TestLinkAtRunTime(t *testing.T) {
+	defs := []def.Types{
+		{def.Named{
+			Name: "UserLink",
+			Type: def.Link{To: def.String{}},
+		}},
+	}
+	testSrc := `
+	var x1 UserLink = UserLink(cid.NewCidV1(cid.Raw, []byte("test block")))
+	buf, err := ipld.Encode(x1, dagjson.Encode)
+	if err != nil {
+		t.Fatalf("encoding (%v)", err)
+	}
+	var x2 UserLink
+	n, err := ipld.Decode(buf, dagjson.Decode)
+	if err != nil {
+		t.Fatalf("decoding (%v)", err)
+	}
+	if err = x2.Parse(n); err != nil {
+		t.Fatalf("parsing (%v)", err)
+	}
+	if !ipld.DeepEqual(x1, x2) {
+		t.Errorf("ipld values are not equal")
+	}
+`
+	for _, d := range defs {
+		RunGenTest(t, d, testSrc)
+	}
+}
+
 func RunGenTest(t *testing.T, defs def.Types, testSrc string) {
 
 	// create tmp dir
@@ -207,6 +237,7 @@ import (
 	"github.com/ipld/go-ipld-prime/codec/dagjson"
 	"github.com/ipld/go-ipld-prime/codec/dagcbor"
 	"github.com/ipld/edelweiss/values"
+	cid "github.com/ipfs/go-cid"
 )
 
 // silence pkg import errors
@@ -218,6 +249,7 @@ var (
 	_ = dagjson.Encode
 	_ = dagcbor.Encode
 	_ = basicnode.Prototype
+	_ = cid.NewCidV1
 )
 
 func TestMain(t *testing.T) {
