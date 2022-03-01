@@ -192,6 +192,78 @@ func TestListAtRunTime(t *testing.T) {
 	}
 }
 
+func TestCallAtRunTime(t *testing.T) {
+	defs := []def.Types{
+		{def.Named{
+			Name: "UserCall",
+			Type: def.Call{
+				Fn: def.Fn{Arg: def.Int{}, Return: def.String{}},
+				ID: def.String{},
+			},
+		}},
+	}
+	testSrc := `
+	var x1 UserCall = UserCall{
+		ID: "abc",
+		Arg: 3,
+	}
+	buf, err := ipld.Encode(x1, dagjson.Encode)
+	if err != nil {
+		t.Fatalf("encoding (%v)", err)
+	}
+	var x2 UserCall
+	n, err := ipld.Decode(buf, dagjson.Decode)
+	if err != nil {
+		t.Fatalf("decoding (%v)", err)
+	}
+	if err = x2.Parse(n); err != nil {
+		t.Fatalf("parsing (%v)", err)
+	}
+	if !ipld.DeepEqual(x1, x2) {
+		t.Errorf("ipld values are not equal")
+	}
+`
+	for _, d := range defs {
+		RunGenTest(t, d, testSrc)
+	}
+}
+
+func TestReturnAtRunTime(t *testing.T) {
+	defs := []def.Types{
+		{def.Named{
+			Name: "UserReturn",
+			Type: def.Return{
+				Fn: def.Fn{Arg: def.Int{}, Return: def.String{}},
+				ID: def.String{},
+			},
+		}},
+	}
+	testSrc := `
+	var x1 UserReturn = UserReturn{
+		ID: "abc",
+		Return: "def",
+	}
+	buf, err := ipld.Encode(x1, dagjson.Encode)
+	if err != nil {
+		t.Fatalf("encoding (%v)", err)
+	}
+	var x2 UserReturn
+	n, err := ipld.Decode(buf, dagjson.Decode)
+	if err != nil {
+		t.Fatalf("decoding (%v)", err)
+	}
+	if err = x2.Parse(n); err != nil {
+		t.Fatalf("parsing (%v)", err)
+	}
+	if !ipld.DeepEqual(x1, x2) {
+		t.Errorf("ipld values are not equal")
+	}
+`
+	for _, d := range defs {
+		RunGenTest(t, d, testSrc)
+	}
+}
+
 func TestLinkAtRunTime(t *testing.T) {
 	defs := []def.Types{
 		{def.Named{
