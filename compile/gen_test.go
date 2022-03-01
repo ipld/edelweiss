@@ -121,6 +121,39 @@ func TestMapAtRunTime(t *testing.T) {
 	}
 }
 
+func TestListAtRunTime(t *testing.T) {
+	defs := []def.Types{
+		{def.Named{
+			Name: "UserList",
+			Type: def.List{Element: def.String{}},
+		}},
+	}
+	testSrc := `
+	var x1 UserList = UserList{
+		"abc",
+		"def",
+	}
+	buf, err := ipld.Encode(x1, dagjson.Encode)
+	if err != nil {
+		t.Fatalf("encoding (%v)", err)
+	}
+	var x2 UserList
+	n, err := ipld.Decode(buf, dagjson.Decode)
+	if err != nil {
+		t.Fatalf("decoding (%v)", err)
+	}
+	if err = x2.Parse(n); err != nil {
+		t.Fatalf("parsing (%v)", err)
+	}
+	if !ipld.DeepEqual(x1, x2) {
+		t.Errorf("ipld values are not equal")
+	}
+`
+	for _, d := range defs {
+		RunGenTest(t, d, testSrc)
+	}
+}
+
 func RunGenTest(t *testing.T, defs def.Types, testSrc string) {
 
 	// create tmp dir

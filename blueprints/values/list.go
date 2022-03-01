@@ -54,7 +54,6 @@ func (x *GoListImpl) GoDef() cg.Blueprint {
 		"Link":            base.IPLDLinkType,
 		"NodePrototype":   base.IPLDNodePrototypeType,
 		"EdelweissString": base.EdelweissString,
-		"Errorf":          base.Errorf,
 		//
 	}
 	return cg.T{
