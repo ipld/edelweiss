@@ -170,6 +170,10 @@ func (x *{{.Type}}_MapIterator) Done() bool {
 	return x.done
 }
 
+func (x {{.Type}}) Node() {{.Node}} {
+	return x
+}
+
 func (x {{.Type}}) Kind() {{.KindType}} {
 	return {{.KindMap}}
 }

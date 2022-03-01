@@ -142,6 +142,10 @@ type {{.Type}} struct {
 {{range .FieldDecls}}	{{.}}{{end}}
 }
 
+func (x {{.Type}}) Node() {{.Node}} {
+	return x
+}
+
 func (x *{{.Type}}) Parse(n {{.Node}}) error {
 	if n.Kind() != {{.KindMap}} {
 		return {{.ErrNA}}

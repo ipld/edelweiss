@@ -222,6 +222,50 @@ func TestLinkAtRunTime(t *testing.T) {
 	}
 }
 
+func TestStructureInductiveAtRunTime(t *testing.T) {
+	defs := []def.Types{
+		{def.Named{
+			Name: "UserStructure",
+			Type: def.MakeStructure(
+				def.Field{Name: "A", Type: def.Int{}},
+				def.Field{Name: "B", Type: def.Named{
+					Name: "UserInductive",
+					Type: def.MakeInductive(
+						def.Case{Name: "X", Type: def.String{}},
+						def.Case{Name: "Y", Type: def.Int{}},
+					)},
+				},
+			),
+		}},
+	}
+	testSrc := `
+	var x1 UserStructure
+	x1.A = 3
+	var x1b UserInductive
+	y := values.Int(5)
+	x1b.Y = &y
+	x1.B = x1b
+	buf, err := ipld.Encode(x1, dagjson.Encode)
+	if err != nil {
+		t.Fatalf("encoding (%v)", err)
+	}
+	var x2 UserStructure
+	n, err := ipld.Decode(buf, dagjson.Decode)
+	if err != nil {
+		t.Fatalf("decoding (%v)", err)
+	}
+	if err = x2.Parse(n); err != nil {
+		t.Fatalf("parsing (%v)", err)
+	}
+	if !ipld.DeepEqual(x1, x2) {
+		t.Errorf("ipld values are not equal")
+	}
+`
+	for _, d := range defs {
+		RunGenTest(t, d, testSrc)
+	}
+}
+
 func RunGenTest(t *testing.T, defs def.Types, testSrc string) {
 
 	// create tmp dir
@@ -239,7 +283,7 @@ module test
 go 1.16
 
 require (
-	github.com/ipld/edelweiss 377c26d968d69ccced4e3fa3adf592a6f491dca1
+	github.com/ipld/edelweiss c5150ca51dd47435b63b10b0a72743e53d476e6a
 	github.com/ipld/go-ipld-prime v0.14.4
 	github.com/ipfs/go-cid v0.0.4
 )
