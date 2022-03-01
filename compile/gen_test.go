@@ -47,6 +47,47 @@ func TestSingletonAtRunTime(t *testing.T) {
 	}
 }
 
+func TestStructureAtRunTime(t *testing.T) {
+	defs := []def.Types{
+		{def.Named{
+			Name: "UserStructure",
+			Type: def.MakeStructure(
+				def.Field{Name: "A", Type: def.Int{}},
+				def.Field{Name: "B", Type: def.String{}},
+				def.Field{Name: "C", Type: def.Float{}},
+				def.Field{Name: "D", Type: def.Byte{}},
+				def.Field{Name: "E", Type: def.Char{}},
+			),
+		}},
+	}
+	testSrc := `
+	var x1 UserStructure
+	x1.A = 3
+	x1.B = "abc"
+	x1.C = 1.2
+	x1.D = 123
+	x1.E = 'w'
+	buf, err := ipld.Encode(x1, dagjson.Encode)
+	if err != nil {
+		t.Fatalf("encoding (%v)", err)
+	}
+	var x2 UserStructure
+	n, err := ipld.Decode(buf, dagjson.Decode)
+	if err != nil {
+		t.Fatalf("decoding (%v)", err)
+	}
+	if err = x2.Parse(n); err != nil {
+		t.Fatalf("parsing (%v)", err)
+	}
+	if !ipld.DeepEqual(x1, x2) {
+		t.Errorf("ipld values are not equal")
+	}
+`
+	for _, d := range defs {
+		RunGenTest(t, d, testSrc)
+	}
+}
+
 func RunGenTest(t *testing.T, defs def.Types, testSrc string) {
 
 	// create tmp dir
@@ -54,7 +95,7 @@ func RunGenTest(t *testing.T, defs def.Types, testSrc string) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer os.RemoveAll(dir)
+	// defer os.RemoveAll(dir)
 	fmt.Printf("generating test in %s\n", dir)
 
 	// create go.mod

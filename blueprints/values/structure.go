@@ -182,7 +182,7 @@ func (x *{{.Type}}_MapIterator) Next() (key {{.Node}}, value {{.Node}}, err erro
 }
 
 func (x *{{.Type}}_MapIterator) Done() bool {
-	return x.i < {{.Length}}
+	return x.i + 1 >= {{.Length}}
 }
 
 func (x {{.Type}}) Kind() {{.KindType}} {
