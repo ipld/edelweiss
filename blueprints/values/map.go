@@ -61,7 +61,6 @@ func (x *GoMapImpl) GoDef() cg.Blueprint {
 		"NodePrototype":   base.IPLDNodePrototypeType,
 		"EdelweissString": base.EdelweissString,
 		"EdelweissInt":    base.EdelweissInt,
-		"Errorf":          base.Errorf,
 		//
 		"IPLDDeepEqual": base.IPLDDeepEqual,
 	}

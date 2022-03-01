@@ -88,6 +88,39 @@ func TestStructureAtRunTime(t *testing.T) {
 	}
 }
 
+func TestMapAtRunTime(t *testing.T) {
+	defs := []def.Types{
+		{def.Named{
+			Name: "UserMap",
+			Type: def.Map{Key: def.String{}, Value: def.Int{}},
+		}},
+	}
+	testSrc := `
+	var x1 UserMap = UserMap{
+		{Key: "a", Value: 1},
+		{Key: "b", Value: 2},
+	}
+	buf, err := ipld.Encode(x1, dagjson.Encode)
+	if err != nil {
+		t.Fatalf("encoding (%v)", err)
+	}
+	var x2 UserMap
+	n, err := ipld.Decode(buf, dagjson.Decode)
+	if err != nil {
+		t.Fatalf("decoding (%v)", err)
+	}
+	if err = x2.Parse(n); err != nil {
+		t.Fatalf("parsing (%v)", err)
+	}
+	if !ipld.DeepEqual(x1, x2) {
+		t.Errorf("ipld values are not equal")
+	}
+`
+	for _, d := range defs {
+		RunGenTest(t, d, testSrc)
+	}
+}
+
 func RunGenTest(t *testing.T, defs def.Types, testSrc string) {
 
 	// create tmp dir
