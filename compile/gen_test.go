@@ -88,6 +88,44 @@ func TestStructureAtRunTime(t *testing.T) {
 	}
 }
 
+func TestInductiveAtRunTime(t *testing.T) {
+	defs := []def.Types{
+		{def.Named{
+			Name: "UserInductive",
+			Type: def.MakeInductive(
+				def.Case{Name: "A", Type: def.Int{}},
+				def.Case{Name: "B", Type: def.String{}},
+				def.Case{Name: "C", Type: def.Float{}},
+				def.Case{Name: "D", Type: def.Byte{}},
+				def.Case{Name: "E", Type: def.Char{}},
+			),
+		}},
+	}
+	testSrc := `
+	var x1 UserInductive
+	var y values.String = "abc"
+	x1.B = &y
+	buf, err := ipld.Encode(x1, dagjson.Encode)
+	if err != nil {
+		t.Fatalf("encoding (%v)", err)
+	}
+	var x2 UserInductive
+	n, err := ipld.Decode(buf, dagjson.Decode)
+	if err != nil {
+		t.Fatalf("decoding (%v)", err)
+	}
+	if err = x2.Parse(n); err != nil {
+		t.Fatalf("parsing (%v)", err)
+	}
+	if !ipld.DeepEqual(x1, x2) {
+		t.Errorf("ipld values are not equal")
+	}
+`
+	for _, d := range defs {
+		RunGenTest(t, d, testSrc)
+	}
+}
+
 func TestMapAtRunTime(t *testing.T) {
 	defs := []def.Types{
 		{def.Named{
