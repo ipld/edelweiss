@@ -75,7 +75,6 @@ func (x GoServerImpl) GoDef() cg.Blueprint {
 					{{.LoggerVar}}.Errorf("cannot encode response (%v)", err)
 					continue
 				}
-				println("writing: ", string(buf))
 				writer.Write(buf)
 			}
 `,
