@@ -51,7 +51,7 @@ func (x GoServerImpl) GoDef() cg.Blueprint {
 			"ReturnEnvelope":    x.Lookup.LookupDepGoRef(x.Def.ReturnEnvelope),
 			"Context":           base.Context,
 			"ContextBackground": base.ContextBackground,
-			"IPLDMarshal":       base.IPLDMarshal,
+			"IPLDEncode":        base.IPLDEncode,
 			"DAGJSONEncode":     base.DAGJSONEncode,
 		}
 		methodDecls[i] = cg.T{
@@ -70,11 +70,12 @@ func (x GoServerImpl) GoDef() cg.Blueprint {
 			}
 			for resp := range ch {
 				env := &{{.ReturnEnvelope}}{ {{.MethodName}}: resp }
-				buf, err := {{.IPLDMarshal}}({{.DAGJSONEncode}}, env, nil)
+				buf, err := {{.IPLDEncode}}(env, {{.DAGJSONEncode}})
 				if err != nil {
 					{{.LoggerVar}}.Errorf("cannot encode response (%v)", err)
 					continue
 				}
+				println("writing: ", string(buf))
 				writer.Write(buf)
 			}
 `,
@@ -86,7 +87,7 @@ func (x GoServerImpl) GoDef() cg.Blueprint {
 		"HTTPHandlerFunc":    base.HTTPHandlerFunc,
 		"HTTPRequest":        base.HTTPRequest,
 		"HTTPResponseWriter": base.HTTPResponseWriter,
-		"IPLDUnmarshal":      base.IPLDUnmarshal,
+		"IPLDDecode":         base.IPLDDecode,
 		"DAGJSONDecode":      base.DAGJSONDecode,
 		//
 		"Interface":    x.Ref.Append("_Server"),
@@ -115,10 +116,15 @@ func {{.AsyncHandler}}(s {{.Interface}}) {{.HTTPHandlerFunc}} {
 	return func(writer {{.HTTPResponseWriter}}, request *{{.HTTPRequest}}) {
 		// parse request
 		msg := request.URL.Query().Get("q")
-		env := &{{.CallEnvelope}}{}
-		_, err := {{.IPLDUnmarshal}}([]byte(msg), {{.DAGJSONDecode}}, env, nil)
+		n, err := {{.IPLDDecode}}([]byte(msg), {{.DAGJSONDecode}})
 		if err != nil {
 			{{.LoggerVar}}.Errorf("received request not decodeable (%v)", err)
+			writer.WriteHeader(400)
+			return
+		}
+		env := &{{.CallEnvelope}}{}
+		if err = env.Parse(n); err != nil {
+			{{.LoggerVar}}.Errorf("parsing call envelope (%v)", err)
 			writer.WriteHeader(400)
 			return
 		}

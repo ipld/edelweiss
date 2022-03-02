@@ -58,7 +58,8 @@ func (x GoClientImpl) GoDef() cg.Blueprint {
 			"ContextWithCancel":         base.ContextWithCancel,
 			"LoggerVar":                 loggerVar,
 			"IOReader":                  base.IOReader,
-			"IPLDMarshal":               base.IPLDMarshal,
+			"IPLDEncode":                base.IPLDEncode,
+			"IPLDDecodeStreaming":       base.IPLDDecodeStreaming,
 			"Errorf":                    base.Errorf,
 			"URLValues":                 base.URLValues,
 			"HTTPNewRequestWithContext": base.HTTPNewRequestWithContext,
@@ -203,7 +204,7 @@ func (c *{{.Type}}) {{.AsyncMethodDecl}} {
 		{{.MethodName}}: req,
 	}
 
-	buf, err := {{.IPLDMarshal}}({{.DAGJSONEncode}}, envelope, nil)
+	buf, err := {{.IPLDEncode}}(envelope, {{.DAGJSONEncode}})
 	if err != nil {
 		return nil, {{.Errorf}}("unexpected serialization error (%v)", err)
 	}
@@ -235,12 +236,16 @@ func {{.ProcessReturnAsync}}(ctx {{.Context}}, ch chan<- {{.MethodReturnAsync}},
 			return
 		}
 
-		env := &{{.ReturnEnvelope}}{}
-		_, err := ipld.UnmarshalStreaming(r, {{.DAGJSONDecode}}, env, nil)
+		n, err := {{.IPLDDecodeStreaming}}(r, {{.DAGJSONDecode}})
 		if {{.ErrorsIs}}(err, {{.IOEOF}}) || {{.ErrorsIs}}(err, {{.IOErrUnexpectedEOF}}) {
 			return
 		}
 		if err != nil {
+			ch <- {{.MethodReturnAsync}}{Err: err}
+			return
+		}
+		env := &{{.ReturnEnvelope}}{}
+		if err = env.Parse(n); err != nil {
 			ch <- {{.MethodReturnAsync}}{Err: err}
 			return
 		}

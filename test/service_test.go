@@ -20,17 +20,23 @@ func TestService(t *testing.T) {
 type TestService_ServerImpl struct{}
 
 func (TestService_ServerImpl) Method1(ctx context.Context, req *values.Int, respCh chan<- *values.Bool) error {
-	defer close(respCh)
-	var r1 values.Bool = true
-	respCh <- &r1
+	go func() {
+		defer close(respCh)
+		var r1 values.Bool = true
+		respCh <- &r1
+	}()
+	return nil
 }
 
 func (TestService_ServerImpl) Method2(ctx context.Context, req *values.String, respCh chan<- *values.Float) error {
-	defer close(respCh)
-	var r1 values.Float = 1.23
-	respCh <- &r1
-	var r2 values.Float = 4.56
-	respCh <- &r2
+	go func() {
+		defer close(respCh)
+		var r1 values.Float = 1.23
+		respCh <- &r1
+		var r2 values.Float = 4.56
+		respCh <- &r2
+	}()
+	return nil
 }
 
 func TestRoundtrip(t *testing.T) {

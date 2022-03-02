@@ -433,7 +433,7 @@ module test
 go 1.16
 
 require (
-	github.com/ipld/edelweiss c5150ca51dd47435b63b10b0a72743e53d476e6a
+	github.com/ipld/edelweiss 7ae8af5d965e6127144e5f257761a0fa9e6b044f
 	github.com/ipld/go-ipld-prime v0.14.4
 	github.com/ipfs/go-cid v0.0.4
 )
@@ -476,7 +476,7 @@ import (
 
 // silence pkg import errors
 var (
-	_ = context.Context
+	_ = context.Background
 	_ = fmt.Printf
 	_ = os.Exit
 	_ = ipld.Encode

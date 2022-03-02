@@ -1,11 +1,14 @@
+POST-MVP
+- [ ] pick an official name for the project
+
 HOUSE CLEANING
-- remove Deps() method from types
-- simplify structure, inductive, union, etc. (use slices)
-- rename pkg def to defs
-- rename interface def.Type to defs.Def
+- [ ] remove Deps() method from types
+- [ ] simplify structure, inductive, union, etc. (use slices)
+- [ ] rename pkg def to defs
+- [ ] rename interface def.Type to defs.Def
 
 
 ROBUST COMPILER ARCHITECTURE
-- create a distinct plan representation layer
-- decouple preparation of blue values from source generation
-	+ blue values will be needed e.g. for test automation when multiple go packages are code generated
+- [ ] create a distinct plan representation layer
+- [ ] decouple preparation of blue values from source generation
+	- blue values will be needed e.g. for test automation when multiple go packages are code generated
