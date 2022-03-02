@@ -272,7 +272,11 @@ func TestLinkAtRunTime(t *testing.T) {
 		}},
 	}
 	testSrc := `
-	var x1 UserLink = UserLink(cid.NewCidV1(cid.Raw, []byte("test block")))
+	c, err := cid.Decode("QmYyQSo1c1Ym7orWxLYvCrM2EmxFTANf8wXmmE7DWjhx5N")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var x1 UserLink = UserLink(c)
 	buf, err := ipld.Encode(x1, dagjson.Encode)
 	if err != nil {
 		t.Fatalf("encoding (%v)", err)
