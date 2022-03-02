@@ -1,4 +1,4 @@
-package compile
+package test
 
 import (
 	"fmt"
@@ -8,11 +8,12 @@ import (
 	"path"
 	"testing"
 
+	"github.com/ipld/edelweiss/compile"
 	"github.com/ipld/edelweiss/def"
 )
 
 func TestGenTest(t *testing.T) {
-	RunGenTest(t, def.Types{def.Named{Name: "T", Type: def.SingletonInt{Int: 23}}}, "")
+	RunSingleGenTest(t, def.Types{def.Named{Name: "T", Type: def.SingletonInt{Int: 23}}}, "")
 }
 
 func TestSingletonAtRunTime(t *testing.T) {
@@ -43,7 +44,7 @@ func TestSingletonAtRunTime(t *testing.T) {
 	}
 `
 	for _, d := range defs {
-		RunGenTest(t, d, testSrc)
+		RunSingleGenTest(t, d, testSrc)
 	}
 }
 
@@ -84,7 +85,7 @@ func TestStructureAtRunTime(t *testing.T) {
 	}
 `
 	for _, d := range defs {
-		RunGenTest(t, d, testSrc)
+		RunSingleGenTest(t, d, testSrc)
 	}
 }
 
@@ -122,7 +123,7 @@ func TestInductiveAtRunTime(t *testing.T) {
 	}
 `
 	for _, d := range defs {
-		RunGenTest(t, d, testSrc)
+		RunSingleGenTest(t, d, testSrc)
 	}
 }
 
@@ -155,7 +156,7 @@ func TestMapAtRunTime(t *testing.T) {
 	}
 `
 	for _, d := range defs {
-		RunGenTest(t, d, testSrc)
+		RunSingleGenTest(t, d, testSrc)
 	}
 }
 
@@ -188,7 +189,7 @@ func TestListAtRunTime(t *testing.T) {
 	}
 `
 	for _, d := range defs {
-		RunGenTest(t, d, testSrc)
+		RunSingleGenTest(t, d, testSrc)
 	}
 }
 
@@ -224,7 +225,7 @@ func TestCallAtRunTime(t *testing.T) {
 	}
 `
 	for _, d := range defs {
-		RunGenTest(t, d, testSrc)
+		RunSingleGenTest(t, d, testSrc)
 	}
 }
 
@@ -260,7 +261,7 @@ func TestReturnAtRunTime(t *testing.T) {
 	}
 `
 	for _, d := range defs {
-		RunGenTest(t, d, testSrc)
+		RunSingleGenTest(t, d, testSrc)
 	}
 }
 
@@ -294,7 +295,7 @@ func TestLinkAtRunTime(t *testing.T) {
 	}
 `
 	for _, d := range defs {
-		RunGenTest(t, d, testSrc)
+		RunSingleGenTest(t, d, testSrc)
 	}
 }
 
@@ -338,7 +339,7 @@ func TestStructureInductiveAtRunTime(t *testing.T) {
 	}
 `
 	for _, d := range defs {
-		RunGenTest(t, d, testSrc)
+		RunSingleGenTest(t, d, testSrc)
 	}
 }
 
@@ -372,7 +373,7 @@ func TestListStructureAtRunTime(t *testing.T) {
 	}
 `
 	for _, d := range defs {
-		RunGenTest(t, d, testSrc)
+		RunSingleGenTest(t, d, testSrc)
 	}
 }
 
@@ -404,8 +405,15 @@ func TestListSingletonAtRunTime(t *testing.T) {
 	}
 `
 	for _, d := range defs {
-		RunGenTest(t, d, testSrc)
+		RunSingleGenTest(t, d, testSrc)
 	}
+}
+
+func RunSingleGenTest(t *testing.T, defs def.Types, testSrc string) {
+	testFuncFmt := `func TestMain(t *testing.T) {
+%s
+}`
+	RunGenTest(t, defs, fmt.Sprintf(testFuncFmt, testSrc))
 }
 
 func RunGenTest(t *testing.T, defs def.Types, testSrc string) {
@@ -435,7 +443,7 @@ require (
 	}
 
 	// generate type code
-	x := &GoPkgCodegen{
+	x := &compile.GoPkgCodegen{
 		GoPkgDirPath: dir,
 		GoPkgPath:    "test",
 		Defs:         defs,
@@ -476,9 +484,7 @@ var (
 	_ = cid.NewCidV1
 )
 
-func TestMain(t *testing.T) {
 %s
-}
 `
 	if err := ioutil.WriteFile(path.Join(dir, "edelweiss_test.go"), []byte(fmt.Sprintf(testGoSrc, testSrc)), 0644); err != nil {
 		t.Fatalf("creating test.go (%v)", err)
