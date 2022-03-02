@@ -464,6 +464,7 @@ import (
 	"fmt"
 	"os"
 	"testing"
+	"net/http/httptest"
 	ipld "github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/node/basicnode"
 	"github.com/ipld/go-ipld-prime/codec/dagjson"
@@ -482,6 +483,7 @@ var (
 	_ = dagcbor.Encode
 	_ = basicnode.Prototype
 	_ = cid.NewCidV1
+	_ = httptest.NewServer
 )
 
 %s

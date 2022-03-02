@@ -89,10 +89,11 @@ func (x GoServerImpl) GoDef() cg.Blueprint {
 		"IPLDUnmarshal":      base.IPLDUnmarshal,
 		"DAGJSONDecode":      base.DAGJSONDecode,
 		//
-		"Interface":  x.Ref.Append("_Server"),
-		"Logger":     cg.GoRef{PkgPath: "github.com/ipfs/go-log", Name: "Logger"},
-		"LoggerName": cg.StringLiteral(fmt.Sprintf("service/server/%s", x.Ref.TypeName)),
-		"LoggerVar":  loggerVar,
+		"Interface":    x.Ref.Append("_Server"),
+		"AsyncHandler": x.Ref.Append("_AsyncHandler"),
+		"Logger":       cg.GoRef{PkgPath: "github.com/ipfs/go-log", Name: "Logger"},
+		"LoggerName":   cg.StringLiteral(fmt.Sprintf("service/server/%s", x.Ref.TypeName)),
+		"LoggerVar":    loggerVar,
 		//
 		"CallEnvelope": x.Lookup.LookupDepGoRef(x.Def.CallEnvelope),
 		"MethodDecls":  methodDecls,
@@ -110,7 +111,7 @@ type {{.Interface}} interface {
 	{{.}}{{end}}
 }
 
-func Server_AsyncHandler(s {{.Interface}}) {{.HTTPHandlerFunc}} {
+func {{.AsyncHandler}}(s {{.Interface}}) {{.HTTPHandlerFunc}} {
 	return func(writer {{.HTTPResponseWriter}}, request *{{.HTTPRequest}}) {
 		// parse request
 		msg := request.URL.Query().Get("q")
