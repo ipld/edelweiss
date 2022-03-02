@@ -8,6 +8,11 @@ import (
 
 type Int int64
 
+func NewInt(v int64) *Int {
+	x := Int(v)
+	return &x
+}
+
 func (Int) Def() def.Type {
 	return def.Int{}
 }

@@ -8,6 +8,11 @@ import (
 
 type Bool bool
 
+func NewBool(v bool) *Bool {
+	x := Bool(v)
+	return &x
+}
+
 func (Bool) Def() def.Type {
 	return def.Bool{}
 }

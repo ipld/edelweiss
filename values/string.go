@@ -8,6 +8,11 @@ import (
 
 type String string
 
+func NewString(v string) *String {
+	x := String(v)
+	return &x
+}
+
 func (String) Def() def.Type {
 	return def.String{}
 }

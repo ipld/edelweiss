@@ -19,18 +19,17 @@ func TestService(t *testing.T) {
 
 type TestService_ServerImpl struct{}
 
-func (TestService_ServerImpl) Method1(ctx pd9.Context, req *pd2.Int, respCh chan<- *pd2.Bool) error {
+func (TestService_ServerImpl) Method1(ctx context.Context, req *values.Int, respCh chan<- *values.Bool) error {
 	defer close(respCh)
-	var r1 pd2.Bool = true
+	var r1 values.Bool = true
 	respCh <- &r1
 }
 
-// XXX: pkg aliases
-func (TestService_ServerImpl) Method2(ctx pd9.Context, req *pd2.String, respCh chan<- *pd2.Float) error {
+func (TestService_ServerImpl) Method2(ctx context.Context, req *values.String, respCh chan<- *values.Float) error {
 	defer close(respCh)
-	var r1 pd2.Float = 1.23
+	var r1 values.Float = 1.23
 	respCh <- &r1
-	var r2 pd2.Float = 4.56
+	var r2 values.Float = 4.56
 	respCh <- &r2
 }
 
@@ -44,7 +43,30 @@ func TestRoundtrip(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	XXX
+	ctx := context.Background()
+
+	r1, err := c.Method1(ctx, values.NewInt(5))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if *r1[0] != values.Bool(true) {
+		t.Errorf("expecting true, fot false")
+	}
+
+	r2, err := c.Method2(ctx, values.NewString("5"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(r2) != 2 {
+		t.Fatalf("expecting 2 results, got %d", len(r2))
+	}
+	if *r2[0] != values.Float(1.23) {
+		t.Fatalf("expecting 1.23, got %v", *r2[0])
+	}
+	if *r2[1] != values.Float(4.56) {
+		t.Fatalf("expecting 4.56, got %v", *r2[1])
+	}
+
 }`
 	RunGenTest(t, defs, testSrc)
 }

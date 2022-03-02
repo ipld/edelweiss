@@ -8,6 +8,11 @@ import (
 
 type Char rune
 
+func NewChar(v rune) *Char {
+	x := Char(v)
+	return &x
+}
+
 func (Char) Def() def.Type {
 	return def.Char{}
 }

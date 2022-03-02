@@ -461,6 +461,7 @@ require (
 package test
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"testing"
@@ -475,6 +476,7 @@ import (
 
 // silence pkg import errors
 var (
+	_ = context.Context
 	_ = fmt.Printf
 	_ = os.Exit
 	_ = ipld.Encode

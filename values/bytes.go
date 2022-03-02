@@ -8,6 +8,11 @@ import (
 
 type Bytes []byte
 
+func NewBytes(v []byte) *Bytes {
+	x := Bytes(v)
+	return &x
+}
+
 func (Bytes) Def() def.Type {
 	return def.Bytes{}
 }

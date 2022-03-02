@@ -8,6 +8,11 @@ import (
 
 type Float float64
 
+func NewFloat(v float64) *Float {
+	x := Float(v)
+	return &x
+}
+
 func (Float) Def() def.Type {
 	return def.Int{}
 }
