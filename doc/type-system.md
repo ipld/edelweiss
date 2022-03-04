@@ -1,5 +1,7 @@
 # TYPE SYSTEM DISCUSSION
 
+*This document is slightly outdated. It was part of the initial design discussions.*
+
 ## OBJECTIVES
 
 At the highest-level, we perceive that the main design objectives for a protocol compiler are:
