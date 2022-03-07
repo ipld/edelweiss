@@ -32,28 +32,34 @@ func TestServiceDef(t *testing.T) {
 				Method{"Put1",
 					Fn{
 						Arg: Ref{"PutArgs"},
-						Return: MakeUnion(
-							Case{"ok", Ref{"ResultOk"}},
-							Case{"error", Ref{"ResultError"}},
-						),
+						Return: Union{
+							Cases: Cases{
+								Case{"ok", Ref{"ResultOk"}},
+								Case{"error", Ref{"ResultError"}},
+							},
+						},
 					},
 				},
 				Method{"Put2",
 					Fn{
 						Arg: MakeTuple(Ref{"Key"}, Any{}),
-						Return: MakeUnion(
-							Case{"ok", Ref{"ResultOk"}},
-							Case{"error", Ref{"ResultError"}},
-						),
+						Return: Union{
+							Cases: Cases{
+								Case{"ok", Ref{"ResultOk"}},
+								Case{"error", Ref{"ResultError"}},
+							},
+						},
 					},
 				},
 				Method{"Get",
 					Fn{
 						Arg: Ref{"Key"},
-						Return: MakeUnion(
-							Case{"found", Ref{"ResultOk"}},
-							Case{"not_found", Ref{"ResultError"}},
-						),
+						Return: Union{
+							Cases: Cases{
+								Case{"found", Ref{"ResultOk"}},
+								Case{"not_found", Ref{"ResultError"}},
+							},
+						},
 					},
 				},
 			),
@@ -81,10 +87,12 @@ func TestServiceDef2(t *testing.T) {
 			},
 		},
 		Named{"PutP2PProviderResponse",
-			MakeUnion(
-				Case{Name: "Success", Type: Nothing{}},
-				Case{Name: "Error", Type: String{}},
-			),
+			Union{
+				Cases: Cases{
+					Case{Name: "Success", Type: Nothing{}},
+					Case{Name: "Error", Type: String{}},
+				},
+			},
 		},
 
 		// GetP2PProviders argument and result types
@@ -96,10 +104,12 @@ func TestServiceDef2(t *testing.T) {
 			},
 		},
 		Named{"GetP2PProvidersResponse",
-			MakeUnion(
-				Case{Name: "Success", Type: List{Ref{"PeerAddr"}}},
-				Case{Name: "Error", Type: String{}},
-			),
+			Union{
+				Cases: Cases{
+					Case{Name: "Success", Type: List{Ref{"PeerAddr"}}},
+					Case{Name: "Error", Type: String{}},
+				},
+			},
 		},
 
 		// Libp2p types

@@ -33,7 +33,7 @@ func (x *GoInductiveImpl) GoTypeRef() cg.GoTypeRef {
 }
 
 func (x *GoInductiveImpl) GoDef() cg.Blueprint {
-	cases := defs.FlattenCaseList(x.Def.Cases)
+	cases := x.Def.Cases
 	caseData := make([]cg.BlueMap, len(cases))
 	for i := range cases {
 		caseData[i] = cg.BlueMap{

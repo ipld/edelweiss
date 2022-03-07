@@ -91,7 +91,7 @@ func provision(p *genPlan, named string, s defs.Def) (defs.Def, error) {
 		return defs.Structure{Fields: fieldPlans}, nil
 
 	case defs.Inductive:
-		cases := defs.FlattenCaseList(t.Cases)
+		cases := t.Cases
 		casePlans := make([]defs.Case, len(cases))
 		for i, c := range cases {
 			ctp, err := generate(p, c.Type)
@@ -100,10 +100,10 @@ func provision(p *genPlan, named string, s defs.Def) (defs.Def, error) {
 			}
 			casePlans[i] = defs.Case{Name: c.Name, Type: ctp}
 		}
-		return defs.MakeInductive(casePlans...), nil
+		return defs.Inductive{Cases: casePlans}, nil
 
 	case defs.Union:
-		cases := defs.FlattenCaseList(t.Cases)
+		cases := t.Cases
 		casePlans := make([]defs.Case, len(cases))
 		for i, c := range cases {
 			ctp, err := generate(p, c.Type)
@@ -112,7 +112,7 @@ func provision(p *genPlan, named string, s defs.Def) (defs.Def, error) {
 			}
 			casePlans[i] = defs.Case{Name: c.Name, Type: ctp}
 		}
-		return defs.MakeInductive(casePlans...), nil
+		return defs.Union{Cases: casePlans}, nil
 
 	case defs.Tuple:
 		slots := defs.FlattenSlotList(t.Slots)
@@ -215,11 +215,11 @@ func provisionService(p *genPlan, named string, s defs.Service) (defs.Def, error
 		callCases[i] = defs.Case{Name: m.Name, Type: argRef}
 		returnCases[i] = defs.Case{Name: m.Name, Type: returnRef}
 	}
-	callEnvelopeRef, err := generate(p, defs.MakeInductive(callCases...))
+	callEnvelopeRef, err := generate(p, defs.Inductive{Cases: callCases})
 	if err != nil {
 		return nil, fmt.Errorf("generating service call envelope (%v)", err)
 	}
-	returnEnvelopeRef, err := generate(p, defs.MakeInductive(returnCases...))
+	returnEnvelopeRef, err := generate(p, defs.Inductive{Cases: returnCases})
 	if err != nil {
 		return nil, fmt.Errorf("generating service call envelope (%v)", err)
 	}

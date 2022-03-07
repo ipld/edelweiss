@@ -29,10 +29,12 @@ defs = Types{
           },
      },
      Named{"PutP2PProviderResponse",
-          MakeUnion(
-               Case{Name: "Success", Type: Nothing{}},
-               Case{Name: "Error", Type: String{}},
-          ),
+          Union{
+               Cases{
+                    Case{Name: "Success", Type: Nothing{}},
+                    Case{Name: "Error", Type: String{}},
+               },
+          },
      },
 
      // GetP2PProviders argument and result types
@@ -44,10 +46,12 @@ defs = Types{
           },
      },
      Named{"GetP2PProvidersResponse",
-          MakeUnion(
-               Case{Name: "Success", Type: List{Ref{"PeerAddr"}}},
-               Case{Name: "Error", Type: String{}},
-          ),
+          Union{
+               Cases{
+                    Case{Name: "Success", Type: List{Ref{"PeerAddr"}}},
+                    Case{Name: "Error", Type: String{}},
+               },
+          },
      },
 
      // Libp2p types

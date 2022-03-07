@@ -2,7 +2,7 @@ POST-MVP
 - [ ] pick an official name for the project
 
 HOUSE CLEANING
-- [ ] simplify structure, inductive, union, etc. (use slices)
+- [ ] simplify structure, inductive, union, tuple
 - [ ] unified ci
 
 ROBUST COMPILER ARCHITECTURE

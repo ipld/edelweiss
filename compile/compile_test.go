@@ -60,10 +60,12 @@ func TestInductiveAtCompileTime(t *testing.T) {
 	defs := defs.Defs{
 		defs.Named{
 			Name: "S1",
-			Type: defs.MakeInductive(
-				defs.Case{Name: "Int", Type: defs.Int{}},
-				defs.Case{Name: "Bool", Type: defs.Bool{}},
-			),
+			Type: defs.Inductive{
+				Cases: defs.Cases{
+					defs.Case{Name: "Int", Type: defs.Int{}},
+					defs.Case{Name: "Bool", Type: defs.Bool{}},
+				},
+			},
 		},
 	}
 	x := &GoPkgCodegen{

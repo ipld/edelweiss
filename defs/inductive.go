@@ -1,15 +1,9 @@
 package defs
 
 type Inductive struct {
-	Cases CaseListOrNone
+	Cases Cases
 }
 
 func (Inductive) Kind() string {
 	return "Inductive"
-}
-
-func MakeInductive(cases ...Case) Inductive {
-	return Inductive{
-		Cases: makeCases(cases),
-	}
 }
