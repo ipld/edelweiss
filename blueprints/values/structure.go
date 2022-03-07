@@ -159,6 +159,7 @@ func (x *{{.Type}}) Parse(n {{.Node}}) error {
 			if k, err := kn.AsString(); err != nil {
 				return {{.Errorf}}("structure map key is not a string")
 			} else {
+				_ = vn
 				switch k {
 {{range .FieldParseCases}}	{{.}}{{end}}
 				}
