@@ -15,8 +15,20 @@ defs = Defs{
      Named{"DelegatedRouting",
           Service{
                Methods{
-                    Method{"PutP2PProvider", Fn{Arg: Ref{"PutP2PProviderRequest"}, Return: Ref{"PutP2PProviderResponse"}}},
-                    Method{"GetP2PProviders", Fn{Arg: Ref{"GetP2PProvidersRequest"}, Return: Ref{"GetP2PProvidersResponse"}}},
+                    Method{
+                         Name: "PutP2PProvider",
+                         Type: Fn{
+                              Arg: Ref{"PutP2PProviderRequest"}, 
+                              Return: Ref{"PutP2PProviderResponse"},
+                         },
+                    },
+                    Method{
+                         Name: "GetP2PProviders",
+                         Type: Fn{
+                              Arg: Ref{"GetP2PProvidersRequest"},
+                              Return: Ref{"GetP2PProvidersResponse"},
+                         },
+                    },
                },
           },
      },
