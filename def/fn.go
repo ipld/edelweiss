@@ -6,10 +6,6 @@ type Fn struct {
 	Return Type
 }
 
-func (fn Fn) Deps() Types {
-	return Types{fn.Arg, fn.Return}
-}
-
 func (Fn) Kind() string {
 	return "Fn"
 }
@@ -20,10 +16,6 @@ type Call struct {
 	ID Type // function instance identifier (can be a user-defined type)
 }
 
-func (call Call) Deps() Types {
-	return Types{call.Fn}
-}
-
 func (Call) Kind() string {
 	return "Call"
 }
@@ -32,10 +24,6 @@ func (Call) Kind() string {
 type Return struct {
 	Fn Fn   // type signature of the function returning a result
 	ID Type // function instance identifier (can be a user-defined type)
-}
-
-func (r Return) Deps() Types {
-	return Types{r.Fn}
 }
 
 func (Return) Kind() string {

@@ -5,42 +5,20 @@ type Service struct {
 	Methods MethodListOrNone
 }
 
-func (s Service) Deps() Types {
-	if s.Methods != nil {
-		return s.Methods.Deps()
-	} else {
-		return nil
-	}
-}
-
 func (Service) Kind() string {
 	return "Service"
 }
 
-type MethodListOrNone interface {
-	Deps() Types
-}
+type MethodListOrNone interface{}
 
 type MethodList struct {
 	Method Method
 	Rest   MethodListOrNone
 }
 
-func (ml MethodList) Deps() Types {
-	if ml.Rest == nil {
-		return ml.Method.Deps()
-	} else {
-		return append(Types{ml.Method.Type}, ml.Rest.Deps()...)
-	}
-}
-
 type Method struct {
 	Name string
 	Type Fn
-}
-
-func (m Method) Deps() Types {
-	return Types{m.Type}
 }
 
 func (m Method) Call() Call {

@@ -4,33 +4,15 @@ type Structure struct {
 	Fields FieldListOrNone
 }
 
-func (s Structure) Deps() Types {
-	if s.Fields != nil {
-		return s.Fields.Deps()
-	} else {
-		return nil
-	}
-}
-
 func (Structure) Kind() string {
 	return "Structure"
 }
 
-type FieldListOrNone interface {
-	Deps() Types
-}
+type FieldListOrNone interface{}
 
 type FieldList struct {
 	Field Field
 	Rest  FieldListOrNone
-}
-
-func (fl FieldList) Deps() Types {
-	if fl.Rest == nil {
-		return Types{fl.Field.Type}
-	} else {
-		return append(Types{fl.Field.Type}, fl.Rest.Deps()...)
-	}
 }
 
 type Field struct {
