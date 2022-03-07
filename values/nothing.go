@@ -1,15 +1,15 @@
 package values
 
 import (
-	"github.com/ipld/edelweiss/def"
+	"github.com/ipld/edelweiss/defs"
 	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/datamodel"
 )
 
 type Nothing struct{}
 
-func (Nothing) Def() def.Def {
-	return def.Nothing{}
+func (Nothing) Def() defs.Def {
+	return defs.Nothing{}
 }
 
 func (v *Nothing) Parse(n datamodel.Node) error {

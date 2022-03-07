@@ -1,4 +1,4 @@
-package def
+package defs
 
 // Bool, Float, Int, Byte, Char
 

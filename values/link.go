@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	cid "github.com/ipfs/go-cid"
-	"github.com/ipld/edelweiss/def"
+	"github.com/ipld/edelweiss/defs"
 	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/datamodel"
 	ipldcid "github.com/ipld/go-ipld-prime/linking/cid"
@@ -13,8 +13,8 @@ import (
 // Link models a link to any type.
 type Link cid.Cid
 
-func (Link) Def() def.Def {
-	return def.Link{To: def.Any{}}
+func (Link) Def() defs.Def {
+	return defs.Link{To: defs.Any{}}
 }
 
 func (v *Link) Parse(n datamodel.Node) error {

@@ -1,7 +1,7 @@
 package values
 
 import (
-	"github.com/ipld/edelweiss/def"
+	"github.com/ipld/edelweiss/defs"
 	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/datamodel"
 )
@@ -13,8 +13,8 @@ func NewBool(v bool) *Bool {
 	return &x
 }
 
-func (Bool) Def() def.Def {
-	return def.Bool{}
+func (Bool) Def() defs.Def {
+	return defs.Bool{}
 }
 
 func (v *Bool) Parse(n datamodel.Node) error {

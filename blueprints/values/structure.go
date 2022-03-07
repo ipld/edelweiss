@@ -5,12 +5,12 @@ import (
 
 	"github.com/ipld/edelweiss/blueprints/base"
 	cg "github.com/ipld/edelweiss/codegen"
-	"github.com/ipld/edelweiss/def"
+	"github.com/ipld/edelweiss/defs"
 )
 
 func BuildStructureImpl(
 	lookup cg.LookupDepGoRef,
-	typeDef def.Structure,
+	typeDef defs.Structure,
 	goTypeRef cg.GoTypeRef,
 ) cg.GoTypeImpl {
 	return &GoStructureImpl{
@@ -22,11 +22,11 @@ func BuildStructureImpl(
 
 type GoStructureImpl struct {
 	Lookup cg.LookupDepGoRef
-	Def    def.Structure
+	Def    defs.Structure
 	Ref    cg.GoTypeRef
 }
 
-func (x *GoStructureImpl) ProtoDef() def.Def {
+func (x *GoStructureImpl) ProtoDef() defs.Def {
 	return x.Def
 }
 
@@ -35,7 +35,7 @@ func (x *GoStructureImpl) GoTypeRef() cg.GoTypeRef {
 }
 
 func (x *GoStructureImpl) GoDef() cg.Blueprint {
-	fields := def.FlattenFieldList(x.Def.Fields)
+	fields := defs.FlattenFieldList(x.Def.Fields)
 	fieldData := make([]cg.BlueMap, len(fields))
 	for i := range fields {
 		fieldData[i] = cg.BlueMap{

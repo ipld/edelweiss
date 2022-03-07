@@ -1,4 +1,4 @@
-package def
+package defs
 
 // Service is a set of named functions.
 type Service struct {

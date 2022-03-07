@@ -4,16 +4,16 @@ import (
 	"fmt"
 
 	cg "github.com/ipld/edelweiss/codegen"
-	"github.com/ipld/edelweiss/def"
+	"github.com/ipld/edelweiss/defs"
 	"github.com/ipld/edelweiss/plans"
 	"github.com/ipld/edelweiss/values"
 )
 
 // generate returns a resolvable (an object that is resolvable to a go type reference)
-func generate(p *genPlan, s def.Def) (def.Def, error) {
+func generate(p *genPlan, s defs.Def) (defs.Def, error) {
 	switch t := s.(type) {
 
-	case def.Named:
+	case defs.Named:
 		plan, err := provision(p, t.Name, t.Type)
 		if err != nil {
 			return nil, err
@@ -21,43 +21,43 @@ func generate(p *genPlan, s def.Def) (def.Def, error) {
 		if err = p.AddNamed(t.Name, plan); err != nil {
 			return nil, err
 		}
-		return def.Ref{Name: t.Name}, nil
+		return defs.Ref{Name: t.Name}, nil
 
-	case def.Ref:
+	case defs.Ref:
 		return t, nil
 
-	case def.Bool:
+	case defs.Bool:
 		return p.AddBuiltin(t, cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "Bool"}), nil
-	case def.Int:
+	case defs.Int:
 		return p.AddBuiltin(t, cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "Int"}), nil
-	case def.Float:
+	case defs.Float:
 		return p.AddBuiltin(t, cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "Float"}), nil
-	case def.Byte:
+	case defs.Byte:
 		return p.AddBuiltin(t, cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "Byte"}), nil
-	case def.Char:
+	case defs.Char:
 		return p.AddBuiltin(t, cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "Char"}), nil
-	case def.String:
+	case defs.String:
 		return p.AddBuiltin(t, cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "String"}), nil
-	case def.Bytes:
+	case defs.Bytes:
 		return p.AddBuiltin(t, cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "Bytes"}), nil
-	case def.Any:
+	case defs.Any:
 		return p.AddBuiltin(t, cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "Any"}), nil
-	case def.Nothing:
+	case defs.Nothing:
 		return p.AddBuiltin(t, cg.GoTypeRef{PkgPath: values.PkgPath, TypeName: "Nothing"}), nil
 
-	case def.Structure, def.Inductive, def.List, def.Union, def.Tuple, def.Link, def.Map,
-		def.SingletonBool, def.SingletonByte, def.SingletonChar, def.SingletonFloat, def.SingletonInt, def.SingletonString,
-		def.Call, def.Return:
+	case defs.Structure, defs.Inductive, defs.List, defs.Union, defs.Tuple, defs.Link, defs.Map,
+		defs.SingletonBool, defs.SingletonByte, defs.SingletonChar, defs.SingletonFloat, defs.SingletonInt, defs.SingletonString,
+		defs.Call, defs.Return:
 		plan, err := provision(p, "", t)
 		if err != nil {
 			return nil, err
 		}
 		return p.AddAnonymous(plan), nil
 
-	case def.Fn:
+	case defs.Fn:
 		return nil, fmt.Errorf("%#v cannot be generated outside of a service context", t)
 
-	case def.Service:
+	case defs.Service:
 		return nil, fmt.Errorf("anonymous service %#v cannot be generated", t)
 	}
 
@@ -65,58 +65,58 @@ func generate(p *genPlan, s def.Def) (def.Def, error) {
 }
 
 // provision returns a generation plan
-func provision(p *genPlan, named string, s def.Def) (def.Def, error) {
+func provision(p *genPlan, named string, s defs.Def) (defs.Def, error) {
 	switch t := s.(type) {
 
-	case def.Named:
+	case defs.Named:
 		return generate(p, t)
 
-	case def.Ref:
+	case defs.Ref:
 		p.AddRef(t.Name)
 		return t, nil
 
-	case def.Bool, def.Int, def.Float, def.Byte, def.Char, def.String, def.Bytes, def.Any, def.Nothing:
+	case defs.Bool, defs.Int, defs.Float, defs.Byte, defs.Char, defs.String, defs.Bytes, defs.Any, defs.Nothing:
 		return t, nil
 
-	case def.Structure:
-		fields := def.FlattenFieldList(t.Fields)
-		fieldPlans := make([]def.Field, len(fields))
+	case defs.Structure:
+		fields := defs.FlattenFieldList(t.Fields)
+		fieldPlans := make([]defs.Field, len(fields))
 		for i, f := range fields {
 			ftp, err := generate(p, f.Type)
 			if err != nil {
 				return nil, err
 			}
-			fieldPlans[i] = def.Field{Name: f.Name, Type: ftp}
+			fieldPlans[i] = defs.Field{Name: f.Name, Type: ftp}
 		}
-		return def.MakeStructure(fieldPlans...), nil
+		return defs.MakeStructure(fieldPlans...), nil
 
-	case def.Inductive:
-		cases := def.FlattenCaseList(t.Cases)
-		casePlans := make([]def.Case, len(cases))
+	case defs.Inductive:
+		cases := defs.FlattenCaseList(t.Cases)
+		casePlans := make([]defs.Case, len(cases))
 		for i, c := range cases {
 			ctp, err := generate(p, c.Type)
 			if err != nil {
 				return nil, err
 			}
-			casePlans[i] = def.Case{Name: c.Name, Type: ctp}
+			casePlans[i] = defs.Case{Name: c.Name, Type: ctp}
 		}
-		return def.MakeInductive(casePlans...), nil
+		return defs.MakeInductive(casePlans...), nil
 
-	case def.Union:
-		cases := def.FlattenCaseList(t.Cases)
-		casePlans := make([]def.Case, len(cases))
+	case defs.Union:
+		cases := defs.FlattenCaseList(t.Cases)
+		casePlans := make([]defs.Case, len(cases))
 		for i, c := range cases {
 			ctp, err := generate(p, c.Type)
 			if err != nil {
 				return nil, err
 			}
-			casePlans[i] = def.Case{Name: c.Name, Type: ctp}
+			casePlans[i] = defs.Case{Name: c.Name, Type: ctp}
 		}
-		return def.MakeInductive(casePlans...), nil
+		return defs.MakeInductive(casePlans...), nil
 
-	case def.Tuple:
-		slots := def.FlattenSlotList(t.Slots)
-		slotPlans := make([]def.Def, len(slots))
+	case defs.Tuple:
+		slots := defs.FlattenSlotList(t.Slots)
+		slotPlans := make([]defs.Def, len(slots))
 		for i, s := range slots {
 			sp, err := generate(p, s)
 			if err != nil {
@@ -124,23 +124,23 @@ func provision(p *genPlan, named string, s def.Def) (def.Def, error) {
 			}
 			slotPlans[i] = sp
 		}
-		return def.MakeTuple(slotPlans...), nil
+		return defs.MakeTuple(slotPlans...), nil
 
-	case def.List:
+	case defs.List:
 		ep, err := generate(p, t.Element)
 		if err != nil {
 			return nil, err
 		}
-		return def.List{Element: ep}, nil
+		return defs.List{Element: ep}, nil
 
-	case def.Link:
+	case defs.Link:
 		tp, err := generate(p, t.To)
 		if err != nil {
 			return nil, err
 		}
-		return def.Link{To: tp}, nil
+		return defs.Link{To: tp}, nil
 
-	case def.Map:
+	case defs.Map:
 		kp, err := generate(p, t.Key)
 		if err != nil {
 			return nil, err
@@ -149,12 +149,12 @@ func provision(p *genPlan, named string, s def.Def) (def.Def, error) {
 		if err != nil {
 			return nil, err
 		}
-		return def.Map{Key: kp, Value: vp}, nil
+		return defs.Map{Key: kp, Value: vp}, nil
 
-	case def.SingletonBool, def.SingletonByte, def.SingletonChar, def.SingletonFloat, def.SingletonInt, def.SingletonString:
+	case defs.SingletonBool, defs.SingletonByte, defs.SingletonChar, defs.SingletonFloat, defs.SingletonInt, defs.SingletonString:
 		return t, nil
 
-	case def.Call:
+	case defs.Call:
 		id, err := generate(p, t.ID)
 		if err != nil {
 			return nil, err
@@ -167,9 +167,9 @@ func provision(p *genPlan, named string, s def.Def) (def.Def, error) {
 		if err != nil {
 			return nil, err
 		}
-		return def.Call{ID: id, Fn: def.Fn{Arg: arg, Return: r}}, nil
+		return defs.Call{ID: id, Fn: defs.Fn{Arg: arg, Return: r}}, nil
 
-	case def.Return:
+	case defs.Return:
 		id, err := generate(p, t.ID)
 		if err != nil {
 			return nil, err
@@ -182,12 +182,12 @@ func provision(p *genPlan, named string, s def.Def) (def.Def, error) {
 		if err != nil {
 			return nil, err
 		}
-		return def.Return{ID: id, Fn: def.Fn{Arg: arg, Return: r}}, nil
+		return defs.Return{ID: id, Fn: defs.Fn{Arg: arg, Return: r}}, nil
 
-	case def.Fn:
+	case defs.Fn:
 		return nil, fmt.Errorf("%#v cannot be provisioned outside of a service context", t)
 
-	case def.Service:
+	case defs.Service:
 		return provisionService(p, named, t)
 
 	}
@@ -195,12 +195,12 @@ func provision(p *genPlan, named string, s def.Def) (def.Def, error) {
 	return nil, fmt.Errorf("unrecognized definition %#v for provisioning", s)
 }
 
-func provisionService(p *genPlan, named string, s def.Service) (def.Def, error) {
-	methods := def.FlattenMethodList(s.Methods)
+func provisionService(p *genPlan, named string, s defs.Service) (defs.Def, error) {
+	methods := defs.FlattenMethodList(s.Methods)
 	plan := plans.Service{
-		Methods: make([]def.Method, len(methods)),
+		Methods: make([]defs.Method, len(methods)),
 	}
-	callCases, returnCases := make([]def.Case, len(methods)), make([]def.Case, len(methods))
+	callCases, returnCases := make([]defs.Case, len(methods)), make([]defs.Case, len(methods))
 	for i, m := range methods {
 		argRef, err := generate(p, m.Type.Arg)
 		if err != nil {
@@ -210,16 +210,16 @@ func provisionService(p *genPlan, named string, s def.Service) (def.Def, error) 
 		if err != nil {
 			return nil, fmt.Errorf("generating method return (%v)", err)
 		}
-		fn := def.Fn{Arg: argRef, Return: returnRef}
-		plan.Methods[i] = def.Method{Name: m.Name, Type: fn}
-		callCases[i] = def.Case{Name: m.Name, Type: argRef}
-		returnCases[i] = def.Case{Name: m.Name, Type: returnRef}
+		fn := defs.Fn{Arg: argRef, Return: returnRef}
+		plan.Methods[i] = defs.Method{Name: m.Name, Type: fn}
+		callCases[i] = defs.Case{Name: m.Name, Type: argRef}
+		returnCases[i] = defs.Case{Name: m.Name, Type: returnRef}
 	}
-	callEnvelopeRef, err := generate(p, def.MakeInductive(callCases...))
+	callEnvelopeRef, err := generate(p, defs.MakeInductive(callCases...))
 	if err != nil {
 		return nil, fmt.Errorf("generating service call envelope (%v)", err)
 	}
-	returnEnvelopeRef, err := generate(p, def.MakeInductive(returnCases...))
+	returnEnvelopeRef, err := generate(p, defs.MakeInductive(returnCases...))
 	if err != nil {
 		return nil, fmt.Errorf("generating service call envelope (%v)", err)
 	}

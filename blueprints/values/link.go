@@ -3,12 +3,12 @@ package values
 import (
 	"github.com/ipld/edelweiss/blueprints/base"
 	cg "github.com/ipld/edelweiss/codegen"
-	"github.com/ipld/edelweiss/def"
+	"github.com/ipld/edelweiss/defs"
 )
 
 func BuildLinkImpl(
 	lookup cg.LookupDepGoRef,
-	typeDef def.Link,
+	typeDef defs.Link,
 	goTypeRef cg.GoTypeRef,
 ) cg.GoTypeImpl {
 	return &GoLinkImpl{
@@ -20,11 +20,11 @@ func BuildLinkImpl(
 
 type GoLinkImpl struct {
 	Lookup cg.LookupDepGoRef
-	Def    def.Link
+	Def    defs.Link
 	Ref    cg.GoTypeRef
 }
 
-func (x *GoLinkImpl) ProtoDef() def.Def {
+func (x *GoLinkImpl) ProtoDef() defs.Def {
 	return x.Def
 }
 

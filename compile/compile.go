@@ -8,7 +8,7 @@ import (
 	blue_services "github.com/ipld/edelweiss/blueprints/services/dagjson-over-http"
 	blue_values "github.com/ipld/edelweiss/blueprints/values"
 	cg "github.com/ipld/edelweiss/codegen"
-	"github.com/ipld/edelweiss/def"
+	"github.com/ipld/edelweiss/defs"
 	"github.com/ipld/edelweiss/plans"
 )
 
@@ -17,7 +17,7 @@ var logger = log.Logger("edelweiss")
 type GoPkgCodegen struct {
 	GoPkgDirPath string // local directory for the package
 	GoPkgPath    string // global package name
-	Defs         def.Defs
+	Defs         defs.Defs
 }
 
 func (x *GoPkgCodegen) GoPkgName() string {
@@ -54,23 +54,23 @@ func buildGoTypeImpls(typeToGen []typePlan, depToGo cg.DefToGoTypeRef) (cg.GoTyp
 	return goTypeImpls, nil
 }
 
-func buildGoTypeImpl(depToGo cg.DefToGoTypeRef, typeDef def.Def, goTypeRef cg.GoTypeRef) []cg.GoTypeImpl {
+func buildGoTypeImpl(depToGo cg.DefToGoTypeRef, typeDef defs.Def, goTypeRef cg.GoTypeRef) []cg.GoTypeImpl {
 	switch d := typeDef.(type) {
-	case def.SingletonBool, def.SingletonFloat, def.SingletonInt, def.SingletonByte, def.SingletonChar, def.SingletonString:
+	case defs.SingletonBool, defs.SingletonFloat, defs.SingletonInt, defs.SingletonByte, defs.SingletonChar, defs.SingletonString:
 		return []cg.GoTypeImpl{blue_values.BuildSingletonImpl(d, goTypeRef)}
-	case def.Structure:
+	case defs.Structure:
 		return []cg.GoTypeImpl{blue_values.BuildStructureImpl(depToGo, d, goTypeRef)}
-	case def.Inductive:
+	case defs.Inductive:
 		return []cg.GoTypeImpl{blue_values.BuildInductiveImpl(depToGo, d, goTypeRef)}
-	case def.List:
+	case defs.List:
 		return []cg.GoTypeImpl{blue_values.BuildListImpl(depToGo, d, goTypeRef)}
-	case def.Link:
+	case defs.Link:
 		return []cg.GoTypeImpl{blue_values.BuildLinkImpl(depToGo, d, goTypeRef)}
-	case def.Map:
+	case defs.Map:
 		return []cg.GoTypeImpl{blue_values.BuildMapImpl(depToGo, d, goTypeRef)}
-	case def.Call:
+	case defs.Call:
 		return []cg.GoTypeImpl{blue_values.BuildCallImpl(depToGo, d, goTypeRef)}
-	case def.Return:
+	case defs.Return:
 		return []cg.GoTypeImpl{blue_values.BuildReturnImpl(depToGo, d, goTypeRef)}
 	case plans.Service:
 		return []cg.GoTypeImpl{

@@ -1,4 +1,4 @@
-package def
+package defs
 
 // Fn represents the type signature of a function.
 type Fn struct {

@@ -1,4 +1,4 @@
-package def
+package defs
 
 type Map struct {
 	Key   Def

@@ -1,7 +1,7 @@
 package values
 
 import (
-	"github.com/ipld/edelweiss/def"
+	"github.com/ipld/edelweiss/defs"
 	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/datamodel"
 )
@@ -13,8 +13,8 @@ type KeyValue struct {
 	Value Any
 }
 
-func (v Map) Def() def.Def {
-	return def.Map{Key: def.Any{}, Value: def.Any{}}
+func (v Map) Def() defs.Def {
+	return defs.Map{Key: defs.Any{}, Value: defs.Any{}}
 }
 
 func (v Map) Node() datamodel.Node {

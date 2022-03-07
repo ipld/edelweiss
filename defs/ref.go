@@ -1,4 +1,4 @@
-package def
+package defs
 
 // Ref is a reference to a type by name.
 type Ref struct {

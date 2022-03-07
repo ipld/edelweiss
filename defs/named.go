@@ -1,4 +1,4 @@
-package def
+package defs
 
 type Named struct {
 	Name string

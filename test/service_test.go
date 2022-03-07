@@ -3,15 +3,15 @@ package test
 import (
 	"testing"
 
-	"github.com/ipld/edelweiss/def"
+	"github.com/ipld/edelweiss/defs"
 )
 
 func TestService(t *testing.T) {
-	defs := def.Defs{
-		def.Named{Name: "TestService",
-			Type: def.MakeService(
-				def.Method{Name: "Method1", Type: def.Fn{Arg: def.Int{}, Return: def.Bool{}}},
-				def.Method{Name: "Method2", Type: def.Fn{Arg: def.String{}, Return: def.Float{}}},
+	defs := defs.Defs{
+		defs.Named{Name: "TestService",
+			Type: defs.MakeService(
+				defs.Method{Name: "Method1", Type: defs.Fn{Arg: defs.Int{}, Return: defs.Bool{}}},
+				defs.Method{Name: "Method2", Type: defs.Fn{Arg: defs.String{}, Return: defs.Float{}}},
 			),
 		},
 	}

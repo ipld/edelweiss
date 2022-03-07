@@ -3,21 +3,21 @@ package test
 import (
 	"testing"
 
-	"github.com/ipld/edelweiss/def"
+	"github.com/ipld/edelweiss/defs"
 )
 
 func TestGenTest(t *testing.T) {
-	RunSingleGenTest(t, def.Defs{def.Named{Name: "T", Type: def.SingletonInt{Int: 23}}}, "")
+	RunSingleGenTest(t, defs.Defs{defs.Named{Name: "T", Type: defs.SingletonInt{Int: 23}}}, "")
 }
 
 func TestSingletonAtRunTime(t *testing.T) {
-	defs := []def.Defs{
-		{def.Named{Name: "UserSingleton", Type: def.SingletonBool{Bool: true}}},
-		{def.Named{Name: "UserSingleton", Type: def.SingletonInt{Int: 23}}},
-		{def.Named{Name: "UserSingleton", Type: def.SingletonFloat{Float: 2.3}}},
-		{def.Named{Name: "UserSingleton", Type: def.SingletonByte{Byte: 2}}},
-		{def.Named{Name: "UserSingleton", Type: def.SingletonChar{Char: 'a'}}},
-		{def.Named{Name: "UserSingleton", Type: def.SingletonString{String: "abc"}}},
+	defs := []defs.Defs{
+		{defs.Named{Name: "UserSingleton", Type: defs.SingletonBool{Bool: true}}},
+		{defs.Named{Name: "UserSingleton", Type: defs.SingletonInt{Int: 23}}},
+		{defs.Named{Name: "UserSingleton", Type: defs.SingletonFloat{Float: 2.3}}},
+		{defs.Named{Name: "UserSingleton", Type: defs.SingletonByte{Byte: 2}}},
+		{defs.Named{Name: "UserSingleton", Type: defs.SingletonChar{Char: 'a'}}},
+		{defs.Named{Name: "UserSingleton", Type: defs.SingletonString{String: "abc"}}},
 	}
 	testSrc := `
 	var x1 UserSingleton
@@ -43,15 +43,15 @@ func TestSingletonAtRunTime(t *testing.T) {
 }
 
 func TestStructureAtRunTime(t *testing.T) {
-	defs := []def.Defs{
-		{def.Named{
+	defs := []defs.Defs{
+		{defs.Named{
 			Name: "UserStructure",
-			Type: def.MakeStructure(
-				def.Field{Name: "A", Type: def.Int{}},
-				def.Field{Name: "B", Type: def.String{}},
-				def.Field{Name: "C", Type: def.Float{}},
-				def.Field{Name: "D", Type: def.Byte{}},
-				def.Field{Name: "E", Type: def.Char{}},
+			Type: defs.MakeStructure(
+				defs.Field{Name: "A", Type: defs.Int{}},
+				defs.Field{Name: "B", Type: defs.String{}},
+				defs.Field{Name: "C", Type: defs.Float{}},
+				defs.Field{Name: "D", Type: defs.Byte{}},
+				defs.Field{Name: "E", Type: defs.Char{}},
 			),
 		}},
 	}
@@ -84,15 +84,15 @@ func TestStructureAtRunTime(t *testing.T) {
 }
 
 func TestInductiveAtRunTime(t *testing.T) {
-	defs := []def.Defs{
-		{def.Named{
+	defs := []defs.Defs{
+		{defs.Named{
 			Name: "UserInductive",
-			Type: def.MakeInductive(
-				def.Case{Name: "A", Type: def.Int{}},
-				def.Case{Name: "B", Type: def.String{}},
-				def.Case{Name: "C", Type: def.Float{}},
-				def.Case{Name: "D", Type: def.Byte{}},
-				def.Case{Name: "E", Type: def.Char{}},
+			Type: defs.MakeInductive(
+				defs.Case{Name: "A", Type: defs.Int{}},
+				defs.Case{Name: "B", Type: defs.String{}},
+				defs.Case{Name: "C", Type: defs.Float{}},
+				defs.Case{Name: "D", Type: defs.Byte{}},
+				defs.Case{Name: "E", Type: defs.Char{}},
 			),
 		}},
 	}
@@ -122,10 +122,10 @@ func TestInductiveAtRunTime(t *testing.T) {
 }
 
 func TestMapAtRunTime(t *testing.T) {
-	defs := []def.Defs{
-		{def.Named{
+	defs := []defs.Defs{
+		{defs.Named{
 			Name: "UserMap",
-			Type: def.Map{Key: def.String{}, Value: def.Int{}},
+			Type: defs.Map{Key: defs.String{}, Value: defs.Int{}},
 		}},
 	}
 	testSrc := `
@@ -155,10 +155,10 @@ func TestMapAtRunTime(t *testing.T) {
 }
 
 func TestListAtRunTime(t *testing.T) {
-	defs := []def.Defs{
-		{def.Named{
+	defs := []defs.Defs{
+		{defs.Named{
 			Name: "UserList",
-			Type: def.List{Element: def.String{}},
+			Type: defs.List{Element: defs.String{}},
 		}},
 	}
 	testSrc := `
@@ -188,12 +188,12 @@ func TestListAtRunTime(t *testing.T) {
 }
 
 func TestCallAtRunTime(t *testing.T) {
-	defs := []def.Defs{
-		{def.Named{
+	defs := []defs.Defs{
+		{defs.Named{
 			Name: "UserCall",
-			Type: def.Call{
-				Fn: def.Fn{Arg: def.Int{}, Return: def.String{}},
-				ID: def.String{},
+			Type: defs.Call{
+				Fn: defs.Fn{Arg: defs.Int{}, Return: defs.String{}},
+				ID: defs.String{},
 			},
 		}},
 	}
@@ -224,12 +224,12 @@ func TestCallAtRunTime(t *testing.T) {
 }
 
 func TestReturnAtRunTime(t *testing.T) {
-	defs := []def.Defs{
-		{def.Named{
+	defs := []defs.Defs{
+		{defs.Named{
 			Name: "UserReturn",
-			Type: def.Return{
-				Fn: def.Fn{Arg: def.Int{}, Return: def.String{}},
-				ID: def.String{},
+			Type: defs.Return{
+				Fn: defs.Fn{Arg: defs.Int{}, Return: defs.String{}},
+				ID: defs.String{},
 			},
 		}},
 	}
@@ -260,10 +260,10 @@ func TestReturnAtRunTime(t *testing.T) {
 }
 
 func TestLinkAtRunTime(t *testing.T) {
-	defs := []def.Defs{
-		{def.Named{
+	defs := []defs.Defs{
+		{defs.Named{
 			Name: "UserLink",
-			Type: def.Link{To: def.String{}},
+			Type: defs.Link{To: defs.String{}},
 		}},
 	}
 	testSrc := `
@@ -294,16 +294,16 @@ func TestLinkAtRunTime(t *testing.T) {
 }
 
 func TestStructureInductiveAtRunTime(t *testing.T) {
-	defs := []def.Defs{
-		{def.Named{
+	defs := []defs.Defs{
+		{defs.Named{
 			Name: "UserStructure",
-			Type: def.MakeStructure(
-				def.Field{Name: "A", Type: def.Int{}},
-				def.Field{Name: "B", Type: def.Named{
+			Type: defs.MakeStructure(
+				defs.Field{Name: "A", Type: defs.Int{}},
+				defs.Field{Name: "B", Type: defs.Named{
 					Name: "UserInductive",
-					Type: def.MakeInductive(
-						def.Case{Name: "X", Type: def.String{}},
-						def.Case{Name: "Y", Type: def.Int{}},
+					Type: defs.MakeInductive(
+						defs.Case{Name: "X", Type: defs.String{}},
+						defs.Case{Name: "Y", Type: defs.Int{}},
 					)},
 				},
 			),
@@ -338,12 +338,12 @@ func TestStructureInductiveAtRunTime(t *testing.T) {
 }
 
 func TestListStructureAtRunTime(t *testing.T) {
-	defs := []def.Defs{
-		{def.Named{
+	defs := []defs.Defs{
+		{defs.Named{
 			Name: "UserList",
-			Type: def.List{
-				Element: def.MakeStructure(
-					def.Field{Name: "X", Type: def.String{}},
+			Type: defs.List{
+				Element: defs.MakeStructure(
+					defs.Field{Name: "X", Type: defs.String{}},
 				),
 			},
 		}},
@@ -372,11 +372,11 @@ func TestListStructureAtRunTime(t *testing.T) {
 }
 
 func TestListSingletonAtRunTime(t *testing.T) {
-	defs := []def.Defs{
-		{def.Named{
+	defs := []defs.Defs{
+		{defs.Named{
 			Name: "UserList",
-			Type: def.List{
-				Element: def.SingletonBool{Bool: true},
+			Type: defs.List{
+				Element: defs.SingletonBool{Bool: true},
 			},
 		}},
 	}

@@ -1,4 +1,4 @@
-package def
+package defs
 
 type Structure struct {
 	Fields FieldListOrNone

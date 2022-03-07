@@ -3,7 +3,7 @@ package values
 import (
 	"fmt"
 
-	"github.com/ipld/edelweiss/def"
+	"github.com/ipld/edelweiss/defs"
 	"github.com/ipld/go-ipld-prime/datamodel"
 )
 
@@ -11,7 +11,7 @@ import (
 const PkgPath = "github.com/ipld/edelweiss/values"
 
 type Value interface {
-	Def() def.Def
+	Def() defs.Def
 	Node() datamodel.Node
 }
 

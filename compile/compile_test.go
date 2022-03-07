@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/ipld/edelweiss/def"
+	"github.com/ipld/edelweiss/defs"
 )
 
 func TestSingletonAtCompileTime(t *testing.T) {
-	defs := def.Defs{
-		def.Named{Name: "T1", Type: def.SingletonBool{Bool: true}},
-		def.Named{Name: "T2", Type: def.SingletonInt{Int: 23}},
+	defs := defs.Defs{
+		defs.Named{Name: "T1", Type: defs.SingletonBool{Bool: true}},
+		defs.Named{Name: "T2", Type: defs.SingletonInt{Int: 23}},
 	}
 	x := &GoPkgCodegen{
 		GoPkgDirPath: "",
@@ -29,12 +29,12 @@ func TestSingletonAtCompileTime(t *testing.T) {
 }
 
 func TestStructureAtCompileTime(t *testing.T) {
-	defs := def.Defs{
-		def.Named{
+	defs := defs.Defs{
+		defs.Named{
 			Name: "S1",
-			Type: def.MakeStructure(
-				def.Field{Name: "Int", Type: def.Int{}},
-				def.Field{Name: "Bool", Type: def.Bool{}},
+			Type: defs.MakeStructure(
+				defs.Field{Name: "Int", Type: defs.Int{}},
+				defs.Field{Name: "Bool", Type: defs.Bool{}},
 			),
 		},
 	}
@@ -55,12 +55,12 @@ func TestStructureAtCompileTime(t *testing.T) {
 }
 
 func TestInductiveAtCompileTime(t *testing.T) {
-	defs := def.Defs{
-		def.Named{
+	defs := defs.Defs{
+		defs.Named{
 			Name: "S1",
-			Type: def.MakeInductive(
-				def.Case{Name: "Int", Type: def.Int{}},
-				def.Case{Name: "Bool", Type: def.Bool{}},
+			Type: defs.MakeInductive(
+				defs.Case{Name: "Int", Type: defs.Int{}},
+				defs.Case{Name: "Bool", Type: defs.Bool{}},
 			),
 		},
 	}
@@ -81,10 +81,10 @@ func TestInductiveAtCompileTime(t *testing.T) {
 }
 
 func TestListAtCompileTime(t *testing.T) {
-	defs := def.Defs{
-		def.Named{
+	defs := defs.Defs{
+		defs.Named{
 			Name: "S1",
-			Type: def.List{Element: def.Int{}},
+			Type: defs.List{Element: defs.Int{}},
 		},
 	}
 	x := &GoPkgCodegen{
@@ -104,10 +104,10 @@ func TestListAtCompileTime(t *testing.T) {
 }
 
 func TestLinkAtCompileTime(t *testing.T) {
-	defs := def.Defs{
-		def.Named{
+	defs := defs.Defs{
+		defs.Named{
 			Name: "S1",
-			Type: def.Link{To: def.Int{}},
+			Type: defs.Link{To: defs.Int{}},
 		},
 	}
 	x := &GoPkgCodegen{
@@ -127,10 +127,10 @@ func TestLinkAtCompileTime(t *testing.T) {
 }
 
 func TestMapAtCompileTime(t *testing.T) {
-	defs := def.Defs{
-		def.Named{
+	defs := defs.Defs{
+		defs.Named{
 			Name: "S1",
-			Type: def.Map{Key: def.Int{}, Value: def.String{}},
+			Type: defs.Map{Key: defs.Int{}, Value: defs.String{}},
 		},
 	}
 	x := &GoPkgCodegen{
@@ -150,10 +150,10 @@ func TestMapAtCompileTime(t *testing.T) {
 }
 
 func TestCallAtCompileTime(t *testing.T) {
-	defs := def.Defs{
-		def.Named{
+	defs := defs.Defs{
+		defs.Named{
 			Name: "S1",
-			Type: def.Call{ID: def.Int{}, Fn: def.Fn{Arg: def.Int{}, Return: def.String{}}},
+			Type: defs.Call{ID: defs.Int{}, Fn: defs.Fn{Arg: defs.Int{}, Return: defs.String{}}},
 		},
 	}
 	x := &GoPkgCodegen{
@@ -173,10 +173,10 @@ func TestCallAtCompileTime(t *testing.T) {
 }
 
 func TestReturnAtCompileTime(t *testing.T) {
-	defs := def.Defs{
-		def.Named{
+	defs := defs.Defs{
+		defs.Named{
 			Name: "S1",
-			Type: def.Return{ID: def.Int{}, Fn: def.Fn{Arg: def.Int{}, Return: def.String{}}},
+			Type: defs.Return{ID: defs.Int{}, Fn: defs.Fn{Arg: defs.Int{}, Return: defs.String{}}},
 		},
 	}
 	x := &GoPkgCodegen{
@@ -196,11 +196,11 @@ func TestReturnAtCompileTime(t *testing.T) {
 }
 
 func TestServiceAtCompileTime(t *testing.T) {
-	defs := def.Defs{
-		def.Named{Name: "TestService",
-			Type: def.MakeService(
-				def.Method{Name: "Method1", Type: def.Fn{Arg: def.Int{}, Return: def.Bool{}}},
-				def.Method{Name: "Method2", Type: def.Fn{Arg: def.String{}, Return: def.Float{}}},
+	defs := defs.Defs{
+		defs.Named{Name: "TestService",
+			Type: defs.MakeService(
+				defs.Method{Name: "Method1", Type: defs.Fn{Arg: defs.Int{}, Return: defs.Bool{}}},
+				defs.Method{Name: "Method2", Type: defs.Fn{Arg: defs.String{}, Return: defs.Float{}}},
 			),
 		},
 	}

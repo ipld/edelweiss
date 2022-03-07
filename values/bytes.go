@@ -1,7 +1,7 @@
 package values
 
 import (
-	"github.com/ipld/edelweiss/def"
+	"github.com/ipld/edelweiss/defs"
 	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/datamodel"
 )
@@ -13,8 +13,8 @@ func NewBytes(v []byte) *Bytes {
 	return &x
 }
 
-func (Bytes) Def() def.Def {
-	return def.Bytes{}
+func (Bytes) Def() defs.Def {
+	return defs.Bytes{}
 }
 
 func (v *Bytes) Parse(n datamodel.Node) error {

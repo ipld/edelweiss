@@ -1,7 +1,7 @@
 package values
 
 import (
-	"github.com/ipld/edelweiss/def"
+	"github.com/ipld/edelweiss/defs"
 	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/datamodel"
 )
@@ -13,8 +13,8 @@ func NewFloat(v float64) *Float {
 	return &x
 }
 
-func (Float) Def() def.Def {
-	return def.Int{}
+func (Float) Def() defs.Def {
+	return defs.Int{}
 }
 
 func (v *Float) Parse(n datamodel.Node) error {

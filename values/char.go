@@ -1,7 +1,7 @@
 package values
 
 import (
-	"github.com/ipld/edelweiss/def"
+	"github.com/ipld/edelweiss/defs"
 	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/datamodel"
 )
@@ -13,8 +13,8 @@ func NewChar(v rune) *Char {
 	return &x
 }
 
-func (Char) Def() def.Def {
-	return def.Char{}
+func (Char) Def() defs.Def {
+	return defs.Char{}
 }
 
 func (v *Char) Parse(n datamodel.Node) error {

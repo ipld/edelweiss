@@ -3,12 +3,12 @@ package values
 import (
 	"github.com/ipld/edelweiss/blueprints/base"
 	cg "github.com/ipld/edelweiss/codegen"
-	"github.com/ipld/edelweiss/def"
+	"github.com/ipld/edelweiss/defs"
 )
 
 func BuildInductiveImpl(
 	lookup cg.LookupDepGoRef,
-	typeDef def.Inductive,
+	typeDef defs.Inductive,
 	goTypeRef cg.GoTypeRef,
 ) cg.GoTypeImpl {
 	return &GoInductiveImpl{
@@ -20,11 +20,11 @@ func BuildInductiveImpl(
 
 type GoInductiveImpl struct {
 	Lookup cg.LookupDepGoRef
-	Def    def.Inductive
+	Def    defs.Inductive
 	Ref    cg.GoTypeRef
 }
 
-func (x *GoInductiveImpl) ProtoDef() def.Def {
+func (x *GoInductiveImpl) ProtoDef() defs.Def {
 	return x.Def
 }
 
@@ -33,7 +33,7 @@ func (x *GoInductiveImpl) GoTypeRef() cg.GoTypeRef {
 }
 
 func (x *GoInductiveImpl) GoDef() cg.Blueprint {
-	cases := def.FlattenCaseList(x.Def.Cases)
+	cases := defs.FlattenCaseList(x.Def.Cases)
 	caseData := make([]cg.BlueMap, len(cases))
 	for i := range cases {
 		caseData[i] = cg.BlueMap{

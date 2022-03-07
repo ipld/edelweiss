@@ -1,15 +1,15 @@
 package values
 
 import (
-	"github.com/ipld/edelweiss/def"
+	"github.com/ipld/edelweiss/defs"
 	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/datamodel"
 )
 
 type List []Any
 
-func (List) Def() def.Def {
-	return def.List{Element: def.Any{}}
+func (List) Def() defs.Def {
+	return defs.List{Element: defs.Any{}}
 }
 
 func listEqual(x, y List) bool {

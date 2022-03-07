@@ -1,4 +1,4 @@
-package def
+package defs
 
 type List struct {
 	Element Def

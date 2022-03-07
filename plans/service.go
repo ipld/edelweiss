@@ -1,13 +1,13 @@
 package plans
 
 import (
-	"github.com/ipld/edelweiss/def"
+	"github.com/ipld/edelweiss/defs"
 )
 
 type Service struct {
-	Methods        []def.Method
-	CallEnvelope   def.Def // ref to inductive
-	ReturnEnvelope def.Def // ref to inductive
+	Methods        []defs.Method
+	CallEnvelope   defs.Def // ref to inductive
+	ReturnEnvelope defs.Def // ref to inductive
 }
 
 func (Service) Kind() string {

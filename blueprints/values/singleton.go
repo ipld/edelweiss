@@ -3,19 +3,19 @@ package values
 import (
 	"github.com/ipld/edelweiss/blueprints/base"
 	cg "github.com/ipld/edelweiss/codegen"
-	"github.com/ipld/edelweiss/def"
+	"github.com/ipld/edelweiss/defs"
 )
 
-func BuildSingletonImpl(typeDef def.Def, goTypeRef cg.GoTypeRef) cg.GoTypeImpl {
+func BuildSingletonImpl(typeDef defs.Def, goTypeRef cg.GoTypeRef) cg.GoTypeImpl {
 	return &GoSingletonImpl{Def: typeDef, Ref: goTypeRef}
 }
 
 type GoSingletonImpl struct {
-	Def def.Def
+	Def defs.Def
 	Ref cg.GoTypeRef
 }
 
-func (x *GoSingletonImpl) ProtoDef() def.Def {
+func (x *GoSingletonImpl) ProtoDef() defs.Def {
 	return x.Def
 }
 
@@ -37,7 +37,7 @@ func (x *GoSingletonImpl) GoDef() cg.Blueprint {
 	}
 	var specific cg.BlueMap
 	switch t := x.Def.(type) {
-	case def.SingletonBool:
+	case defs.SingletonBool:
 		specific = cg.BlueMap{
 			"KindValue":             base.IPLDKindBool,
 			"AsMethod":              cg.V("AsBool"),
@@ -51,7 +51,7 @@ func (x *GoSingletonImpl) GoDef() cg.Blueprint {
 			"AsStringReturnsResult": cg.StringLiteral(""),
 			"AsStringReturnsError":  base.EdelweissErrNA,
 		}
-	case def.SingletonInt:
+	case defs.SingletonInt:
 		specific = cg.BlueMap{
 			"KindValue":             base.IPLDKindInt,
 			"AsMethod":              cg.V("AsInt"),
@@ -65,7 +65,7 @@ func (x *GoSingletonImpl) GoDef() cg.Blueprint {
 			"AsStringReturnsResult": cg.StringLiteral(""),
 			"AsStringReturnsError":  base.EdelweissErrNA,
 		}
-	case def.SingletonFloat:
+	case defs.SingletonFloat:
 		specific = cg.BlueMap{
 			"KindValue":             base.IPLDKindFloat,
 			"AsMethod":              cg.V("AsFloat"),
@@ -79,7 +79,7 @@ func (x *GoSingletonImpl) GoDef() cg.Blueprint {
 			"AsStringReturnsResult": cg.StringLiteral(""),
 			"AsStringReturnsError":  base.EdelweissErrNA,
 		}
-	case def.SingletonString:
+	case defs.SingletonString:
 		specific = cg.BlueMap{
 			"KindValue":             base.IPLDKindString,
 			"AsMethod":              cg.V("AsString"),
@@ -93,7 +93,7 @@ func (x *GoSingletonImpl) GoDef() cg.Blueprint {
 			"AsStringReturnsResult": cg.StringLiteral(t.String),
 			"AsStringReturnsError":  base.Nil,
 		}
-	case def.SingletonChar:
+	case defs.SingletonChar:
 		specific = cg.BlueMap{
 			"KindValue":             base.IPLDKindInt,
 			"AsMethod":              cg.V("AsInt"),
@@ -107,7 +107,7 @@ func (x *GoSingletonImpl) GoDef() cg.Blueprint {
 			"AsStringReturnsResult": cg.StringLiteral(""),
 			"AsStringReturnsError":  base.EdelweissErrNA,
 		}
-	case def.SingletonByte:
+	case defs.SingletonByte:
 		specific = cg.BlueMap{
 			"KindValue":             base.IPLDKindInt,
 			"AsMethod":              cg.V("AsInt"),

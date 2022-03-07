@@ -1,7 +1,7 @@
 package values
 
 import (
-	"github.com/ipld/edelweiss/def"
+	"github.com/ipld/edelweiss/defs"
 	"github.com/ipld/go-ipld-prime/datamodel"
 )
 
@@ -9,8 +9,8 @@ type Any struct {
 	Value
 }
 
-func (Any) Def() def.Def {
-	return def.Any{}
+func (Any) Def() defs.Def {
+	return defs.Any{}
 }
 
 func (v *Any) Parse(n datamodel.Node) error {
