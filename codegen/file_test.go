@@ -2,8 +2,6 @@ package codegen
 
 import (
 	"testing"
-
-	"github.com/ipld/edelweiss/defs"
 )
 
 func TestFile(t *testing.T) {
@@ -29,10 +27,6 @@ var _ = pd1.Errorf`
 }
 
 type testTypeImpl struct{}
-
-func (testTypeImpl) ProtoDef() defs.Def {
-	return nil
-}
 
 func (testTypeImpl) GoTypeRef() GoTypeRef {
 	return GoTypeRef{}

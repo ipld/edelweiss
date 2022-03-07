@@ -5,6 +5,5 @@ HOUSE CLEANING
 - [ ] unified ci
 
 ROBUST COMPILER ARCHITECTURE
-- [ ] create a distinct plan representation layer
 - [ ] decouple preparation of blue values from source generation
 	- blue values will be needed e.g. for test automation when multiple go packages are code generated

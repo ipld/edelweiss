@@ -2,8 +2,6 @@ package codegen
 
 import (
 	"io"
-
-	"github.com/ipld/edelweiss/defs"
 )
 
 type GoRef struct {
@@ -41,7 +39,6 @@ func (g GoTypeRef) Prepend(prefix string) GoTypeRef {
 }
 
 type GoTypeImpl interface {
-	ProtoDef() defs.Def
 	GoTypeRef() GoTypeRef
 	GoDef() Blueprint
 }

@@ -14,8 +14,7 @@ type Builtin interface {
 }
 
 type BuiltinOrRefPlan interface {
-	Builtin
-	IAmRef()
+	Plan
 }
 
 type Ref struct {

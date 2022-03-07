@@ -5,18 +5,17 @@ import (
 
 	"github.com/ipld/edelweiss/blueprints/base"
 	cg "github.com/ipld/edelweiss/codegen"
-	"github.com/ipld/edelweiss/defs"
 	"github.com/ipld/edelweiss/plans"
 )
 
 func BuildClientImpl(
 	lookup cg.LookupDepGoRef,
-	typeDef plans.Service,
+	plan plans.Service,
 	goTypeRef cg.GoTypeRef,
 ) cg.GoTypeImpl {
 	return &GoClientImpl{
 		Lookup: lookup,
-		Def:    typeDef,
+		Def:    plan,
 		Ref:    goTypeRef,
 	}
 }
@@ -25,10 +24,6 @@ type GoClientImpl struct {
 	Lookup cg.LookupDepGoRef
 	Def    plans.Service
 	Ref    cg.GoTypeRef
-}
-
-func (x GoClientImpl) ProtoDef() defs.Def {
-	return x.Def
 }
 
 func (x GoClientImpl) GoTypeRef() cg.GoTypeRef {

@@ -5,29 +5,25 @@ import (
 
 	"github.com/ipld/edelweiss/blueprints/base"
 	cg "github.com/ipld/edelweiss/codegen"
-	"github.com/ipld/edelweiss/defs"
+	"github.com/ipld/edelweiss/plans"
 )
 
 func BuildStructureImpl(
 	lookup cg.LookupDepGoRef,
-	typeDef defs.Structure,
+	plan plans.Structure,
 	goTypeRef cg.GoTypeRef,
 ) cg.GoTypeImpl {
 	return &GoStructureImpl{
 		Lookup: lookup,
-		Def:    typeDef,
+		Def:    plan,
 		Ref:    goTypeRef,
 	}
 }
 
 type GoStructureImpl struct {
 	Lookup cg.LookupDepGoRef
-	Def    defs.Structure
+	Def    plans.Structure
 	Ref    cg.GoTypeRef
-}
-
-func (x *GoStructureImpl) ProtoDef() defs.Def {
-	return x.Def
 }
 
 func (x *GoStructureImpl) GoTypeRef() cg.GoTypeRef {

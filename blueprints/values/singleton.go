@@ -3,20 +3,16 @@ package values
 import (
 	"github.com/ipld/edelweiss/blueprints/base"
 	cg "github.com/ipld/edelweiss/codegen"
-	"github.com/ipld/edelweiss/defs"
+	"github.com/ipld/edelweiss/plans"
 )
 
-func BuildSingletonImpl(typeDef defs.Def, goTypeRef cg.GoTypeRef) cg.GoTypeImpl {
-	return &GoSingletonImpl{Def: typeDef, Ref: goTypeRef}
+func BuildSingletonImpl(plan plans.Plan, goTypeRef cg.GoTypeRef) cg.GoTypeImpl {
+	return &GoSingletonImpl{Def: plan, Ref: goTypeRef}
 }
 
 type GoSingletonImpl struct {
-	Def defs.Def
+	Def plans.Plan
 	Ref cg.GoTypeRef
-}
-
-func (x *GoSingletonImpl) ProtoDef() defs.Def {
-	return x.Def
 }
 
 func (x *GoSingletonImpl) GoTypeRef() cg.GoTypeRef {
@@ -37,7 +33,7 @@ func (x *GoSingletonImpl) GoDef() cg.Blueprint {
 	}
 	var specific cg.BlueMap
 	switch t := x.Def.(type) {
-	case defs.SingletonBool:
+	case plans.SingletonBool:
 		specific = cg.BlueMap{
 			"KindValue":             base.IPLDKindBool,
 			"AsMethod":              cg.V("AsBool"),
@@ -51,7 +47,7 @@ func (x *GoSingletonImpl) GoDef() cg.Blueprint {
 			"AsStringReturnsResult": cg.StringLiteral(""),
 			"AsStringReturnsError":  base.EdelweissErrNA,
 		}
-	case defs.SingletonInt:
+	case plans.SingletonInt:
 		specific = cg.BlueMap{
 			"KindValue":             base.IPLDKindInt,
 			"AsMethod":              cg.V("AsInt"),
@@ -65,7 +61,7 @@ func (x *GoSingletonImpl) GoDef() cg.Blueprint {
 			"AsStringReturnsResult": cg.StringLiteral(""),
 			"AsStringReturnsError":  base.EdelweissErrNA,
 		}
-	case defs.SingletonFloat:
+	case plans.SingletonFloat:
 		specific = cg.BlueMap{
 			"KindValue":             base.IPLDKindFloat,
 			"AsMethod":              cg.V("AsFloat"),
@@ -79,7 +75,7 @@ func (x *GoSingletonImpl) GoDef() cg.Blueprint {
 			"AsStringReturnsResult": cg.StringLiteral(""),
 			"AsStringReturnsError":  base.EdelweissErrNA,
 		}
-	case defs.SingletonString:
+	case plans.SingletonString:
 		specific = cg.BlueMap{
 			"KindValue":             base.IPLDKindString,
 			"AsMethod":              cg.V("AsString"),
@@ -93,7 +89,7 @@ func (x *GoSingletonImpl) GoDef() cg.Blueprint {
 			"AsStringReturnsResult": cg.StringLiteral(t.String),
 			"AsStringReturnsError":  base.Nil,
 		}
-	case defs.SingletonChar:
+	case plans.SingletonChar:
 		specific = cg.BlueMap{
 			"KindValue":             base.IPLDKindInt,
 			"AsMethod":              cg.V("AsInt"),
@@ -107,7 +103,7 @@ func (x *GoSingletonImpl) GoDef() cg.Blueprint {
 			"AsStringReturnsResult": cg.StringLiteral(""),
 			"AsStringReturnsError":  base.EdelweissErrNA,
 		}
-	case defs.SingletonByte:
+	case plans.SingletonByte:
 		specific = cg.BlueMap{
 			"KindValue":             base.IPLDKindInt,
 			"AsMethod":              cg.V("AsInt"),

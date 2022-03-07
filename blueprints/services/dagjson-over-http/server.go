@@ -5,7 +5,6 @@ import (
 
 	"github.com/ipld/edelweiss/blueprints/base"
 	cg "github.com/ipld/edelweiss/codegen"
-	"github.com/ipld/edelweiss/defs"
 	"github.com/ipld/edelweiss/plans"
 )
 
@@ -25,10 +24,6 @@ type GoServerImpl struct {
 	Lookup cg.LookupDepGoRef
 	Def    plans.Service
 	Ref    cg.GoTypeRef
-}
-
-func (x GoServerImpl) ProtoDef() defs.Def {
-	return x.Def
 }
 
 func (x GoServerImpl) GoTypeRef() cg.GoTypeRef {

@@ -34,7 +34,7 @@ func (x *GoPkgCodegen) Compile() (*cg.GoFile, error) {
 	if err := p.VerifyCompleteness(); err != nil {
 		return nil, err
 	}
-	goTypeImpls, err := buildGoTypeImpls(p.Plan(), p.DefToGo())
+	goTypeImpls, err := buildGoTypeImpls(p.Plan(), p.PlanToGo())
 	if err != nil {
 		return nil, err
 	}
@@ -46,31 +46,31 @@ func (x *GoPkgCodegen) Compile() (*cg.GoFile, error) {
 	return file, nil
 }
 
-func buildGoTypeImpls(typeToGen []typePlan, depToGo cg.DefToGoTypeRef) (cg.GoTypeImpls, error) {
+func buildGoTypeImpls(typeToGen []typePlan, depToGo cg.PlanToGoTypeRef) (cg.GoTypeImpls, error) {
 	goTypeImpls := cg.GoTypeImpls{}
 	for _, ttg := range typeToGen {
-		goTypeImpls = append(goTypeImpls, buildGoTypeImpl(depToGo, ttg.Def, ttg.GoRef)...)
+		goTypeImpls = append(goTypeImpls, buildGoTypeImpl(depToGo, ttg.Plan, ttg.GoRef)...)
 	}
 	return goTypeImpls, nil
 }
 
-func buildGoTypeImpl(depToGo cg.DefToGoTypeRef, typeDef defs.Def, goTypeRef cg.GoTypeRef) []cg.GoTypeImpl {
-	switch d := typeDef.(type) {
-	case defs.SingletonBool, defs.SingletonFloat, defs.SingletonInt, defs.SingletonByte, defs.SingletonChar, defs.SingletonString:
+func buildGoTypeImpl(depToGo cg.PlanToGoTypeRef, plan plans.Plan, goTypeRef cg.GoTypeRef) []cg.GoTypeImpl {
+	switch d := plan.(type) {
+	case plans.SingletonBool, plans.SingletonFloat, plans.SingletonInt, plans.SingletonByte, plans.SingletonChar, plans.SingletonString:
 		return []cg.GoTypeImpl{blue_values.BuildSingletonImpl(d, goTypeRef)}
-	case defs.Structure:
+	case plans.Structure:
 		return []cg.GoTypeImpl{blue_values.BuildStructureImpl(depToGo, d, goTypeRef)}
-	case defs.Inductive:
+	case plans.Inductive:
 		return []cg.GoTypeImpl{blue_values.BuildInductiveImpl(depToGo, d, goTypeRef)}
-	case defs.List:
+	case plans.List:
 		return []cg.GoTypeImpl{blue_values.BuildListImpl(depToGo, d, goTypeRef)}
-	case defs.Link:
+	case plans.Link:
 		return []cg.GoTypeImpl{blue_values.BuildLinkImpl(depToGo, d, goTypeRef)}
-	case defs.Map:
+	case plans.Map:
 		return []cg.GoTypeImpl{blue_values.BuildMapImpl(depToGo, d, goTypeRef)}
-	case defs.Call:
+	case plans.Call:
 		return []cg.GoTypeImpl{blue_values.BuildCallImpl(depToGo, d, goTypeRef)}
-	case defs.Return:
+	case plans.Return:
 		return []cg.GoTypeImpl{blue_values.BuildReturnImpl(depToGo, d, goTypeRef)}
 	case plans.Service:
 		return []cg.GoTypeImpl{

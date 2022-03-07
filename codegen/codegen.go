@@ -3,18 +3,18 @@ package codegen
 import (
 	"fmt"
 
-	"github.com/ipld/edelweiss/defs"
+	"github.com/ipld/edelweiss/plans"
 )
 
 // compilation structures
 
 type LookupDepGoRef interface {
-	LookupDepGoRef(defs.Def) GoTypeRef
+	LookupDepGoRef(plans.Plan) GoTypeRef
 }
 
-type DefToGoTypeRef map[defs.Def]GoTypeRef
+type PlanToGoTypeRef map[plans.BuiltinOrRefPlan]GoTypeRef
 
-func (m DefToGoTypeRef) LookupDepGoRef(t defs.Def) GoTypeRef {
+func (m PlanToGoTypeRef) LookupDepGoRef(t plans.Plan) GoTypeRef {
 	r, ok := m[t]
 	if !ok {
 		panic(fmt.Sprintf("missing dependency %#v", t))

@@ -1,7 +1,6 @@
 package compile
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/ipld/edelweiss/defs"
@@ -21,11 +20,10 @@ func TestSingletonAtCompileTime(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	fileBuf, err := goFile.Generate()
+	_, err = goFile.Generate()
 	if err != nil {
 		t.Fatal(err)
 	}
-	fmt.Println(string(fileBuf))
 }
 
 func TestStructureAtCompileTime(t *testing.T) {
@@ -49,11 +47,10 @@ func TestStructureAtCompileTime(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	fileBuf, err := goFile.Generate()
+	_, err = goFile.Generate()
 	if err != nil {
 		t.Fatal(err)
 	}
-	fmt.Println(string(fileBuf))
 }
 
 func TestInductiveAtCompileTime(t *testing.T) {
@@ -77,11 +74,10 @@ func TestInductiveAtCompileTime(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	fileBuf, err := goFile.Generate()
+	_, err = goFile.Generate()
 	if err != nil {
 		t.Fatal(err)
 	}
-	fmt.Println(string(fileBuf))
 }
 
 func TestListAtCompileTime(t *testing.T) {
@@ -100,11 +96,10 @@ func TestListAtCompileTime(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	fileBuf, err := goFile.Generate()
+	_, err = goFile.Generate()
 	if err != nil {
 		t.Fatal(err)
 	}
-	fmt.Println(string(fileBuf))
 }
 
 func TestLinkAtCompileTime(t *testing.T) {
@@ -123,11 +118,10 @@ func TestLinkAtCompileTime(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	fileBuf, err := goFile.Generate()
+	_, err = goFile.Generate()
 	if err != nil {
 		t.Fatal(err)
 	}
-	fmt.Println(string(fileBuf))
 }
 
 func TestMapAtCompileTime(t *testing.T) {
@@ -146,11 +140,10 @@ func TestMapAtCompileTime(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	fileBuf, err := goFile.Generate()
+	_, err = goFile.Generate()
 	if err != nil {
 		t.Fatal(err)
 	}
-	fmt.Println(string(fileBuf))
 }
 
 func TestCallAtCompileTime(t *testing.T) {
@@ -169,11 +162,10 @@ func TestCallAtCompileTime(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	fileBuf, err := goFile.Generate()
+	_, err = goFile.Generate()
 	if err != nil {
 		t.Fatal(err)
 	}
-	fmt.Println(string(fileBuf))
 }
 
 func TestReturnAtCompileTime(t *testing.T) {
@@ -192,11 +184,10 @@ func TestReturnAtCompileTime(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	fileBuf, err := goFile.Generate()
+	_, err = goFile.Generate()
 	if err != nil {
 		t.Fatal(err)
 	}
-	fmt.Println(string(fileBuf))
 }
 
 func TestServiceAtCompileTime(t *testing.T) {
@@ -219,9 +210,8 @@ func TestServiceAtCompileTime(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	fileBuf, err := goFile.Generate()
+	_, err = goFile.Generate()
 	if err != nil {
 		t.Fatal(err)
 	}
-	fmt.Println(string(fileBuf))
 }
