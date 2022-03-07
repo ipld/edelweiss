@@ -10,7 +10,7 @@ The MVP for an RPC compiler targets to enable the following workflow.
 (1) Define services and types in Go. This example defines a simplified Delegated Routing protocol:
 
 ```go
-defs = Types{
+defs = Defs{
      // Delegated Routing service definition
      Named{"DelegatedRouting",
           Service{
