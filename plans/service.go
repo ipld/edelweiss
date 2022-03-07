@@ -1,15 +1,17 @@
 package plans
 
-import (
-	"github.com/ipld/edelweiss/defs"
-)
-
 type Service struct {
-	Methods        []defs.Method
-	CallEnvelope   defs.Def // ref to inductive
-	ReturnEnvelope defs.Def // ref to inductive
+	Methods        Methods
+	CallEnvelope   BuiltinOrRefPlan
+	ReturnEnvelope BuiltinOrRefPlan
 }
 
-func (Service) Kind() string {
-	return "Service"
+func (Service) IAmPlan()     {}
+func (Service) Kind() string { return "Service" }
+
+type Methods []Method
+
+type Method struct {
+	Name string
+	Type Fn
 }
