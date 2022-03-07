@@ -83,7 +83,7 @@ defs = Defs{
 (2) Generate the service implementation (client and server). For instance:
 
 ```go
-build := GenerateGo{
+build := GoPkgCodegen{
      Defs: defs,
      PkgPath: "github.com/ipfs/go-delegated-routing", // go package path
      PkgDir: "/home/petar/src/github.com/ipfs/go-delegated-routing", // local directory
