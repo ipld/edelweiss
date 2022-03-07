@@ -1,8 +1,8 @@
 package def
 
 type Map struct {
-	Key   Type
-	Value Type
+	Key   Def
+	Value Def
 }
 
 func (Map) Kind() string {

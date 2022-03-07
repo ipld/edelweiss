@@ -1,7 +1,7 @@
 package def
 
 type Link struct {
-	To Type
+	To Def
 }
 
 func (Link) Kind() string {

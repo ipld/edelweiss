@@ -13,7 +13,7 @@ func NewBytes(v []byte) *Bytes {
 	return &x
 }
 
-func (Bytes) Def() def.Type {
+func (Bytes) Def() def.Def {
 	return def.Bytes{}
 }
 

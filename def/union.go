@@ -17,7 +17,7 @@ type CaseList struct {
 
 type Case struct {
 	Name string
-	Type Type
+	Type Def
 }
 
 func MakeUnion(cases ...Case) Union {

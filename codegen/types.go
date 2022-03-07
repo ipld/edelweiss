@@ -41,7 +41,7 @@ func (g GoTypeRef) Prepend(prefix string) GoTypeRef {
 }
 
 type GoTypeImpl interface {
-	ProtoDef() def.Type
+	ProtoDef() def.Def
 	GoTypeRef() GoTypeRef
 	GoDef() Blueprint
 }

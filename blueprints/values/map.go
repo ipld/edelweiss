@@ -24,7 +24,7 @@ type GoMapImpl struct {
 	Ref    cg.GoTypeRef
 }
 
-func (x *GoMapImpl) ProtoDef() def.Type {
+func (x *GoMapImpl) ProtoDef() def.Def {
 	return x.Def
 }
 

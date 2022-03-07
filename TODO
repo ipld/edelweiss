@@ -4,7 +4,6 @@ POST-MVP
 HOUSE CLEANING
 - [ ] simplify structure, inductive, union, etc. (use slices)
 - [ ] rename pkg def to defs
-- [ ] rename interface def.Type to defs.Def
 - [ ] unified ci
 
 ROBUST COMPILER ARCHITECTURE

@@ -8,7 +8,7 @@ import (
 
 type Nothing struct{}
 
-func (Nothing) Def() def.Type {
+func (Nothing) Def() def.Def {
 	return def.Nothing{}
 }
 

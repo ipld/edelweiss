@@ -13,7 +13,7 @@ import (
 // Link models a link to any type.
 type Link cid.Cid
 
-func (Link) Def() def.Type {
+func (Link) Def() def.Def {
 	return def.Link{To: def.Any{}}
 }
 

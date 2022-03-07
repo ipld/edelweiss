@@ -13,7 +13,7 @@ func NewBool(v bool) *Bool {
 	return &x
 }
 
-func (Bool) Def() def.Type {
+func (Bool) Def() def.Def {
 	return def.Bool{}
 }
 

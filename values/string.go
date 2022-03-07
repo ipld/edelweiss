@@ -13,7 +13,7 @@ func NewString(v string) *String {
 	return &x
 }
 
-func (String) Def() def.Type {
+func (String) Def() def.Def {
 	return def.String{}
 }
 

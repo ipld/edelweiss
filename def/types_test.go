@@ -5,7 +5,7 @@ import (
 )
 
 func TestServiceDef(t *testing.T) {
-	_ = Types{
+	_ = Defs{
 
 		Named{"Key", List{Byte{}}},
 
@@ -59,7 +59,7 @@ func TestServiceDef(t *testing.T) {
 }
 
 func TestServiceDef2(t *testing.T) {
-	_ = Types{
+	_ = Defs{
 		// Delegated Routing service definition
 		Named{"DelegatedRoutingService",
 			MakeService(

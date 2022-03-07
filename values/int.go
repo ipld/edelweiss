@@ -13,7 +13,7 @@ func NewInt(v int64) *Int {
 	return &x
 }
 
-func (Int) Def() def.Type {
+func (Int) Def() def.Def {
 	return def.Int{}
 }
 

@@ -11,17 +11,17 @@ func (Tuple) Kind() string {
 type SlotListOrNone interface{}
 
 type SlotList struct {
-	Slot Type
+	Slot Def
 	Rest SlotListOrNone
 }
 
-func MakeTuple(slots ...Type) Tuple {
+func MakeTuple(slots ...Def) Tuple {
 	return Tuple{
 		Slots: makeSlots(slots),
 	}
 }
 
-func makeSlots(slots []Type) SlotListOrNone {
+func makeSlots(slots []Def) SlotListOrNone {
 	if len(slots) == 0 {
 		return nil
 	} else {
@@ -32,8 +32,8 @@ func makeSlots(slots []Type) SlotListOrNone {
 	}
 }
 
-func FlattenSlotList(x SlotListOrNone) []Type {
-	r, cur := []Type{}, x
+func FlattenSlotList(x SlotListOrNone) []Def {
+	r, cur := []Def{}, x
 	for cur != nil {
 		l := cur.(SlotList)
 		r = append(r, l.Slot)

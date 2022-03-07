@@ -17,7 +17,7 @@ var logger = log.Logger("edelweiss")
 type GoPkgCodegen struct {
 	GoPkgDirPath string // local directory for the package
 	GoPkgPath    string // global package name
-	Defs         def.Types
+	Defs         def.Defs
 }
 
 func (x *GoPkgCodegen) GoPkgName() string {
@@ -54,7 +54,7 @@ func buildGoTypeImpls(typeToGen []typePlan, depToGo cg.DefToGoTypeRef) (cg.GoTyp
 	return goTypeImpls, nil
 }
 
-func buildGoTypeImpl(depToGo cg.DefToGoTypeRef, typeDef def.Type, goTypeRef cg.GoTypeRef) []cg.GoTypeImpl {
+func buildGoTypeImpl(depToGo cg.DefToGoTypeRef, typeDef def.Def, goTypeRef cg.GoTypeRef) []cg.GoTypeImpl {
 	switch d := typeDef.(type) {
 	case def.SingletonBool, def.SingletonFloat, def.SingletonInt, def.SingletonByte, def.SingletonChar, def.SingletonString:
 		return []cg.GoTypeImpl{blue_values.BuildSingletonImpl(d, goTypeRef)}

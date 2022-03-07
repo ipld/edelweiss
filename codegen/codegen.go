@@ -9,12 +9,12 @@ import (
 // compilation structures
 
 type LookupDepGoRef interface {
-	LookupDepGoRef(def.Type) GoTypeRef
+	LookupDepGoRef(def.Def) GoTypeRef
 }
 
-type DefToGoTypeRef map[def.Type]GoTypeRef
+type DefToGoTypeRef map[def.Def]GoTypeRef
 
-func (m DefToGoTypeRef) LookupDepGoRef(t def.Type) GoTypeRef {
+func (m DefToGoTypeRef) LookupDepGoRef(t def.Def) GoTypeRef {
 	r, ok := m[t]
 	if !ok {
 		panic(fmt.Sprintf("missing dependency %#v", t))

@@ -13,7 +13,7 @@ type KeyValue struct {
 	Value Any
 }
 
-func (v Map) Def() def.Type {
+func (v Map) Def() def.Def {
 	return def.Map{Key: def.Any{}, Value: def.Any{}}
 }
 

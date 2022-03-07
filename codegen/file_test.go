@@ -30,7 +30,7 @@ var _ = pd1.Errorf`
 
 type testTypeImpl struct{}
 
-func (testTypeImpl) ProtoDef() def.Type {
+func (testTypeImpl) ProtoDef() def.Def {
 	return nil
 }
 

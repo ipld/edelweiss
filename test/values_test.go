@@ -7,11 +7,11 @@ import (
 )
 
 func TestGenTest(t *testing.T) {
-	RunSingleGenTest(t, def.Types{def.Named{Name: "T", Type: def.SingletonInt{Int: 23}}}, "")
+	RunSingleGenTest(t, def.Defs{def.Named{Name: "T", Type: def.SingletonInt{Int: 23}}}, "")
 }
 
 func TestSingletonAtRunTime(t *testing.T) {
-	defs := []def.Types{
+	defs := []def.Defs{
 		{def.Named{Name: "UserSingleton", Type: def.SingletonBool{Bool: true}}},
 		{def.Named{Name: "UserSingleton", Type: def.SingletonInt{Int: 23}}},
 		{def.Named{Name: "UserSingleton", Type: def.SingletonFloat{Float: 2.3}}},
@@ -43,7 +43,7 @@ func TestSingletonAtRunTime(t *testing.T) {
 }
 
 func TestStructureAtRunTime(t *testing.T) {
-	defs := []def.Types{
+	defs := []def.Defs{
 		{def.Named{
 			Name: "UserStructure",
 			Type: def.MakeStructure(
@@ -84,7 +84,7 @@ func TestStructureAtRunTime(t *testing.T) {
 }
 
 func TestInductiveAtRunTime(t *testing.T) {
-	defs := []def.Types{
+	defs := []def.Defs{
 		{def.Named{
 			Name: "UserInductive",
 			Type: def.MakeInductive(
@@ -122,7 +122,7 @@ func TestInductiveAtRunTime(t *testing.T) {
 }
 
 func TestMapAtRunTime(t *testing.T) {
-	defs := []def.Types{
+	defs := []def.Defs{
 		{def.Named{
 			Name: "UserMap",
 			Type: def.Map{Key: def.String{}, Value: def.Int{}},
@@ -155,7 +155,7 @@ func TestMapAtRunTime(t *testing.T) {
 }
 
 func TestListAtRunTime(t *testing.T) {
-	defs := []def.Types{
+	defs := []def.Defs{
 		{def.Named{
 			Name: "UserList",
 			Type: def.List{Element: def.String{}},
@@ -188,7 +188,7 @@ func TestListAtRunTime(t *testing.T) {
 }
 
 func TestCallAtRunTime(t *testing.T) {
-	defs := []def.Types{
+	defs := []def.Defs{
 		{def.Named{
 			Name: "UserCall",
 			Type: def.Call{
@@ -224,7 +224,7 @@ func TestCallAtRunTime(t *testing.T) {
 }
 
 func TestReturnAtRunTime(t *testing.T) {
-	defs := []def.Types{
+	defs := []def.Defs{
 		{def.Named{
 			Name: "UserReturn",
 			Type: def.Return{
@@ -260,7 +260,7 @@ func TestReturnAtRunTime(t *testing.T) {
 }
 
 func TestLinkAtRunTime(t *testing.T) {
-	defs := []def.Types{
+	defs := []def.Defs{
 		{def.Named{
 			Name: "UserLink",
 			Type: def.Link{To: def.String{}},
@@ -294,7 +294,7 @@ func TestLinkAtRunTime(t *testing.T) {
 }
 
 func TestStructureInductiveAtRunTime(t *testing.T) {
-	defs := []def.Types{
+	defs := []def.Defs{
 		{def.Named{
 			Name: "UserStructure",
 			Type: def.MakeStructure(
@@ -338,7 +338,7 @@ func TestStructureInductiveAtRunTime(t *testing.T) {
 }
 
 func TestListStructureAtRunTime(t *testing.T) {
-	defs := []def.Types{
+	defs := []def.Defs{
 		{def.Named{
 			Name: "UserList",
 			Type: def.List{
@@ -372,7 +372,7 @@ func TestListStructureAtRunTime(t *testing.T) {
 }
 
 func TestListSingletonAtRunTime(t *testing.T) {
-	defs := []def.Types{
+	defs := []def.Defs{
 		{def.Named{
 			Name: "UserList",
 			Type: def.List{

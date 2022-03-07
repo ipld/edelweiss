@@ -13,7 +13,7 @@ func NewChar(v rune) *Char {
 	return &x
 }
 
-func (Char) Def() def.Type {
+func (Char) Def() def.Def {
 	return def.Char{}
 }
 

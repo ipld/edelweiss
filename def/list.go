@@ -1,7 +1,7 @@
 package def
 
 type List struct {
-	Element Type
+	Element Def
 }
 
 func (List) Kind() string {

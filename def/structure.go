@@ -17,7 +17,7 @@ type FieldList struct {
 
 type Field struct {
 	Name string
-	Type Type
+	Type Def
 }
 
 func MakeStructure(fields ...Field) Structure {

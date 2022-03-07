@@ -24,7 +24,7 @@ type GoInductiveImpl struct {
 	Ref    cg.GoTypeRef
 }
 
-func (x *GoInductiveImpl) ProtoDef() def.Type {
+func (x *GoInductiveImpl) ProtoDef() def.Def {
 	return x.Def
 }
 

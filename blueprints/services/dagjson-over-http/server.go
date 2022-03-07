@@ -27,7 +27,7 @@ type GoServerImpl struct {
 	Ref    cg.GoTypeRef
 }
 
-func (x GoServerImpl) ProtoDef() def.Type {
+func (x GoServerImpl) ProtoDef() def.Def {
 	return x.Def
 }
 

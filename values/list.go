@@ -8,7 +8,7 @@ import (
 
 type List []Any
 
-func (List) Def() def.Type {
+func (List) Def() def.Def {
 	return def.List{Element: def.Any{}}
 }
 

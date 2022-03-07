@@ -8,7 +8,7 @@ import (
 )
 
 func TestSingletonAtCompileTime(t *testing.T) {
-	defs := def.Types{
+	defs := def.Defs{
 		def.Named{Name: "T1", Type: def.SingletonBool{Bool: true}},
 		def.Named{Name: "T2", Type: def.SingletonInt{Int: 23}},
 	}
@@ -29,7 +29,7 @@ func TestSingletonAtCompileTime(t *testing.T) {
 }
 
 func TestStructureAtCompileTime(t *testing.T) {
-	defs := def.Types{
+	defs := def.Defs{
 		def.Named{
 			Name: "S1",
 			Type: def.MakeStructure(
@@ -55,7 +55,7 @@ func TestStructureAtCompileTime(t *testing.T) {
 }
 
 func TestInductiveAtCompileTime(t *testing.T) {
-	defs := def.Types{
+	defs := def.Defs{
 		def.Named{
 			Name: "S1",
 			Type: def.MakeInductive(
@@ -81,7 +81,7 @@ func TestInductiveAtCompileTime(t *testing.T) {
 }
 
 func TestListAtCompileTime(t *testing.T) {
-	defs := def.Types{
+	defs := def.Defs{
 		def.Named{
 			Name: "S1",
 			Type: def.List{Element: def.Int{}},
@@ -104,7 +104,7 @@ func TestListAtCompileTime(t *testing.T) {
 }
 
 func TestLinkAtCompileTime(t *testing.T) {
-	defs := def.Types{
+	defs := def.Defs{
 		def.Named{
 			Name: "S1",
 			Type: def.Link{To: def.Int{}},
@@ -127,7 +127,7 @@ func TestLinkAtCompileTime(t *testing.T) {
 }
 
 func TestMapAtCompileTime(t *testing.T) {
-	defs := def.Types{
+	defs := def.Defs{
 		def.Named{
 			Name: "S1",
 			Type: def.Map{Key: def.Int{}, Value: def.String{}},
@@ -150,7 +150,7 @@ func TestMapAtCompileTime(t *testing.T) {
 }
 
 func TestCallAtCompileTime(t *testing.T) {
-	defs := def.Types{
+	defs := def.Defs{
 		def.Named{
 			Name: "S1",
 			Type: def.Call{ID: def.Int{}, Fn: def.Fn{Arg: def.Int{}, Return: def.String{}}},
@@ -173,7 +173,7 @@ func TestCallAtCompileTime(t *testing.T) {
 }
 
 func TestReturnAtCompileTime(t *testing.T) {
-	defs := def.Types{
+	defs := def.Defs{
 		def.Named{
 			Name: "S1",
 			Type: def.Return{ID: def.Int{}, Fn: def.Fn{Arg: def.Int{}, Return: def.String{}}},
@@ -196,7 +196,7 @@ func TestReturnAtCompileTime(t *testing.T) {
 }
 
 func TestServiceAtCompileTime(t *testing.T) {
-	defs := def.Types{
+	defs := def.Defs{
 		def.Named{Name: "TestService",
 			Type: def.MakeService(
 				def.Method{Name: "Method1", Type: def.Fn{Arg: def.Int{}, Return: def.Bool{}}},

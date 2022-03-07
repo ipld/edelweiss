@@ -9,7 +9,7 @@ type Any struct {
 	Value
 }
 
-func (Any) Def() def.Type {
+func (Any) Def() def.Def {
 	return def.Any{}
 }
 

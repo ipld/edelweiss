@@ -12,14 +12,14 @@ import (
 	"github.com/ipld/edelweiss/def"
 )
 
-func RunSingleGenTest(t *testing.T, defs def.Types, testSrc string) {
+func RunSingleGenTest(t *testing.T, defs def.Defs, testSrc string) {
 	testFuncFmt := `func TestMain(t *testing.T) {
 %s
 }`
 	RunGenTest(t, defs, fmt.Sprintf(testFuncFmt, testSrc))
 }
 
-func RunGenTest(t *testing.T, defs def.Types, testSrc string) {
+func RunGenTest(t *testing.T, defs def.Defs, testSrc string) {
 
 	// create tmp dir
 	dir, err := os.MkdirTemp("", "edelweiss_test")

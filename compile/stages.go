@@ -10,7 +10,7 @@ import (
 )
 
 // generate returns a resolvable (an object that is resolvable to a go type reference)
-func generate(p *genPlan, s def.Type) (def.Type, error) {
+func generate(p *genPlan, s def.Def) (def.Def, error) {
 	switch t := s.(type) {
 
 	case def.Named:
@@ -65,7 +65,7 @@ func generate(p *genPlan, s def.Type) (def.Type, error) {
 }
 
 // provision returns a generation plan
-func provision(p *genPlan, named string, s def.Type) (def.Type, error) {
+func provision(p *genPlan, named string, s def.Def) (def.Def, error) {
 	switch t := s.(type) {
 
 	case def.Named:
@@ -116,7 +116,7 @@ func provision(p *genPlan, named string, s def.Type) (def.Type, error) {
 
 	case def.Tuple:
 		slots := def.FlattenSlotList(t.Slots)
-		slotPlans := make([]def.Type, len(slots))
+		slotPlans := make([]def.Def, len(slots))
 		for i, s := range slots {
 			sp, err := generate(p, s)
 			if err != nil {
@@ -195,7 +195,7 @@ func provision(p *genPlan, named string, s def.Type) (def.Type, error) {
 	return nil, fmt.Errorf("unrecognized definition %#v for provisioning", s)
 }
 
-func provisionService(p *genPlan, named string, s def.Service) (def.Type, error) {
+func provisionService(p *genPlan, named string, s def.Service) (def.Def, error) {
 	methods := def.FlattenMethodList(s.Methods)
 	plan := plans.Service{
 		Methods: make([]def.Method, len(methods)),

@@ -13,7 +13,7 @@ func NewFloat(v float64) *Float {
 	return &x
 }
 
-func (Float) Def() def.Type {
+func (Float) Def() def.Def {
 	return def.Int{}
 }
 

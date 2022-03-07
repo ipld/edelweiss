@@ -7,7 +7,7 @@ import (
 )
 
 func TestService(t *testing.T) {
-	defs := def.Types{
+	defs := def.Defs{
 		def.Named{Name: "TestService",
 			Type: def.MakeService(
 				def.Method{Name: "Method1", Type: def.Fn{Arg: def.Int{}, Return: def.Bool{}}},

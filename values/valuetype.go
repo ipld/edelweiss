@@ -11,7 +11,7 @@ import (
 const PkgPath = "github.com/ipld/edelweiss/values"
 
 type Value interface {
-	Def() def.Type
+	Def() def.Def
 	Node() datamodel.Node
 }
 

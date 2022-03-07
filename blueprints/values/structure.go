@@ -26,7 +26,7 @@ type GoStructureImpl struct {
 	Ref    cg.GoTypeRef
 }
 
-func (x *GoStructureImpl) ProtoDef() def.Type {
+func (x *GoStructureImpl) ProtoDef() def.Def {
 	return x.Def
 }
 

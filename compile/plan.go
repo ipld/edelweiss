@@ -9,15 +9,15 @@ import (
 
 type genPlan struct {
 	goPkgPath string
-	defToGo   map[def.Type]cg.GoTypeRef
-	nameToDef map[string]def.Type
+	defToGo   map[def.Def]cg.GoTypeRef
+	nameToDef map[string]def.Def
 	refs      map[string]bool
 	plan      []typePlan
 }
 
 type typePlan struct {
 	Name  string
-	Def   def.Type
+	Def   def.Def
 	GoRef cg.GoTypeRef
 }
 
@@ -26,7 +26,7 @@ func newGenPlan(goPkgPath string) *genPlan {
 		goPkgPath: goPkgPath,
 		defToGo:   cg.DefToGoTypeRef{},
 		plan:      []typePlan{},
-		nameToDef: map[string]def.Type{},
+		nameToDef: map[string]def.Def{},
 		refs:      map[string]bool{},
 	}
 }
@@ -39,7 +39,7 @@ func (p *genPlan) Plan() []typePlan {
 	return p.plan
 }
 
-func (p *genPlan) AddNamed(name string, d def.Type) error {
+func (p *genPlan) AddNamed(name string, d def.Def) error {
 	if _, ok := p.nameToDef[name]; ok {
 		return fmt.Errorf("name %s already defined", name)
 	}
@@ -50,13 +50,13 @@ func (p *genPlan) AddNamed(name string, d def.Type) error {
 	return nil
 }
 
-func (p *genPlan) AddAnonymous(t def.Type) def.Ref {
+func (p *genPlan) AddAnonymous(t def.Def) def.Ref {
 	name := fmt.Sprintf("Anon%s%d", t.Kind(), len(p.plan))
 	p.AddNamed(name, t)
 	return def.Ref{Name: name}
 }
 
-func (p *genPlan) AddBuiltin(t def.Type, goTypeRef cg.GoTypeRef) def.Type {
+func (p *genPlan) AddBuiltin(t def.Def, goTypeRef cg.GoTypeRef) def.Def {
 	p.defToGo[t] = goTypeRef
 	return t
 }

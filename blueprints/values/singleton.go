@@ -6,16 +6,16 @@ import (
 	"github.com/ipld/edelweiss/def"
 )
 
-func BuildSingletonImpl(typeDef def.Type, goTypeRef cg.GoTypeRef) cg.GoTypeImpl {
+func BuildSingletonImpl(typeDef def.Def, goTypeRef cg.GoTypeRef) cg.GoTypeImpl {
 	return &GoSingletonImpl{Def: typeDef, Ref: goTypeRef}
 }
 
 type GoSingletonImpl struct {
-	Def def.Type
+	Def def.Def
 	Ref cg.GoTypeRef
 }
 
-func (x *GoSingletonImpl) ProtoDef() def.Type {
+func (x *GoSingletonImpl) ProtoDef() def.Def {
 	return x.Def
 }
 
