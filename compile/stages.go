@@ -115,7 +115,7 @@ func provision(p *genPlan, named string, s defs.Def) (defs.Def, error) {
 		return defs.Union{Cases: casePlans}, nil
 
 	case defs.Tuple:
-		slots := defs.FlattenSlotList(t.Slots)
+		slots := t.Slots
 		slotPlans := make([]defs.Def, len(slots))
 		for i, s := range slots {
 			sp, err := generate(p, s)
@@ -124,7 +124,7 @@ func provision(p *genPlan, named string, s defs.Def) (defs.Def, error) {
 			}
 			slotPlans[i] = sp
 		}
-		return defs.MakeTuple(slotPlans...), nil
+		return defs.Tuple{Slots: slotPlans}, nil
 
 	case defs.List:
 		ep, err := generate(p, t.Element)

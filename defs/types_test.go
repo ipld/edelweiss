@@ -42,7 +42,9 @@ func TestServiceDef(t *testing.T) {
 				},
 				Method{"Put2",
 					Fn{
-						Arg: MakeTuple(Ref{"Key"}, Any{}),
+						Arg: Tuple{
+							Slots: Slots{Ref{"Key"}, Any{}},
+						},
 						Return: Union{
 							Cases: Cases{
 								Case{"ok", Ref{"ResultOk"}},
