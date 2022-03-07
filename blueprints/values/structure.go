@@ -35,7 +35,7 @@ func (x *GoStructureImpl) GoTypeRef() cg.GoTypeRef {
 }
 
 func (x *GoStructureImpl) GoDef() cg.Blueprint {
-	fields := defs.FlattenFieldList(x.Def.Fields)
+	fields := x.Def.Fields
 	fieldData := make([]cg.BlueMap, len(fields))
 	for i := range fields {
 		fieldData[i] = cg.BlueMap{

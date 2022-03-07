@@ -21,10 +21,12 @@ defs = Types{
 
      // PutP2PProvider argument and result types
      Named{"PutP2PProviderRequest",
-          MakeStructure(
-               Field{Name: "Key", Type: List{Byte{}}},
-               Field{Name: "Providers", Type: List{String{}}},
-          ),
+          Structure{
+               Fields{
+                    Field{Name: "Key", Type: List{Byte{}}},
+                    Field{Name: "Providers", Type: List{String{}}},
+               },
+          },
      },
      Named{"PutP2PProviderResponse",
           MakeUnion(
@@ -35,9 +37,11 @@ defs = Types{
 
      // GetP2PProviders argument and result types
      Named{"GetP2PProvidersRequest",
-          MakeStructure(
-               Field{Name: "Key", Type: List{Byte{}}},
-          ),
+          Structure{
+               Fields{
+                    Field{Name: "Key", Type: List{Byte{}}},
+               },
+          },
      },
      Named{"GetP2PProvidersResponse",
           MakeUnion(
@@ -48,10 +52,12 @@ defs = Types{
 
      // Libp2p types
      Named{"PeerAddr",
-          MakeStructure(
-               Field{Name: "ID", Type: List{Byte{}}},
-               Field{Name: "Multiaddresses", Type: List{String{}}},
-          ),
+          Structure{
+               Fields{
+                    Field{Name: "ID", Type: List{Byte{}}},
+                    Field{Name: "Multiaddresses", Type: List{String{}}},
+               },
+          },
      },
 }
 ```

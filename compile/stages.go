@@ -79,7 +79,7 @@ func provision(p *genPlan, named string, s defs.Def) (defs.Def, error) {
 		return t, nil
 
 	case defs.Structure:
-		fields := defs.FlattenFieldList(t.Fields)
+		fields := t.Fields
 		fieldPlans := make([]defs.Field, len(fields))
 		for i, f := range fields {
 			ftp, err := generate(p, f.Type)
@@ -88,7 +88,7 @@ func provision(p *genPlan, named string, s defs.Def) (defs.Def, error) {
 			}
 			fieldPlans[i] = defs.Field{Name: f.Name, Type: ftp}
 		}
-		return defs.MakeStructure(fieldPlans...), nil
+		return defs.Structure{Fields: fieldPlans}, nil
 
 	case defs.Inductive:
 		cases := defs.FlattenCaseList(t.Cases)

@@ -32,10 +32,12 @@ func TestStructureAtCompileTime(t *testing.T) {
 	defs := defs.Defs{
 		defs.Named{
 			Name: "S1",
-			Type: defs.MakeStructure(
-				defs.Field{Name: "Int", Type: defs.Int{}},
-				defs.Field{Name: "Bool", Type: defs.Bool{}},
-			),
+			Type: defs.Structure{
+				Fields: defs.Fields{
+					defs.Field{Name: "Int", Type: defs.Int{}},
+					defs.Field{Name: "Bool", Type: defs.Bool{}},
+				},
+			},
 		},
 	}
 	x := &GoPkgCodegen{

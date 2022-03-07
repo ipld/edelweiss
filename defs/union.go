@@ -26,7 +26,7 @@ func MakeUnion(cases ...Case) Union {
 	}
 }
 
-func makeCases(cases []Case) FieldListOrNone {
+func makeCases(cases []Case) CaseListOrNone {
 	if len(cases) == 0 {
 		return nil
 	} else {

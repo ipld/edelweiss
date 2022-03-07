@@ -9,20 +9,23 @@ func TestServiceDef(t *testing.T) {
 
 		Named{"Key", List{Byte{}}},
 
-		Named{"PutArgs", MakeStructure(
-			Field{"key", Ref{"Key"}},
-			Field{"value", Any{}},
-		)},
+		Named{"PutArgs", Structure{
+			Fields: Fields{
+				Field{"key", Ref{"Key"}},
+				Field{"value", Any{}},
+			}}},
 
-		Named{"ResultOk", MakeStructure(
-			Field{"status", SingletonString{"ok"}},
-			Field{"value", Any{}},
-		)},
+		Named{"ResultOk", Structure{
+			Fields: Fields{
+				Field{"status", SingletonString{"ok"}},
+				Field{"value", Any{}},
+			}}},
 
-		Named{"ResultError", MakeStructure(
-			Field{"status", SingletonString{"error"}},
-			Field{"value", String{}},
-		)},
+		Named{"ResultError", Structure{
+			Fields{
+				Field{"status", SingletonString{"error"}},
+				Field{"value", String{}},
+			}}},
 
 		Named{"RoutingService",
 			MakeService(
@@ -70,10 +73,12 @@ func TestServiceDef2(t *testing.T) {
 
 		// PutP2PProvider argument and result types
 		Named{"PutP2PProviderRequest",
-			MakeStructure(
-				Field{Name: "Key", Type: List{Byte{}}},
-				Field{Name: "Providers", Type: List{String{}}},
-			),
+			Structure{
+				Fields: Fields{
+					Field{Name: "Key", Type: List{Byte{}}},
+					Field{Name: "Providers", Type: List{String{}}},
+				},
+			},
 		},
 		Named{"PutP2PProviderResponse",
 			MakeUnion(
@@ -84,9 +89,11 @@ func TestServiceDef2(t *testing.T) {
 
 		// GetP2PProviders argument and result types
 		Named{"GetP2PProvidersRequest",
-			MakeStructure(
-				Field{Name: "Key", Type: List{Byte{}}},
-			),
+			Structure{
+				Fields: Fields{
+					Field{Name: "Key", Type: List{Byte{}}},
+				},
+			},
 		},
 		Named{"GetP2PProvidersResponse",
 			MakeUnion(
@@ -97,10 +104,12 @@ func TestServiceDef2(t *testing.T) {
 
 		// Libp2p types
 		Named{"PeerAddr",
-			MakeStructure(
-				Field{Name: "ID", Type: List{Byte{}}},
-				Field{Name: "Multiaddresses", Type: List{String{}}},
-			),
+			Structure{
+				Fields: Fields{
+					Field{Name: "ID", Type: List{Byte{}}},
+					Field{Name: "Multiaddresses", Type: List{String{}}},
+				},
+			},
 		},
 	}
 }

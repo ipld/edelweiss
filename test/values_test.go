@@ -46,13 +46,15 @@ func TestStructureAtRunTime(t *testing.T) {
 	defs := []defs.Defs{
 		{defs.Named{
 			Name: "UserStructure",
-			Type: defs.MakeStructure(
-				defs.Field{Name: "A", Type: defs.Int{}},
-				defs.Field{Name: "B", Type: defs.String{}},
-				defs.Field{Name: "C", Type: defs.Float{}},
-				defs.Field{Name: "D", Type: defs.Byte{}},
-				defs.Field{Name: "E", Type: defs.Char{}},
-			),
+			Type: defs.Structure{
+				Fields: defs.Fields{
+					defs.Field{Name: "A", Type: defs.Int{}},
+					defs.Field{Name: "B", Type: defs.String{}},
+					defs.Field{Name: "C", Type: defs.Float{}},
+					defs.Field{Name: "D", Type: defs.Byte{}},
+					defs.Field{Name: "E", Type: defs.Char{}},
+				},
+			},
 		}},
 	}
 	testSrc := `
@@ -297,16 +299,18 @@ func TestStructureInductiveAtRunTime(t *testing.T) {
 	defs := []defs.Defs{
 		{defs.Named{
 			Name: "UserStructure",
-			Type: defs.MakeStructure(
-				defs.Field{Name: "A", Type: defs.Int{}},
-				defs.Field{Name: "B", Type: defs.Named{
-					Name: "UserInductive",
-					Type: defs.MakeInductive(
-						defs.Case{Name: "X", Type: defs.String{}},
-						defs.Case{Name: "Y", Type: defs.Int{}},
-					)},
+			Type: defs.Structure{
+				Fields: defs.Fields{
+					defs.Field{Name: "A", Type: defs.Int{}},
+					defs.Field{Name: "B", Type: defs.Named{
+						Name: "UserInductive",
+						Type: defs.MakeInductive(
+							defs.Case{Name: "X", Type: defs.String{}},
+							defs.Case{Name: "Y", Type: defs.Int{}},
+						)},
+					},
 				},
-			),
+			},
 		}},
 	}
 	testSrc := `
@@ -342,9 +346,11 @@ func TestListStructureAtRunTime(t *testing.T) {
 		{defs.Named{
 			Name: "UserList",
 			Type: defs.List{
-				Element: defs.MakeStructure(
-					defs.Field{Name: "X", Type: defs.String{}},
-				),
+				Element: defs.Structure{
+					Fields: defs.Fields{
+						defs.Field{Name: "X", Type: defs.String{}},
+					},
+				},
 			},
 		}},
 	}
