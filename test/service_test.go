@@ -9,10 +9,12 @@ import (
 func TestService(t *testing.T) {
 	defs := defs.Defs{
 		defs.Named{Name: "TestService",
-			Type: defs.MakeService(
-				defs.Method{Name: "Method1", Type: defs.Fn{Arg: defs.Int{}, Return: defs.Bool{}}},
-				defs.Method{Name: "Method2", Type: defs.Fn{Arg: defs.String{}, Return: defs.Float{}}},
-			),
+			Type: defs.Service{
+				Methods: defs.Methods{
+					defs.Method{Name: "Method1", Type: defs.Fn{Arg: defs.Int{}, Return: defs.Bool{}}},
+					defs.Method{Name: "Method2", Type: defs.Fn{Arg: defs.String{}, Return: defs.Float{}}},
+				},
+			},
 		},
 	}
 	testSrc := `

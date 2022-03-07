@@ -28,43 +28,45 @@ func TestServiceDef(t *testing.T) {
 			}}},
 
 		Named{"RoutingService",
-			MakeService(
-				Method{"Put1",
-					Fn{
-						Arg: Ref{"PutArgs"},
-						Return: Union{
-							Cases: Cases{
-								Case{"ok", Ref{"ResultOk"}},
-								Case{"error", Ref{"ResultError"}},
+			Service{
+				Methods: Methods{
+					Method{"Put1",
+						Fn{
+							Arg: Ref{"PutArgs"},
+							Return: Union{
+								Cases: Cases{
+									Case{"ok", Ref{"ResultOk"}},
+									Case{"error", Ref{"ResultError"}},
+								},
+							},
+						},
+					},
+					Method{"Put2",
+						Fn{
+							Arg: Tuple{
+								Slots: Slots{Ref{"Key"}, Any{}},
+							},
+							Return: Union{
+								Cases: Cases{
+									Case{"ok", Ref{"ResultOk"}},
+									Case{"error", Ref{"ResultError"}},
+								},
+							},
+						},
+					},
+					Method{"Get",
+						Fn{
+							Arg: Ref{"Key"},
+							Return: Union{
+								Cases: Cases{
+									Case{"found", Ref{"ResultOk"}},
+									Case{"not_found", Ref{"ResultError"}},
+								},
 							},
 						},
 					},
 				},
-				Method{"Put2",
-					Fn{
-						Arg: Tuple{
-							Slots: Slots{Ref{"Key"}, Any{}},
-						},
-						Return: Union{
-							Cases: Cases{
-								Case{"ok", Ref{"ResultOk"}},
-								Case{"error", Ref{"ResultError"}},
-							},
-						},
-					},
-				},
-				Method{"Get",
-					Fn{
-						Arg: Ref{"Key"},
-						Return: Union{
-							Cases: Cases{
-								Case{"found", Ref{"ResultOk"}},
-								Case{"not_found", Ref{"ResultError"}},
-							},
-						},
-					},
-				},
-			),
+			},
 		},
 	}
 }
@@ -73,10 +75,12 @@ func TestServiceDef2(t *testing.T) {
 	_ = Defs{
 		// Delegated Routing service definition
 		Named{"DelegatedRoutingService",
-			MakeService(
-				Method{"PutP2PProvider", Fn{Arg: Ref{"PutP2PProviderRequest"}, Return: Ref{"PutP2PProviderResponse"}}},
-				Method{"GetP2PProviders", Fn{Arg: Ref{"GetP2PProvidersRequest"}, Return: Ref{"GetP2PProvidersResponse"}}},
-			),
+			Service{
+				Methods: Methods{
+					Method{"PutP2PProvider", Fn{Arg: Ref{"PutP2PProviderRequest"}, Return: Ref{"PutP2PProviderResponse"}}},
+					Method{"GetP2PProviders", Fn{Arg: Ref{"GetP2PProvidersRequest"}, Return: Ref{"GetP2PProvidersResponse"}}},
+				},
+			},
 		},
 
 		// PutP2PProvider argument and result types

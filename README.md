@@ -12,11 +12,13 @@ The MVP for an RPC compiler targets to enable the following workflow.
 ```go
 defs = Types{
      // Delegated Routing service definition
-     Named{"DelegatedRoutingService",
-          MakeService(
-               Method{"PutP2PProvider", Fn{Arg: Ref{"PutP2PProviderRequest"}, Return: Ref{"PutP2PProviderResponse"}}},
-               Method{"GetP2PProviders", Fn{Arg: Ref{"GetP2PProvidersRequest"}, Return: Ref{"GetP2PProvidersResponse"}}},
-          ),
+     Named{"DelegatedRouting",
+          Service{
+               Methods{
+                    Method{"PutP2PProvider", Fn{Arg: Ref{"PutP2PProviderRequest"}, Return: Ref{"PutP2PProviderResponse"}}},
+                    Method{"GetP2PProviders", Fn{Arg: Ref{"GetP2PProvidersRequest"}, Return: Ref{"GetP2PProvidersResponse"}}},
+               },
+          },
      },
 
      // PutP2PProvider argument and result types

@@ -196,7 +196,7 @@ func provision(p *genPlan, named string, s defs.Def) (defs.Def, error) {
 }
 
 func provisionService(p *genPlan, named string, s defs.Service) (defs.Def, error) {
-	methods := defs.FlattenMethodList(s.Methods)
+	methods := s.Methods
 	plan := plans.Service{
 		Methods: make([]defs.Method, len(methods)),
 	}
