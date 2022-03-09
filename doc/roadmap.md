@@ -75,10 +75,17 @@ The consequences of these capabilities are dramatic. We expect that most softwar
 Some of the immediately obvious areas of application of this technology are:
 
 - generation of the fastest physically possible de/serializers for IPLD schemas (Milestone 2)
-- RPC framework for Filecoin FVM that supports decentralized lambda objects (Milestone 3)
+- RPC framework for Filecoin FVM that supports passing decentralized lambda objects (Milestone 3)
 - command-line argument generation
 - documentation generation
 - generation of equivalent APIs in different forms (libp2p, HTTP, command-line, Filecoin actor)
 - higher-level data interpretation abstractions (akin to Advanced Data Layouts)
+
+There are some more subtle, less obvious areas of application. In general, any software that uses the protocol compiler is able to gracefully detect and capture data structures that are in excess of the schema that it is aware of. This enables some novel applications:
+
+- older IPFS nodes can detect when they are talking to newer ones and prompt the users to upgrade their software (thank you @lidel)
+- IPFS middleware, in particular caching for content routing, can now be implemented as generic services that understand the minimal skeletal structure of specific routing APIs (like delegated routing API or the DHT API)
+
+To unlock these applications, we hope that we will gradually be able to transition existing IPFS network APIs (like DHT and bitswap) to use the protocol compiler infrastructure.
 
 We are very excited to grow this project into a polished generalized compiler framework for the PL ecosystem and start on-boarding developers to the limitless possibilities ahead.
