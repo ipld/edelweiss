@@ -294,3 +294,96 @@ Representationally:
 
 Programmatically:
 - Code-generated Go `struct`
+
+---
+# Inductive
+
+Semantically:
+- One of a list of name/value pairs _distinguished by their name_, written as
+```go
+Inductive{
+     Cases: Cases{
+          Case{Name: "NAME", Type: TYPE_DEF_OR_REF},
+          ...
+     }
+}
+```
+
+Representationally:
+- Encoded as an IPLD map, wrapping the case name and its value
+
+Programmatically:
+- Code-generated as a Go `struct` with one pointer field per case
+
+_"Inductive" types correspond to IPLD Schema "union" types._
+
+---
+# Singletons
+
+Semantically:
+- A builtin value that always equals a given constant, written as
+```go
+SingletonBool{BOOL_VALUE}
+SingletonInt{INT_VALUE}
+SingletonByte{BYTE_VALUE}
+SingletonChar{CHAR_VALUE}
+SingletonFloat{FLOAT_VALUE}
+SingletonString{STRING_VALUE}
+```
+
+Representationally:
+- Encoded as the correspoding IPLD kind
+
+Programmatically:
+- Code-generated as an empty Go `struct`
+
+---
+# Union
+
+Semantically:
+- One of a list of name/value pairs _distinguished by their value_, written as
+```go
+Union{
+     Cases: Cases{
+          Case{Name: "NAME", Type: TYPE_DEF_OR_REF},
+          ...
+     }
+}
+```
+
+Representationally:
+- Encoded as the value of the active case
+- The union itself has _no representational footprint_
+
+Programmatically:
+- Code-generated as a Go `struct` with one pointer field per case
+
+---
+# Enumeration = Union + Singleton
+
+Traditional enumerations over any primitive type can be expressed as a union of singletons:
+
+```go
+Union{
+     Cases: Cases{
+          Case{Name: "Case1", Value: SingletonInt{1}}
+          Case{Name: "Case2", Value: SingletonInt{2}}
+          ...
+     }
+}
+```
+
+---
+# String-valued enumeration = Inductive + Nothing
+
+Traditional enumerations over strings can be expressed as an inductive type with nothing values:
+
+```go
+Inductive{
+     Cases: Cases{
+          Case{Name: "Case1", Value: Nothing{}}
+          Case{Name: "Case2", Value: Nothing{}}
+          ...
+     }
+}
+```
