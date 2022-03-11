@@ -243,6 +243,48 @@ Representationally:
 - Encodes as IPLD link
 
 Programmatically:
-- Code-generated
+- Code-generated Go `struct` which holds a `Cid`
 
-Use `Link{To: Any{}}` when the target is unknown.
+Use `Link{To: Any{}}` when the link target is of unknown type.
+
+---
+# List
+
+Semantically:
+- `List{Element: TYPE_DEF_OR_REF}`
+
+Representationally:
+- Encodes as IPLD list
+
+Programmatically:
+- Code-generated Go alias for a slice type
+
+---
+# Map
+
+Semantically:
+- `Map{Key: TYPE_DEF_OR_REF, Value: TYPE_DEF_OR_REF}`
+
+Representationally:
+- Encodes as IPLD list of key/value pairs or an IPLD map, if the key is a string
+
+Programmatically:
+- Code-generated Go slice of key/value pairs or a Go map, if the key is a string
+
+---
+# Structure
+
+Semantically:
+- `Structure{Fields: []Field}` where `Field` is
+```go
+type Field struct {
+     Name string
+     Value TYPE_DEF_OR_REF
+}
+```
+
+Representationally:
+- Encodes as IPLD map
+
+Programmatically:
+- Code-generated Go `struct`
