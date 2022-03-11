@@ -36,12 +36,16 @@ petar@protocol.ai
 3. Representation of data in user's programming language
 
 ---
-# Type
+# Types
 
-- **Builtin:** Bool, Float, Int, Byte, _Char_, _String_, _Bytes_
-- **Parametric:** Link, List, Map, Structure, _Inductive_, _Singleton_, _Union_
-- **Special:** Any, Nothing
-- **Functional:** _Function_, _Service_, _Method_
+- **Non-parametric**
+  - **Builtin:** Bool, Float, Int, Byte, _Char_, _String_, _Bytes_
+  - **Special:** Any, Nothing
+- **Parametric**
+  - **Composite:** Link, List, Map, Structure, _Inductive_, _Singleton_, _Union_
+  - **Functional:** _Function_, _Service_, _Method_
+
+_Italicized types_ are new or different from IPLD Schema types.
 
 ---
 # __Definitions__
@@ -275,11 +279,13 @@ Programmatically:
 # Structure
 
 Semantically:
-- `Structure{Fields: []Field}` where `Field` is
+- A list of named and typed fields, written as
 ```go
-type Field struct {
-     Name string
-     Value TYPE_DEF_OR_REF
+Structure{
+     Fields: Fields{
+          Field{Name: "NAME", Type: TYPE_DEF_OR_REF},
+          ...
+     }
 }
 ```
 
