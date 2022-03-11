@@ -296,6 +296,26 @@ Programmatically:
 - Code-generated Go `struct`
 
 ---
+# Singletons
+
+Semantically:
+- A builtin value that always equals a given constant, written as
+```go
+SingletonBool{BOOL_VALUE}
+SingletonInt{INT_VALUE}
+SingletonByte{BYTE_VALUE}
+SingletonChar{CHAR_VALUE}
+SingletonFloat{FLOAT_VALUE}
+SingletonString{STRING_VALUE}
+```
+
+Representationally:
+- Encoded as the correspoding IPLD kind
+
+Programmatically:
+- Code-generated as an empty Go `struct`
+
+---
 # Inductive
 
 Semantically:
@@ -318,26 +338,6 @@ Programmatically:
 _"Inductive" types correspond to IPLD Schema "union" types._
 
 ---
-# Singletons
-
-Semantically:
-- A builtin value that always equals a given constant, written as
-```go
-SingletonBool{BOOL_VALUE}
-SingletonInt{INT_VALUE}
-SingletonByte{BYTE_VALUE}
-SingletonChar{CHAR_VALUE}
-SingletonFloat{FLOAT_VALUE}
-SingletonString{STRING_VALUE}
-```
-
-Representationally:
-- Encoded as the correspoding IPLD kind
-
-Programmatically:
-- Code-generated as an empty Go `struct`
-
----
 # Union
 
 Semantically:
@@ -357,6 +357,14 @@ Representationally:
 
 Programmatically:
 - Code-generated as a Go `struct` with one pointer field per case
+
+---
+# Inductive ≠ Union
+
+Note that inductive and union types are fundamentally different:
+- Both types constitute cases that have a name and a value
+- Inductive cases are distinguished by their names
+- Union cases are distinguished by their values
 
 ---
 # Enumeration = Union + Singleton
@@ -387,3 +395,7 @@ Inductive{
      }
 }
 ```
+
+---
+# **Services**
+
