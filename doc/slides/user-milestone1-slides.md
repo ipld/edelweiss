@@ -25,27 +25,8 @@ petar@protocol.ai
 
 - Definitions
 - Types (semantics, representations, generated runtime code)
-- Type interoperability
-
----
-# Significance of types
-
-1. Semantics of data (agnostic to programming language)
-2. Representation of data in IPLD Data Model (encoding/decoding)
-   Note: _"Transforms" (introduced later) can alter representation._
-3. Representation of data in user's programming language
-
----
-# Types
-
-- **Non-parametric**
-  - **Builtin:** Bool, Float, Int, Byte, _Char_, _String_, _Bytes_
-  - **Special:** Any, Nothing
-- **Parametric**
-  - **Composite:** Link, List, Map, Structure, _Inductive_, _Singleton_, _Union_
-  - **Functional:** _Function_, _Service_, _Method_
-
-_Italicized types_ are new or different from IPLD Schema types.
+- Interoperability
+- Usage
 
 ---
 # __Definitions__
@@ -140,6 +121,29 @@ Named{
      Type: List{ Element: Ref{Name: "MyList"} }
 }
 ```
+
+---
+# __Types__
+
+---
+# Significance of types
+
+1. Semantics of data (agnostic to programming language)
+2. Representation of data in IPLD Data Model (encoding/decoding)
+   Note: _"Transforms" (introduced later) can alter representation._
+3. Representation of data in user's programming language
+
+---
+# Types
+
+- **Non-parametric**
+  - **Builtin:** Bool, Float, Int, Byte, _Char_, _String_, _Bytes_
+  - **Special:** Any, Nothing
+- **Parametric**
+  - **Composite:** Link, List, Map, Structure, _Inductive_, _Singleton_, _Union_
+  - **Functional:** _Function_, _Service_, _Method_
+
+_Italicized types_ are new or different from IPLD Schema types.
 
 ---
 # __Non-parametric types__
@@ -437,7 +441,7 @@ Named{
   - Method and arguments captured in the DAGJSON body of an HTTP GET request
 
 ---
-# **Type interoperability**
+# **Cross-version and -capability interoperability**
 
 ---
 # Problem
@@ -449,6 +453,50 @@ Named{
 # Solution
 
 - Enable backwards-compatible growth from any state and in any part of a protocol
+
+---
+# Structures can grow
+
+A server expecting
+```go
+Structure{
+     Fields: Fields{
+          Field{ Name: "Foo", Type: Int{} },
+     },
+}
+```
+Will accept requests from a client sending
+```go
+Structure{
+     Fields: Fields{
+          Field{ Name: "Foo", Type: Int{} },
+          Field{ Name: "Bar", Type: String{} },
+     },
+}
+```
+
+---
+# Structures can shrink
+
+A server expecting
+```go
+Structure{
+     Fields: Fields{
+          Field{ Name: "Bar", Type: Union{
+                    Cases: Cases{
+                         Case{ Name: "Missing", Type: Nothing{} },
+                         Case{ Name: "String", Type: String{} },
+                    },
+               },
+          },
+     },
+}
+```
+Will accept requests from a client sending
+```go
+Structure{ Fields: Fields{} }
+```
+_This feature is slated for Milestone 2._
 
 ---
 # Introducing alternatives where there weren't (1/2)
@@ -468,13 +516,13 @@ Structure{
 ---
 # Introducing alternatives where there weren't (2/2)
 
-Suppose V1 of a type definition is:
+The next iteration, V2, of the protocol can substitute any given type with a union over old and new alternatives:
 ```go
 Structure{
      Fields: Fields{
           Field{
                Name: "Foo",
-               Type: Union{
+               Type: Union{   // int is substituted by union of int or float
                     Cases: Cases{
                          Case{ Name: "MyInt", Type: Int{} },
                          Case{ Name: "MyFloat", Type: Float{} },
@@ -484,6 +532,19 @@ Structure{
      },
 }
 ```
+
+---
+# Excess, deficit and unexpected data
+
+At a receiver:
+
+- Data which is in excess of the schema can be captured generically as IPLD data. This applies to: structure fields and union/inductive cases.
+
+- Data which is missing can be captured, by instructing the code-generator to treat the entire schema as optional (at every level of the schema hierarchy)
+
+- Data which contradicts the expected types can also be captured generically as IPLD data. This applies to: structure fields and union/inductive cases.
+
+_These features are planned for Milestone 2, based on use case urgency._
 
 ---
 # **Usage**
