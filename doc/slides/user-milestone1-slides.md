@@ -384,7 +384,7 @@ Union{
 ---
 # String-valued enumeration = Inductive + Nothing
 
-Traditional enumerations over strings can be expressed as an inductive type with nothing values:
+Traditional enumerations over strings can also be expressed as an inductive type with nothing values:
 
 ```go
 Inductive{
@@ -399,3 +399,110 @@ Inductive{
 ---
 # **Services**
 
+
+---
+# Service type
+
+- A _service_ is a collection of _methods_
+- Each _method_ is uniquely named and associated with a _functional signature_
+- A functional signature specifies the types of the argument and a return values
+
+---
+# Service definition
+
+```go
+Named{
+     Name: "MyService"
+     Service{
+          Methods: Methods{
+               Method{
+                    Name: "MyMethod",
+                    Type: Fn{
+                         Arg: TYPE_DEF_OR_REF,
+                         Return: TYPE_DEF_OR_REF,
+                    },
+               },
+               ...
+          },
+     },
+}
+```
+
+---
+# Generated RPC code
+
+- The compiler supports multiple RPC code-generation backends
+- Currently, we have a DAGJSON-over-HTTP backend
+  - Single URL endpoint per service
+  - Method and arguments captured in the DAGJSON body of an HTTP GET request
+
+---
+# **Type interoperability**
+
+---
+# Problem
+
+- Protocols always evolve; never in a finished state
+- It is hard to predict the direction of evolution of a protocol
+- This causes over-thinking, over-engineering and paralisis in earlier version designs
+
+# Solution
+
+- Enable backwards-compatible growth from any state and in any part of a protocol
+
+---
+# Introducing alternatives where there weren't (1/2)
+
+Suppose V1 of a type definition is:
+```go
+Structure{
+     Fields: Fields{
+          Field{
+               Name: "Foo",
+               Type: Int{},
+          },
+     },
+}
+```
+
+---
+# Introducing alternatives where there weren't (2/2)
+
+Suppose V1 of a type definition is:
+```go
+Structure{
+     Fields: Fields{
+          Field{
+               Name: "Foo",
+               Type: Union{
+                    Cases: Cases{
+                         Case{ Name: "MyInt", Type: Int{} },
+                         Case{ Name: "MyFloat", Type: Float{} },
+                    }
+               },
+          },
+     },
+}
+```
+
+---
+# **Usage**
+---
+# Compiling and code generation
+
+_See a complete example in github.com/ipld/edelweiss/examples_
+
+Compile type definitions to a Go source file generation plan:
+```go
+x := &GoPkgCodegen{
+     GoPkgDirPath: "/home/petar/src/foo/bar", // local directory for generated code
+     GoPkgPath:    "github.com/petar/foo/bar", // go package name of generated code
+     Defs:         Types{ ... }, // type definitions
+}
+goFile, err := x.Compile()
+```
+
+Materialize the Go file to disk:
+```go
+err = goFile.Build()
+```
