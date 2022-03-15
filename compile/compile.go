@@ -62,6 +62,8 @@ func buildGoTypeImpl(depToGo cg.PlanToGoTypeRef, plan plans.Plan, goTypeRef cg.G
 		return []cg.GoTypeImpl{blue_values.BuildStructureImpl(depToGo, d, goTypeRef)}
 	case plans.Inductive:
 		return []cg.GoTypeImpl{blue_values.BuildInductiveImpl(depToGo, d, goTypeRef)}
+	case plans.Union:
+		return []cg.GoTypeImpl{blue_values.BuildUnionImpl(depToGo, d, goTypeRef)}
 	case plans.List:
 		return []cg.GoTypeImpl{blue_values.BuildListImpl(depToGo, d, goTypeRef)}
 	case plans.Link:
