@@ -450,3 +450,56 @@ func TestListSingletonAtRunTime(t *testing.T) {
 		RunSingleGenTest(t, d, testSrc)
 	}
 }
+
+func TestUnionListAtRunTime(t *testing.T) {
+	defs := []defs.Defs{
+		{defs.Named{
+			Name: "UserUnion",
+			Type: defs.Union{
+				Cases: defs.Cases{
+					defs.Case{
+						Name: "A",
+						Type: defs.Named{
+							Name: "UserStructure",
+							Type: defs.Structure{
+								Fields: defs.Fields{
+									defs.Field{Name: "F", Type: defs.Int{}},
+								},
+							},
+						},
+					},
+					defs.Case{
+						Name: "B",
+						Type: defs.Named{
+							Name: "UserList",
+							Type: defs.List{Element: defs.String{}},
+						},
+					},
+				},
+			},
+		}},
+	}
+	testSrc := `
+	var x1 UserUnion
+	var y UserList = UserList{values.String("abc")}
+	x1.B = &y
+	buf, err := ipld.Encode(x1, dagjson.Encode)
+	if err != nil {
+		t.Fatalf("encoding (%v)", err)
+	}
+	var x2 UserUnion
+	n, err := ipld.Decode(buf, dagjson.Decode)
+	if err != nil {
+		t.Fatalf("decoding (%v)", err)
+	}
+	if err = x2.Parse(n); err != nil {
+		t.Fatalf("parsing (%v)", err)
+	}
+	if !ipld.DeepEqual(x1, x2) {
+		t.Errorf("ipld values are not equal")
+	}
+`
+	for _, d := range defs {
+		RunSingleGenTest(t, d, testSrc)
+	}
+}
