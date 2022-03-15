@@ -80,6 +80,33 @@ func TestInductiveAtCompileTime(t *testing.T) {
 	}
 }
 
+func TestUnionAtCompileTime(t *testing.T) {
+	defs := defs.Defs{
+		defs.Named{
+			Name: "S1",
+			Type: defs.Union{
+				Cases: defs.Cases{
+					defs.Case{Name: "Int", Type: defs.Int{}},
+					defs.Case{Name: "Bool", Type: defs.Bool{}},
+				},
+			},
+		},
+	}
+	x := &GoPkgCodegen{
+		GoPkgDirPath: "",
+		GoPkgPath:    "test",
+		Defs:         defs,
+	}
+	goFile, err := x.Compile()
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = goFile.Generate()
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestListAtCompileTime(t *testing.T) {
 	defs := defs.Defs{
 		defs.Named{

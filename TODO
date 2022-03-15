@@ -2,7 +2,6 @@ POST-MVP
 - [ ] pick an official name for the project
 
 HOUSE CLEANING
-- [ ] unified ci
 - [ ] Map type must also parse IPLD maps to enable generic ingestion of IPLD data model kinds
 - [ ] verify implementation of Any decodes any IPLD data model value
 
