@@ -36,7 +36,7 @@ We have commitments from the Delegated Routing and Indexer projects in PL to be 
 
 ## Milestone 2: Feature parity with IPLD schema and the fastest IPLD de/serializer
 
-In this milestone, we will introduce the notion of _transforms_ which are a generalization of IPLD schema representations. Transforms are user-defined middleware, decoupled from types, which mutates IPLD schema on-the-fly with zero-allocations. Combinging types with transforms enables users to de/serialize any specific IPLD representation strategy to a desired user-facing type schema. This feature will bring the protocol compiler to feature parity with IPLD schema.
+In this milestone, we will introduce the notion of [_transforms_](transforms.md) which are a generalization of IPLD schema representations. Transforms are user-defined middleware, decoupled from types, which mutates IPLD schema on-the-fly with zero-allocations. Combinging types with transforms enables users to de/serialize any specific IPLD representation strategy to a desired user-facing type schema. This feature will bring the protocol compiler to feature parity with IPLD schema.
 
 Additionally, we plan to upgrade the protocol compiler's type deserialization strategy from parsing the IPLD data model (from Milestone 1) to implementing the native IPLD `NodeAssembler` interface. This will result in the fastest IPLD de/serialization code to date. Both encoding and decoding paths will then be fully-static native IPLD code, involving no reflection.
 
