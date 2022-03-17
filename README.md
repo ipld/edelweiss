@@ -14,7 +14,7 @@ For a detailed longer-term roadmap and planned features refer to the [Protocol C
 
 The current state of the language and how to use the compiler is covered in the [Edelweiss for users](doc/slides/user-milestone1-slides.pdf) slides.
 
-A [complete working example](examples/gen-routing-api/routing.go) which defines a toy routing service API is provided in this repo. The [resulting generated code](examples/gen-routing-api/proto/proto_edelweiss.go) is also included in the repo for your viewing convenience.
+A [complete working example](examples/gen-routing-api/routing.go) — which defines a toy routing service API — is provided in this repo. The [resulting generated code](examples/gen-routing-api/proto/proto_edelweiss.go) is also included in the repo for your viewing convenience.
 
 # Projects using Edelweiss
 
