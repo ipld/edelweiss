@@ -1,103 +1,21 @@
 
-# Decentralized Protocol Compiler (WIP)
+# Edelweiss: Decentralized Protocol Compiler
 
-For a detailed and longer-term roadmap of this project, refer to the [Protocol Compiler Roadmap 2022](doc/roadmap.md).
+Edelweiss is a code-generating compiler. Currently, it supports:
+- a comprehensive type system for modeling data
+- service and method definitions
+- Go language code-generation of data types and associated fast, static encoders and decoders to and from the IPLD data model
+- Go language code-generation of RPC services based on a DAGJSON-over-HTTP networking stack
+- the ability to rapidly add user-defined code-generating backends for custom RPC networking stacks
 
-## Target user experience for Milestone 1 (MVP): RPC protocol compiler
+For a detailed longer-term roadmap and planned features refer to the [Protocol Compiler Roadmap 2022](doc/roadmap.md).
 
-The MVP for an RPC compiler targets to enable the following workflow.
+# Documentation
 
-(1) Define services and types in Go. This example defines a simplified Delegated Routing protocol:
+The current state of the language and how to use the compiler is covered in the [Edelweiss for users](doc/slides/user-milestone1-slides.pdf) slides.
 
-```go
-defs = Defs{
-     // Delegated Routing service definition
-     Named{"DelegatedRouting",
-          Service{
-               Methods{
-                    Method{
-                         Name: "PutP2PProvider",
-                         Type: Fn{
-                              Arg: Ref{"PutP2PProviderRequest"}, 
-                              Return: Ref{"PutP2PProviderResponse"},
-                         },
-                    },
-                    Method{
-                         Name: "GetP2PProviders",
-                         Type: Fn{
-                              Arg: Ref{"GetP2PProvidersRequest"},
-                              Return: Ref{"GetP2PProvidersResponse"},
-                         },
-                    },
-               },
-          },
-     },
+A [complete working example](examples/gen-routing-api/routing.go) which defines a toy routing service API is provided in this repo. The [resulting generated code](examples/gen-routing-api/proto/proto_edelweiss.go) is also included in the repo for your viewing convenience.
 
-     // PutP2PProvider argument and result types
-     Named{"PutP2PProviderRequest",
-          Structure{
-               Fields{
-                    Field{Name: "Key", Type: List{Byte{}}},
-                    Field{Name: "Providers", Type: List{String{}}},
-               },
-          },
-     },
-     Named{"PutP2PProviderResponse",
-          Union{
-               Cases{
-                    Case{Name: "Success", Type: Nothing{}},
-                    Case{Name: "Error", Type: String{}},
-               },
-          },
-     },
+# Projects using Edelweiss
 
-     // GetP2PProviders argument and result types
-     Named{"GetP2PProvidersRequest",
-          Structure{
-               Fields{
-                    Field{Name: "Key", Type: List{Byte{}}},
-               },
-          },
-     },
-     Named{"GetP2PProvidersResponse",
-          Union{
-               Cases{
-                    Case{Name: "Success", Type: List{Ref{"PeerAddr"}}},
-                    Case{Name: "Error", Type: String{}},
-               },
-          },
-     },
-
-     // Libp2p types
-     Named{"PeerAddr",
-          Structure{
-               Fields{
-                    Field{Name: "ID", Type: List{Byte{}}},
-                    Field{Name: "Multiaddresses", Type: List{String{}}},
-               },
-          },
-     },
-}
-```
-
-(2) Generate the service implementation (client and server). For instance:
-
-```go
-build := GoPkgCodegen{
-     Defs: defs,
-     PkgPath: "github.com/ipfs/go-delegated-routing", // go package path
-     PkgDir: "/home/petar/src/github.com/ipfs/go-delegated-routing", // local directory
-}
-if err := build.Build(); err != nil {
-     // ...
-}
-// ...
-```
-
-### Generated code
-
-The generated code will be entirely static — no use of Go reflection.
-
-The generated code will supports IPLD serialization by implementing the native `Node` interface. Due to the lack of reflection, we expect this to be the fastest IPLD encoder to date.
-
-For the MVP stage, the generated code will support IPLD deserialization by parsing from a deserialized IPLD data model format, rather than implementing the native `NodeAssembler` interface. Following the MVP, we expect to transition to implementing `NodeAssembler` relatively easily — due to the novel code generation framework we are utilizing. At this point, we expect that the generated code will be the fastest IPLD decoder yet.
+Currently, Edelweiss is in the process of being onboarded as the [RPC framework for the Delegated Routing API](https://github.com/ipfs/go-delegated-routing/pull/11) of IPFS and Hydra nodes.
