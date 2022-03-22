@@ -196,6 +196,42 @@ func TestMapAtRunTime(t *testing.T) {
 	}
 }
 
+// IPLD DAGJSON encoding does not support maps with non-string keys.
+// This can be remedied on the Edelweiss side by using encoding non-string key maps into a list of pairs repn.
+func _TestNonStringMapAtRunTime(t *testing.T) {
+	defs := []defs.Defs{
+		{defs.Named{
+			Name: "UserMap",
+			Type: defs.Map{Key: defs.Float{}, Value: defs.Int{}},
+		}},
+	}
+	testSrc := `
+	var x1 UserMap = UserMap{
+		{Key: 123.456, Value: 1},
+		{Key: 456.789, Value: 2},
+	}
+	buf, err := ipld.Encode(x1, dagjson.Encode)
+	if err != nil {
+		t.Fatalf("encoding (%v)", err)
+	}
+	fmt.Println(string(buf))
+	var x2 UserMap
+	n, err := ipld.Decode(buf, dagjson.Decode)
+	if err != nil {
+		t.Fatalf("decoding (%v)", err)
+	}
+	if err = x2.Parse(n); err != nil {
+		t.Fatalf("parsing (%v)", err)
+	}
+	if !ipld.DeepEqual(x1, x2) {
+		t.Errorf("ipld values are not equal")
+	}
+`
+	for _, d := range defs {
+		RunSingleGenTest(t, d, testSrc)
+	}
+}
+
 func TestListAtRunTime(t *testing.T) {
 	defs := []defs.Defs{
 		{defs.Named{
