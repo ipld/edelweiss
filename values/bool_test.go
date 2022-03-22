@@ -8,8 +8,7 @@ import (
 )
 
 func TestBoolRoundtrip(t *testing.T) {
-	var b0 Bool
-	b0 = true
+	b0 := Bool(true)
 	buf, err := ipld.Encode(b0, dagjson.Encode)
 	if err != nil {
 		t.Fatal(err)

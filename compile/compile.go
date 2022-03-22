@@ -4,15 +4,12 @@ import (
 	"fmt"
 	"path"
 
-	log "github.com/ipfs/go-log"
 	blue_services "github.com/ipld/edelweiss/blueprints/services/dagjson-over-http"
 	blue_values "github.com/ipld/edelweiss/blueprints/values"
 	cg "github.com/ipld/edelweiss/codegen"
 	"github.com/ipld/edelweiss/defs"
 	"github.com/ipld/edelweiss/plans"
 )
-
-var logger = log.Logger("edelweiss")
 
 type GoPkgCodegen struct {
 	GoPkgDirPath string // local directory for the package

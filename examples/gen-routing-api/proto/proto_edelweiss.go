@@ -1,26 +1,24 @@
 package proto
 
-import(
-	pd1 "github.com/ipld/go-ipld-prime/datamodel"
-	pd2 "github.com/ipld/edelweiss/values"
-	pd3 "fmt"
-	pd4 "net/http"
-	pd5 "github.com/ipld/go-ipld-prime"
-	pd6 "context"
-	pd7 "github.com/ipld/go-ipld-prime/codec/dagjson"
-	pd8 "errors"
+import (
 	pd9 "bytes"
-	pd10 "io"
-	pd11 "net/url"
+	pd6 "context"
+	pd8 "errors"
+	pd3 "fmt"
 	pd12 "github.com/ipfs/go-log"
+	pd2 "github.com/ipld/edelweiss/values"
+	pd5 "github.com/ipld/go-ipld-prime"
+	pd7 "github.com/ipld/go-ipld-prime/codec/dagjson"
+	pd1 "github.com/ipld/go-ipld-prime/datamodel"
+	pd10 "io"
+	pd4 "net/http"
+	pd11 "net/url"
 )
-
 
 // -- protocol type AnonInductive0 --
 
 type AnonInductive0 struct {
-		GetP2PProvide *GetP2PProvideRequest
-
+	GetP2PProvide *GetP2PProvideRequest
 }
 
 func (x *AnonInductive0) Parse(n pd1.Node) error {
@@ -61,7 +59,7 @@ func (x *AnonInductive0_MapIterator) Next() (key pd1.Node, value pd1.Node, err e
 	} else {
 		x.done = true
 		switch {
-			case x.s.GetP2PProvide != nil:
+		case x.s.GetP2PProvide != nil:
 			return pd2.String("GetP2PProvide"), x.s.GetP2PProvide.Node(), nil
 
 		default:
@@ -84,7 +82,7 @@ func (x AnonInductive0) Kind() pd1.Kind {
 
 func (x AnonInductive0) LookupByString(key string) (pd1.Node, error) {
 	switch {
-		case x.GetP2PProvide != nil && key == "GetP2PProvide":
+	case x.GetP2PProvide != nil && key == "GetP2PProvide":
 		return x.GetP2PProvide.Node(), nil
 
 	}
@@ -108,7 +106,7 @@ func (x AnonInductive0) LookupByIndex(idx int64) (pd1.Node, error) {
 
 func (x AnonInductive0) LookupBySegment(seg pd1.PathSegment) (pd1.Node, error) {
 	switch seg.String() {
-		case "GetP2PProvide":
+	case "GetP2PProvide":
 		return x.GetP2PProvide.Node(), nil
 
 	}
@@ -162,11 +160,11 @@ func (x AnonInductive0) AsLink() (pd1.Link, error) {
 func (x AnonInductive0) Prototype() pd1.NodePrototype {
 	return nil
 }
+
 // -- protocol type AnonInductive1 --
 
 type AnonInductive1 struct {
-		GetP2PProvide *GetP2PProvideResponse
-
+	GetP2PProvide *GetP2PProvideResponse
 }
 
 func (x *AnonInductive1) Parse(n pd1.Node) error {
@@ -207,7 +205,7 @@ func (x *AnonInductive1_MapIterator) Next() (key pd1.Node, value pd1.Node, err e
 	} else {
 		x.done = true
 		switch {
-			case x.s.GetP2PProvide != nil:
+		case x.s.GetP2PProvide != nil:
 			return pd2.String("GetP2PProvide"), x.s.GetP2PProvide.Node(), nil
 
 		default:
@@ -230,7 +228,7 @@ func (x AnonInductive1) Kind() pd1.Kind {
 
 func (x AnonInductive1) LookupByString(key string) (pd1.Node, error) {
 	switch {
-		case x.GetP2PProvide != nil && key == "GetP2PProvide":
+	case x.GetP2PProvide != nil && key == "GetP2PProvide":
 		return x.GetP2PProvide.Node(), nil
 
 	}
@@ -254,7 +252,7 @@ func (x AnonInductive1) LookupByIndex(idx int64) (pd1.Node, error) {
 
 func (x AnonInductive1) LookupBySegment(seg pd1.PathSegment) (pd1.Node, error) {
 	switch seg.String() {
-		case "GetP2PProvide":
+	case "GetP2PProvide":
 		return x.GetP2PProvide.Node(), nil
 
 	}
@@ -308,29 +306,25 @@ func (x AnonInductive1) AsLink() (pd1.Link, error) {
 func (x AnonInductive1) Prototype() pd1.NodePrototype {
 	return nil
 }
+
 var logger_client_DelegatedRouting = pd12.Logger("service/client/DelegatedRouting")
 
 type DelegatedRouting_Client interface {
+	GetP2PProvide(ctx pd6.Context, req *GetP2PProvideRequest) ([]*GetP2PProvideResponse, error)
 
-GetP2PProvide(ctx pd6.Context, req *GetP2PProvideRequest) ([]*GetP2PProvideResponse, error)
-
-
-GetP2PProvide_Async(ctx pd6.Context, req *GetP2PProvideRequest) (<-chan DelegatedRouting_GetP2PProvide_AsyncResult, error)
-
+	GetP2PProvide_Async(ctx pd6.Context, req *GetP2PProvideRequest) (<-chan DelegatedRouting_GetP2PProvide_AsyncResult, error)
 }
-
 
 type DelegatedRouting_GetP2PProvide_AsyncResult struct {
 	Resp *GetP2PProvideResponse
 	Err  error
 }
 
-
 type DelegatedRouting_ClientOption func(*client_DelegatedRouting) error
 
 type client_DelegatedRouting struct {
-	httpClient       *pd4.Client
-	endpoint     *pd11.URL
+	httpClient *pd4.Client
+	endpoint   *pd11.URL
 }
 
 func DelegatedRouting_Client_WithHTTPClient(hc *pd4.Client) DelegatedRouting_ClientOption {
@@ -353,8 +347,6 @@ func New_DelegatedRouting_Client(endpoint string, opts ...DelegatedRouting_Clien
 	}
 	return c, nil
 }
-
-
 
 func (c *client_DelegatedRouting) GetP2PProvide(ctx pd6.Context, req *GetP2PProvideRequest) ([]*GetP2PProvideResponse, error) {
 	ctx, cancel := pd6.WithCancel(ctx)
@@ -441,11 +433,9 @@ func process_DelegatedRouting_GetP2PProvide_AsyncResult(ctx pd6.Context, ch chan
 	}
 }
 
-
 var logger_server_DelegatedRouting = pd12.Logger("service/server/DelegatedRouting")
 
 type DelegatedRouting_Server interface {
-
 	GetP2PProvide(ctx pd6.Context, req *GetP2PProvideRequest, respCh chan<- *GetP2PProvideResponse) error
 }
 
@@ -477,7 +467,7 @@ func DelegatedRouting_AsyncHandler(s DelegatedRouting_Server) pd4.HandlerFunc {
 				return
 			}
 			for resp := range ch {
-				env := &AnonInductive1{ GetP2PProvide: resp }
+				env := &AnonInductive1{GetP2PProvide: resp}
 				buf, err := pd5.Encode(env, pd7.Encode)
 				if err != nil {
 					logger_server_DelegatedRouting.Errorf("cannot encode response (%v)", err)
@@ -612,11 +602,11 @@ func (iter *AnonList3_ListIterator) Next() (int64, pd1.Node, error) {
 func (iter *AnonList3_ListIterator) Done() bool {
 	return iter.at >= iter.list.Length()
 }
+
 // -- protocol type GetP2PProvideRequest --
 
 type GetP2PProvideRequest struct {
-		Keys AnonList3
-
+	Keys AnonList3
 }
 
 func (x GetP2PProvideRequest) Node() pd1.Node {
@@ -638,11 +628,11 @@ func (x *GetP2PProvideRequest) Parse(n pd1.Node) error {
 			} else {
 				_ = vn
 				switch k {
-			case "Keys":
-			if err := x.Keys.Parse(vn); err != nil {
-				return err
-			}
-			nfields++
+				case "Keys":
+					if err := x.Keys.Parse(vn); err != nil {
+						return err
+					}
+					nfields++
 
 				}
 			}
@@ -663,15 +653,15 @@ type GetP2PProvideRequest_MapIterator struct {
 func (x *GetP2PProvideRequest_MapIterator) Next() (key pd1.Node, value pd1.Node, err error) {
 	x.i++
 	switch x.i {
-			case 0:
-			return pd2.String("Keys"), x.s.Keys.Node(), nil
+	case 0:
+		return pd2.String("Keys"), x.s.Keys.Node(), nil
 
 	}
 	return nil, nil, pd2.ErrNA
 }
 
 func (x *GetP2PProvideRequest_MapIterator) Done() bool {
-	return x.i + 1 >= 1
+	return x.i+1 >= 1
 }
 
 func (x GetP2PProvideRequest) Kind() pd1.Kind {
@@ -680,7 +670,7 @@ func (x GetP2PProvideRequest) Kind() pd1.Kind {
 
 func (x GetP2PProvideRequest) LookupByString(key string) (pd1.Node, error) {
 	switch key {
-		case "Keys":
+	case "Keys":
 		return x.Keys.Node(), nil
 
 	}
@@ -707,7 +697,7 @@ func (x GetP2PProvideRequest) LookupByNode(key pd1.Node) (pd1.Node, error) {
 
 func (x GetP2PProvideRequest) LookupByIndex(idx int64) (pd1.Node, error) {
 	switch idx {
-		case 0:
+	case 0:
 		return x.Keys.Node(), nil
 
 	}
@@ -716,7 +706,7 @@ func (x GetP2PProvideRequest) LookupByIndex(idx int64) (pd1.Node, error) {
 
 func (x GetP2PProvideRequest) LookupBySegment(seg pd1.PathSegment) (pd1.Node, error) {
 	switch seg.String() {
-		case "0", "Keys":
+	case "0", "Keys":
 		return x.Keys.Node(), nil
 
 	}
@@ -890,11 +880,11 @@ func (iter *AnonList5_ListIterator) Next() (int64, pd1.Node, error) {
 func (iter *AnonList5_ListIterator) Done() bool {
 	return iter.at >= iter.list.Length()
 }
+
 // -- protocol type GetP2PProvideResponse --
 
 type GetP2PProvideResponse struct {
-		ProvidersByKey AnonList5
-
+	ProvidersByKey AnonList5
 }
 
 func (x GetP2PProvideResponse) Node() pd1.Node {
@@ -916,11 +906,11 @@ func (x *GetP2PProvideResponse) Parse(n pd1.Node) error {
 			} else {
 				_ = vn
 				switch k {
-			case "ProvidersByKey":
-			if err := x.ProvidersByKey.Parse(vn); err != nil {
-				return err
-			}
-			nfields++
+				case "ProvidersByKey":
+					if err := x.ProvidersByKey.Parse(vn); err != nil {
+						return err
+					}
+					nfields++
 
 				}
 			}
@@ -941,15 +931,15 @@ type GetP2PProvideResponse_MapIterator struct {
 func (x *GetP2PProvideResponse_MapIterator) Next() (key pd1.Node, value pd1.Node, err error) {
 	x.i++
 	switch x.i {
-			case 0:
-			return pd2.String("ProvidersByKey"), x.s.ProvidersByKey.Node(), nil
+	case 0:
+		return pd2.String("ProvidersByKey"), x.s.ProvidersByKey.Node(), nil
 
 	}
 	return nil, nil, pd2.ErrNA
 }
 
 func (x *GetP2PProvideResponse_MapIterator) Done() bool {
-	return x.i + 1 >= 1
+	return x.i+1 >= 1
 }
 
 func (x GetP2PProvideResponse) Kind() pd1.Kind {
@@ -958,7 +948,7 @@ func (x GetP2PProvideResponse) Kind() pd1.Kind {
 
 func (x GetP2PProvideResponse) LookupByString(key string) (pd1.Node, error) {
 	switch key {
-		case "ProvidersByKey":
+	case "ProvidersByKey":
 		return x.ProvidersByKey.Node(), nil
 
 	}
@@ -985,7 +975,7 @@ func (x GetP2PProvideResponse) LookupByNode(key pd1.Node) (pd1.Node, error) {
 
 func (x GetP2PProvideResponse) LookupByIndex(idx int64) (pd1.Node, error) {
 	switch idx {
-		case 0:
+	case 0:
 		return x.ProvidersByKey.Node(), nil
 
 	}
@@ -994,7 +984,7 @@ func (x GetP2PProvideResponse) LookupByIndex(idx int64) (pd1.Node, error) {
 
 func (x GetP2PProvideResponse) LookupBySegment(seg pd1.PathSegment) (pd1.Node, error) {
 	switch seg.String() {
-		case "0", "ProvidersByKey":
+	case "0", "ProvidersByKey":
 		return x.ProvidersByKey.Node(), nil
 
 	}
@@ -1052,9 +1042,8 @@ func (x GetP2PProvideResponse) Prototype() pd1.NodePrototype {
 // -- protocol type ProvidersByKey --
 
 type ProvidersByKey struct {
-		Key Multihash
-		Provider Provider
-
+	Key      Multihash
+	Provider Provider
 }
 
 func (x ProvidersByKey) Node() pd1.Node {
@@ -1076,16 +1065,16 @@ func (x *ProvidersByKey) Parse(n pd1.Node) error {
 			} else {
 				_ = vn
 				switch k {
-			case "Key":
-			if err := x.Key.Parse(vn); err != nil {
-				return err
-			}
-			nfields++
-			case "Provider":
-			if err := x.Provider.Parse(vn); err != nil {
-				return err
-			}
-			nfields++
+				case "Key":
+					if err := x.Key.Parse(vn); err != nil {
+						return err
+					}
+					nfields++
+				case "Provider":
+					if err := x.Provider.Parse(vn); err != nil {
+						return err
+					}
+					nfields++
 
 				}
 			}
@@ -1106,17 +1095,17 @@ type ProvidersByKey_MapIterator struct {
 func (x *ProvidersByKey_MapIterator) Next() (key pd1.Node, value pd1.Node, err error) {
 	x.i++
 	switch x.i {
-			case 0:
-			return pd2.String("Key"), x.s.Key.Node(), nil
-			case 1:
-			return pd2.String("Provider"), x.s.Provider.Node(), nil
+	case 0:
+		return pd2.String("Key"), x.s.Key.Node(), nil
+	case 1:
+		return pd2.String("Provider"), x.s.Provider.Node(), nil
 
 	}
 	return nil, nil, pd2.ErrNA
 }
 
 func (x *ProvidersByKey_MapIterator) Done() bool {
-	return x.i + 1 >= 2
+	return x.i+1 >= 2
 }
 
 func (x ProvidersByKey) Kind() pd1.Kind {
@@ -1125,9 +1114,9 @@ func (x ProvidersByKey) Kind() pd1.Kind {
 
 func (x ProvidersByKey) LookupByString(key string) (pd1.Node, error) {
 	switch key {
-		case "Key":
+	case "Key":
 		return x.Key.Node(), nil
-		case "Provider":
+	case "Provider":
 		return x.Provider.Node(), nil
 
 	}
@@ -1154,9 +1143,9 @@ func (x ProvidersByKey) LookupByNode(key pd1.Node) (pd1.Node, error) {
 
 func (x ProvidersByKey) LookupByIndex(idx int64) (pd1.Node, error) {
 	switch idx {
-		case 0:
+	case 0:
 		return x.Key.Node(), nil
-		case 1:
+	case 1:
 		return x.Provider.Node(), nil
 
 	}
@@ -1165,9 +1154,9 @@ func (x ProvidersByKey) LookupByIndex(idx int64) (pd1.Node, error) {
 
 func (x ProvidersByKey) LookupBySegment(seg pd1.PathSegment) (pd1.Node, error) {
 	switch seg.String() {
-		case "0", "Key":
+	case "0", "Key":
 		return x.Key.Node(), nil
-		case "1", "Provider":
+	case "1", "Provider":
 		return x.Provider.Node(), nil
 
 	}
@@ -1225,8 +1214,7 @@ func (x ProvidersByKey) Prototype() pd1.NodePrototype {
 // -- protocol type Multihash --
 
 type Multihash struct {
-		Bytes pd2.Bytes
-
+	Bytes pd2.Bytes
 }
 
 func (x Multihash) Node() pd1.Node {
@@ -1248,11 +1236,11 @@ func (x *Multihash) Parse(n pd1.Node) error {
 			} else {
 				_ = vn
 				switch k {
-			case "Bytes":
-			if err := x.Bytes.Parse(vn); err != nil {
-				return err
-			}
-			nfields++
+				case "Bytes":
+					if err := x.Bytes.Parse(vn); err != nil {
+						return err
+					}
+					nfields++
 
 				}
 			}
@@ -1273,15 +1261,15 @@ type Multihash_MapIterator struct {
 func (x *Multihash_MapIterator) Next() (key pd1.Node, value pd1.Node, err error) {
 	x.i++
 	switch x.i {
-			case 0:
-			return pd2.String("Bytes"), x.s.Bytes.Node(), nil
+	case 0:
+		return pd2.String("Bytes"), x.s.Bytes.Node(), nil
 
 	}
 	return nil, nil, pd2.ErrNA
 }
 
 func (x *Multihash_MapIterator) Done() bool {
-	return x.i + 1 >= 1
+	return x.i+1 >= 1
 }
 
 func (x Multihash) Kind() pd1.Kind {
@@ -1290,7 +1278,7 @@ func (x Multihash) Kind() pd1.Kind {
 
 func (x Multihash) LookupByString(key string) (pd1.Node, error) {
 	switch key {
-		case "Bytes":
+	case "Bytes":
 		return x.Bytes.Node(), nil
 
 	}
@@ -1317,7 +1305,7 @@ func (x Multihash) LookupByNode(key pd1.Node) (pd1.Node, error) {
 
 func (x Multihash) LookupByIndex(idx int64) (pd1.Node, error) {
 	switch idx {
-		case 0:
+	case 0:
 		return x.Bytes.Node(), nil
 
 	}
@@ -1326,7 +1314,7 @@ func (x Multihash) LookupByIndex(idx int64) (pd1.Node, error) {
 
 func (x Multihash) LookupBySegment(seg pd1.PathSegment) (pd1.Node, error) {
 	switch seg.String() {
-		case "0", "Bytes":
+	case "0", "Bytes":
 		return x.Bytes.Node(), nil
 
 	}
@@ -1500,6 +1488,7 @@ func (iter *AnonList9_ListIterator) Next() (int64, pd1.Node, error) {
 func (iter *AnonList9_ListIterator) Done() bool {
 	return iter.at >= iter.list.Length()
 }
+
 // -- protocol type AnonList10 --
 
 type AnonList10 []TransferProto
@@ -1619,12 +1608,12 @@ func (iter *AnonList10_ListIterator) Next() (int64, pd1.Node, error) {
 func (iter *AnonList10_ListIterator) Done() bool {
 	return iter.at >= iter.list.Length()
 }
+
 // -- protocol type Provider --
 
 type Provider struct {
-		Nodes AnonList9
-		Proto AnonList10
-
+	Nodes AnonList9
+	Proto AnonList10
 }
 
 func (x Provider) Node() pd1.Node {
@@ -1646,16 +1635,16 @@ func (x *Provider) Parse(n pd1.Node) error {
 			} else {
 				_ = vn
 				switch k {
-			case "Nodes":
-			if err := x.Nodes.Parse(vn); err != nil {
-				return err
-			}
-			nfields++
-			case "Proto":
-			if err := x.Proto.Parse(vn); err != nil {
-				return err
-			}
-			nfields++
+				case "Nodes":
+					if err := x.Nodes.Parse(vn); err != nil {
+						return err
+					}
+					nfields++
+				case "Proto":
+					if err := x.Proto.Parse(vn); err != nil {
+						return err
+					}
+					nfields++
 
 				}
 			}
@@ -1676,17 +1665,17 @@ type Provider_MapIterator struct {
 func (x *Provider_MapIterator) Next() (key pd1.Node, value pd1.Node, err error) {
 	x.i++
 	switch x.i {
-			case 0:
-			return pd2.String("Nodes"), x.s.Nodes.Node(), nil
-			case 1:
-			return pd2.String("Proto"), x.s.Proto.Node(), nil
+	case 0:
+		return pd2.String("Nodes"), x.s.Nodes.Node(), nil
+	case 1:
+		return pd2.String("Proto"), x.s.Proto.Node(), nil
 
 	}
 	return nil, nil, pd2.ErrNA
 }
 
 func (x *Provider_MapIterator) Done() bool {
-	return x.i + 1 >= 2
+	return x.i+1 >= 2
 }
 
 func (x Provider) Kind() pd1.Kind {
@@ -1695,9 +1684,9 @@ func (x Provider) Kind() pd1.Kind {
 
 func (x Provider) LookupByString(key string) (pd1.Node, error) {
 	switch key {
-		case "Nodes":
+	case "Nodes":
 		return x.Nodes.Node(), nil
-		case "Proto":
+	case "Proto":
 		return x.Proto.Node(), nil
 
 	}
@@ -1724,9 +1713,9 @@ func (x Provider) LookupByNode(key pd1.Node) (pd1.Node, error) {
 
 func (x Provider) LookupByIndex(idx int64) (pd1.Node, error) {
 	switch idx {
-		case 0:
+	case 0:
 		return x.Nodes.Node(), nil
-		case 1:
+	case 1:
 		return x.Proto.Node(), nil
 
 	}
@@ -1735,9 +1724,9 @@ func (x Provider) LookupByIndex(idx int64) (pd1.Node, error) {
 
 func (x Provider) LookupBySegment(seg pd1.PathSegment) (pd1.Node, error) {
 	switch seg.String() {
-		case "0", "Nodes":
+	case "0", "Nodes":
 		return x.Nodes.Node(), nil
-		case "1", "Proto":
+	case "1", "Proto":
 		return x.Proto.Node(), nil
 
 	}
@@ -1795,8 +1784,7 @@ func (x Provider) Prototype() pd1.NodePrototype {
 // -- protocol type Node --
 
 type Node struct {
-		Peer *Peer
-
+	Peer *Peer
 }
 
 func (x *Node) Parse(n pd1.Node) error {
@@ -1837,7 +1825,7 @@ func (x *Node_MapIterator) Next() (key pd1.Node, value pd1.Node, err error) {
 	} else {
 		x.done = true
 		switch {
-			case x.s.Peer != nil:
+		case x.s.Peer != nil:
 			return pd2.String("Peer"), x.s.Peer.Node(), nil
 
 		default:
@@ -1860,7 +1848,7 @@ func (x Node) Kind() pd1.Kind {
 
 func (x Node) LookupByString(key string) (pd1.Node, error) {
 	switch {
-		case x.Peer != nil && key == "Peer":
+	case x.Peer != nil && key == "Peer":
 		return x.Peer.Node(), nil
 
 	}
@@ -1884,7 +1872,7 @@ func (x Node) LookupByIndex(idx int64) (pd1.Node, error) {
 
 func (x Node) LookupBySegment(seg pd1.PathSegment) (pd1.Node, error) {
 	switch seg.String() {
-		case "Peer":
+	case "Peer":
 		return x.Peer.Node(), nil
 
 	}
@@ -1938,6 +1926,7 @@ func (x Node) AsLink() (pd1.Link, error) {
 func (x Node) Prototype() pd1.NodePrototype {
 	return nil
 }
+
 // -- protocol type AnonList13 --
 
 type AnonList13 []pd2.Bytes
@@ -2057,12 +2046,12 @@ func (iter *AnonList13_ListIterator) Next() (int64, pd1.Node, error) {
 func (iter *AnonList13_ListIterator) Done() bool {
 	return iter.at >= iter.list.Length()
 }
+
 // -- protocol type Peer --
 
 type Peer struct {
-		ID pd2.Bytes
-		Multiaddresses AnonList13
-
+	ID             pd2.Bytes
+	Multiaddresses AnonList13
 }
 
 func (x Peer) Node() pd1.Node {
@@ -2084,16 +2073,16 @@ func (x *Peer) Parse(n pd1.Node) error {
 			} else {
 				_ = vn
 				switch k {
-			case "ID":
-			if err := x.ID.Parse(vn); err != nil {
-				return err
-			}
-			nfields++
-			case "Multiaddresses":
-			if err := x.Multiaddresses.Parse(vn); err != nil {
-				return err
-			}
-			nfields++
+				case "ID":
+					if err := x.ID.Parse(vn); err != nil {
+						return err
+					}
+					nfields++
+				case "Multiaddresses":
+					if err := x.Multiaddresses.Parse(vn); err != nil {
+						return err
+					}
+					nfields++
 
 				}
 			}
@@ -2114,17 +2103,17 @@ type Peer_MapIterator struct {
 func (x *Peer_MapIterator) Next() (key pd1.Node, value pd1.Node, err error) {
 	x.i++
 	switch x.i {
-			case 0:
-			return pd2.String("ID"), x.s.ID.Node(), nil
-			case 1:
-			return pd2.String("Multiaddresses"), x.s.Multiaddresses.Node(), nil
+	case 0:
+		return pd2.String("ID"), x.s.ID.Node(), nil
+	case 1:
+		return pd2.String("Multiaddresses"), x.s.Multiaddresses.Node(), nil
 
 	}
 	return nil, nil, pd2.ErrNA
 }
 
 func (x *Peer_MapIterator) Done() bool {
-	return x.i + 1 >= 2
+	return x.i+1 >= 2
 }
 
 func (x Peer) Kind() pd1.Kind {
@@ -2133,9 +2122,9 @@ func (x Peer) Kind() pd1.Kind {
 
 func (x Peer) LookupByString(key string) (pd1.Node, error) {
 	switch key {
-		case "ID":
+	case "ID":
 		return x.ID.Node(), nil
-		case "Multiaddresses":
+	case "Multiaddresses":
 		return x.Multiaddresses.Node(), nil
 
 	}
@@ -2162,9 +2151,9 @@ func (x Peer) LookupByNode(key pd1.Node) (pd1.Node, error) {
 
 func (x Peer) LookupByIndex(idx int64) (pd1.Node, error) {
 	switch idx {
-		case 0:
+	case 0:
 		return x.ID.Node(), nil
-		case 1:
+	case 1:
 		return x.Multiaddresses.Node(), nil
 
 	}
@@ -2173,9 +2162,9 @@ func (x Peer) LookupByIndex(idx int64) (pd1.Node, error) {
 
 func (x Peer) LookupBySegment(seg pd1.PathSegment) (pd1.Node, error) {
 	switch seg.String() {
-		case "0", "ID":
+	case "0", "ID":
 		return x.ID.Node(), nil
-		case "1", "Multiaddresses":
+	case "1", "Multiaddresses":
 		return x.Multiaddresses.Node(), nil
 
 	}
@@ -2233,8 +2222,7 @@ func (x Peer) Prototype() pd1.NodePrototype {
 // -- protocol type TransferProto --
 
 type TransferProto struct {
-		Bitswap *BitswapTransfer
-
+	Bitswap *BitswapTransfer
 }
 
 func (x *TransferProto) Parse(n pd1.Node) error {
@@ -2275,7 +2263,7 @@ func (x *TransferProto_MapIterator) Next() (key pd1.Node, value pd1.Node, err er
 	} else {
 		x.done = true
 		switch {
-			case x.s.Bitswap != nil:
+		case x.s.Bitswap != nil:
 			return pd2.String("Bitswap"), x.s.Bitswap.Node(), nil
 
 		default:
@@ -2298,7 +2286,7 @@ func (x TransferProto) Kind() pd1.Kind {
 
 func (x TransferProto) LookupByString(key string) (pd1.Node, error) {
 	switch {
-		case x.Bitswap != nil && key == "Bitswap":
+	case x.Bitswap != nil && key == "Bitswap":
 		return x.Bitswap.Node(), nil
 
 	}
@@ -2322,7 +2310,7 @@ func (x TransferProto) LookupByIndex(idx int64) (pd1.Node, error) {
 
 func (x TransferProto) LookupBySegment(seg pd1.PathSegment) (pd1.Node, error) {
 	switch seg.String() {
-		case "Bitswap":
+	case "Bitswap":
 		return x.Bitswap.Node(), nil
 
 	}
@@ -2376,10 +2364,10 @@ func (x TransferProto) AsLink() (pd1.Link, error) {
 func (x TransferProto) Prototype() pd1.NodePrototype {
 	return nil
 }
+
 // -- protocol type BitswapTransfer --
 
 type BitswapTransfer struct {
-
 }
 
 func (x BitswapTransfer) Node() pd1.Node {
@@ -2427,7 +2415,7 @@ func (x *BitswapTransfer_MapIterator) Next() (key pd1.Node, value pd1.Node, err 
 }
 
 func (x *BitswapTransfer_MapIterator) Done() bool {
-	return x.i + 1 >= 0
+	return x.i+1 >= 0
 }
 
 func (x BitswapTransfer) Kind() pd1.Kind {
