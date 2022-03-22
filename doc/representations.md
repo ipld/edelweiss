@@ -238,12 +238,40 @@ Example values in IPLD DAG-JSON format:
 "abc"
 ```
 
-## Service method call
+## Service method calls
 
 Example service type definition:
-XXX
+```go
+Service{
+     Methods: Methods{
+          Method{Name: "Method1", Type: Fn{Arg: Int{}, Return: Bool{}}},
+          Method{Name: "Method2", Type: Fn{Arg: String{}, Return: Float{}}},
+     },
+},
+```
 
 ### Request
 
+Based on the service definition (above), Edelweiss generates a type definition for a method call request. In this case:
+
+```go
+Inductive{
+     Cases: Cases{
+          Case{ Name: "Method1", Value: Int{} }
+          Case{ Name: "Method2", Value: String{} }
+     },
+}
+```
+
 ### Response
 
+Based on the service definition (above), Edelweiss generates a type definition for a method call response. In this case:
+
+```go
+Inductive{
+     Cases: Cases{
+          Case{ Name: "Method1", Value: Bool{} }
+          Case{ Name: "Method2", Value: Float{} }
+     },
+}
+```
