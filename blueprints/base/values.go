@@ -14,6 +14,7 @@ const (
 var (
 	Nil          = cg.V("nil")
 	IPLDKindType = &cg.GoTypeRef{PkgPath: IPLDDatamodelPkg, TypeName: "Kind"}
+	IPLDNull     = &cg.GoTypeRef{PkgPath: IPLDDatamodelPkg, TypeName: "Null"}
 	// IPLD kind values
 	IPLDKindInvalid = &cg.GoRef{PkgPath: IPLDDatamodelPkg, Name: "Kind_Invalid"}
 	IPLDKindBool    = &cg.GoRef{PkgPath: IPLDDatamodelPkg, Name: "Kind_Bool"}
@@ -45,6 +46,7 @@ var (
 	EdelweissErrNotFound = &cg.GoRef{PkgPath: EdelweissValuesPkg, Name: "ErrNotFound"}
 	EdelweissString      = &cg.GoRef{PkgPath: EdelweissValuesPkg, Name: "String"}
 	EdelweissInt         = &cg.GoRef{PkgPath: EdelweissValuesPkg, Name: "Int"}
+	EdelweissParseFunc   = &cg.GoRef{PkgPath: EdelweissValuesPkg, Name: "ParseFunc"}
 )
 
 var (
