@@ -40,6 +40,7 @@ func (x *GoListImpl) GoDef() cg.Blueprint {
 		"Node":            base.IPLDNodeType,
 		"KindType":        base.IPLDKindType,
 		"KindList":        base.IPLDKindList,
+		"KindNull":        base.IPLDKindNull,
 		"KindString":      base.IPLDKindString,
 		"KindInt":         base.IPLDKindInt,
 		"ErrNA":           base.EdelweissErrNA,
@@ -64,6 +65,10 @@ func (v {{.Type}}) Node() {{.Node}} {
 }
 
 func (v *{{.Type}}) Parse(n {{.Node}}) error {
+	if n.Kind() == {{.KindNull}} {
+		*v = nil
+		return nil
+	}
 	if n.Kind() != {{.KindList}} {
 		return {{.ErrNA}}
 	} else {

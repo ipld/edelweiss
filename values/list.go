@@ -30,6 +30,10 @@ func (v List) Node() datamodel.Node {
 }
 
 func (v *List) Parse(n datamodel.Node) error {
+	if n.Kind() == ipld.Kind_Null {
+		*v = nil
+		return nil
+	}
 	if n.Kind() != ipld.Kind_List {
 		return ErrNA
 	} else {

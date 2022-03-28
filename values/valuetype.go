@@ -19,6 +19,8 @@ type Parser interface {
 	Parse(datamodel.Node) error
 }
 
+type ParseFunc func(datamodel.Node) error
+
 var (
 	ErrNA           = fmt.Errorf("n/a")
 	ErrBounds       = fmt.Errorf("index out of bounds")
