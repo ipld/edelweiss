@@ -17,6 +17,7 @@ var (
 	IPLDNull     = &cg.GoTypeRef{PkgPath: IPLDDatamodelPkg, TypeName: "Null"}
 	// IPLD kind values
 	IPLDKindInvalid = &cg.GoRef{PkgPath: IPLDDatamodelPkg, Name: "Kind_Invalid"}
+	IPLDKindNull    = &cg.GoRef{PkgPath: IPLDDatamodelPkg, Name: "Kind_Null"}
 	IPLDKindBool    = &cg.GoRef{PkgPath: IPLDDatamodelPkg, Name: "Kind_Bool"}
 	IPLDKindInt     = &cg.GoRef{PkgPath: IPLDDatamodelPkg, Name: "Kind_Int"}
 	IPLDKindFloat   = &cg.GoRef{PkgPath: IPLDDatamodelPkg, Name: "Kind_Float"}
