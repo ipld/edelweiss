@@ -21,23 +21,23 @@ func TestService(t *testing.T) {
 
 type TestService_ServerImpl struct{}
 
-func (TestService_ServerImpl) Method1(ctx context.Context, req *values.Int, respCh chan<- *values.Bool) error {
+func (TestService_ServerImpl) Method1(ctx context.Context, req *values.Int, respCh chan<- *TestService_Method1_AsyncResult) error {
 	go func() {
 		defer close(respCh)
 		var r1 values.Bool = true
-		respCh <- &r1
+		respCh <- &TestService_Method1_AsyncResult{ Resp: &r1 }
 	}()
 	return nil
 }
 
-func (TestService_ServerImpl) Method2(ctx context.Context, req *values.String, respCh chan<- *values.Float) error {
+func (TestService_ServerImpl) Method2(ctx context.Context, req *values.String, respCh chan<- *TestService_Method2_AsyncResult) error {
 	go func() {
 		defer close(respCh)
 		var r1 values.Float = 1.23
-		respCh <- &r1
+		respCh <- &TestService_Method2_AsyncResult{ Resp: &r1 }
 		// TODO: dagjson.Decode does not support multiple streaming values
 		// var r2 values.Float = 4.56
-		// respCh <- &r2
+		// respCh <- &TestService_Method2_AsyncResult{ Resp: &r2 }
 	}()
 	return nil
 }
