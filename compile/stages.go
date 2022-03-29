@@ -18,7 +18,7 @@ func generate(p *genPlan, s defs.Def) (plans.BuiltinOrRefPlan, error) {
 		if err != nil {
 			return nil, err
 		}
-		if err = p.AddNamed(t.Name, plan); err != nil {
+		if _, err = p.AddNamed(t.Name, plan); err != nil {
 			return nil, err
 		}
 		return plans.Ref{Name: t.Name}, nil
@@ -225,7 +225,7 @@ func provisionService(p *genPlan, named string, s defs.Service) (plans.Plan, err
 	plan := plans.Service{
 		Methods: make(plans.Methods, len(methods)),
 	}
-	callCases, returnCases := make(plans.Cases, len(methods)), make(plans.Cases, len(methods))
+	callCases, returnCases := make(plans.Cases, len(methods)), make(plans.Cases, len(methods)+1)
 	for i, m := range methods {
 		argRef, err := generate(p, m.Type.Arg)
 		if err != nil {
@@ -237,9 +237,20 @@ func provisionService(p *genPlan, named string, s defs.Service) (plans.Plan, err
 		}
 		fn := plans.Fn{Arg: argRef, Return: returnRef}
 		plan.Methods[i] = plans.Method{Name: m.Name, Type: fn}
-		callCases[i] = plans.Case{Name: m.Name, Type: argRef}
-		returnCases[i] = plans.Case{Name: m.Name, Type: returnRef}
+		callCases[i] = plans.Case{Name: m.Name + "Request", Type: argRef}
+		returnCases[i] = plans.Case{Name: m.Name + "Response", Type: returnRef}
 	}
+	errorEnvelope := plans.Structure{
+		Fields: plans.Fields{
+			plans.Field{Name: "Code", Type: plans.String{}},
+		},
+	}
+	var err error
+	errEnvName := fmt.Sprintf("%s_Error", named)
+	if plan.ErrorEnvelope, err = p.AddNamed(errEnvName, errorEnvelope); err != nil {
+		return nil, fmt.Errorf("service envelope name %s already in use", errEnvName)
+	}
+	returnCases[len(returnCases)-1] = plans.Case{Name: "Error", Type: plan.ErrorEnvelope}
 	//
 	// callEnvelopeRef, err := generate(p, plans.Inductive{Cases: callCases})
 	// if err != nil {

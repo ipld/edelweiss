@@ -2,6 +2,7 @@ package plans
 
 type Service struct {
 	Methods        Methods
+	ErrorEnvelope  BuiltinOrRefPlan
 	CallEnvelope   BuiltinOrRefPlan
 	ReturnEnvelope BuiltinOrRefPlan
 }
