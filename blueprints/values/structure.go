@@ -34,10 +34,14 @@ func (x *GoStructureImpl) GoDef() cg.Blueprint {
 	fields := x.Def.Fields
 	fieldData := make([]cg.BlueMap, len(fields))
 	for i := range fields {
+		goFieldName := fields[i].GoName
+		if goFieldName == "" {
+			goFieldName = fields[i].Name
+		}
 		fieldData[i] = cg.BlueMap{
 			"FieldIndex":       cg.IntLiteral(i),
 			"FieldIndexString": cg.StringLiteral(strconv.Itoa(i)),
-			"FieldName":        cg.V(fields[i].Name),
+			"FieldName":        cg.V(goFieldName),
 			"FieldNameString":  cg.StringLiteral(fields[i].Name),
 			"FieldType":        x.Lookup.LookupDepGoRef(fields[i].Type),
 			"EdelweissString":  base.EdelweissString,

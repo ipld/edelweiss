@@ -101,7 +101,7 @@ func provision(p *genPlan, named string, s defs.Def) (plans.Plan, error) {
 			if err != nil {
 				return nil, err
 			}
-			fieldPlans[i] = plans.Field{Name: f.Name, Type: ftp}
+			fieldPlans[i] = plans.Field{Name: f.Name, GoName: f.GoName, Type: ftp}
 		}
 		return plans.Structure{Fields: fieldPlans}, nil
 

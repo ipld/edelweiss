@@ -48,11 +48,11 @@ func TestStructureAtRunTime(t *testing.T) {
 			Name: "UserStructure",
 			Type: defs.Structure{
 				Fields: defs.Fields{
-					defs.Field{Name: "A", Type: defs.Int{}},
-					defs.Field{Name: "B", Type: defs.String{}},
-					defs.Field{Name: "C", Type: defs.Float{}},
-					defs.Field{Name: "D", Type: defs.Byte{}},
-					defs.Field{Name: "E", Type: defs.Char{}},
+					defs.Field{Name: "a", GoName: "A", Type: defs.Int{}},
+					defs.Field{Name: "B", GoName: "", Type: defs.String{}},
+					defs.Field{Name: "C", GoName: "", Type: defs.Float{}},
+					defs.Field{Name: "D", GoName: "", Type: defs.Byte{}},
+					defs.Field{Name: "E", GoName: "", Type: defs.Char{}},
 				},
 			},
 		}},
