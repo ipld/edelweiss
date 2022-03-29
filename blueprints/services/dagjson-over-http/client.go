@@ -83,10 +83,15 @@ func (x GoClientImpl) GoDef() cg.Blueprint {
 		methodAsyncDecls[i] = asyncMethodDecl
 		bmImpl := cg.MergeBlueMaps(bmDecl,
 			cg.BlueMap{
+				"ErrorEnvelope":   x.Lookup.LookupDepGoRef(x.Def.ErrorEnvelope),
 				"CallEnvelope":    x.Lookup.LookupDepGoRef(x.Def.CallEnvelope),
 				"ReturnEnvelope":  x.Lookup.LookupDepGoRef(x.Def.ReturnEnvelope),
 				"SyncMethodDecl":  syncMethodDecl,
 				"AsyncMethodDecl": asyncMethodDecl,
+				"ErrContext":      base.EdelweissErrContext,
+				"ErrProto":        base.EdelweissErrProto,
+				"ErrService":      base.EdelweissErrService,
+				"ErrorsNew":       base.ErrorsNew,
 			},
 		)
 		methodImpls[i] = cg.T{Data: bmImpl, Src: goClientMethodImplTemplate}
@@ -185,7 +190,9 @@ func (c *{{.Type}}) {{.SyncMethodDecl}} {
 				if r.Err == nil {
 					resps = append(resps, r.Resp)
 				} else {
-					{{.LoggerVar}}.Errorf("client received invalid response (%v)", r.Err)
+					{{.LoggerVar}}.Errorf("client received erro response (%v)", r.Err)
+					cancel()
+					return resps, r.Err
 				}
 			}
 		case <-ctx.Done():
@@ -228,6 +235,7 @@ func {{.ProcessReturnAsync}}(ctx {{.Context}}, ch chan<- {{.MethodReturnAsync}},
 	defer close(ch)
 	for {
 		if ctx.Err() != nil {
+			ch <- {{.MethodReturnAsync}}{Err: {{.ErrContext}}{ctx.Err()}} // context cancelled
 			return
 		}
 
@@ -236,15 +244,19 @@ func {{.ProcessReturnAsync}}(ctx {{.Context}}, ch chan<- {{.MethodReturnAsync}},
 			return
 		}
 		if err != nil {
-			ch <- {{.MethodReturnAsync}}{Err: err}
+			ch <- {{.MethodReturnAsync}}{Err: {{.ErrProto}}{err}} // IPLD decode error
 			return
 		}
 		env := &{{.ReturnEnvelope}}{}
 		if err = env.Parse(n); err != nil {
-			ch <- {{.MethodReturnAsync}}{Err: err}
+			ch <- {{.MethodReturnAsync}}{Err: {{.ErrProto}}{err}} // schema decode error
 			return
 		}
 
+		if env.Error != nil {
+			ch <- {{.MethodReturnAsync}}{Err: {{.ErrService}}{ {{.ErrorsNew}}(env.Error.Code) }} // service-level error
+			return
+		}
 		if env.{{.MethodName}} == nil {
 			continue
 		}

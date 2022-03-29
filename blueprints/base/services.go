@@ -2,6 +2,7 @@ package base
 
 import (
 	cg "github.com/ipld/edelweiss/codegen"
+	"github.com/ipld/edelweiss/services"
 )
 
 var (
@@ -24,4 +25,12 @@ var (
 	IOReader           = &cg.GoRef{PkgPath: "io", Name: "Reader"}
 	IOEOF              = &cg.GoRef{PkgPath: "io", Name: "EOF"}
 	IOErrUnexpectedEOF = &cg.GoRef{PkgPath: "io", Name: "ErrUnexpectedEOF"}
+)
+
+const EdelweissServicesPkg = services.PkgPath
+
+var (
+	EdelweissErrContext = &cg.GoTypeRef{PkgPath: EdelweissServicesPkg, TypeName: "ErrContext"}
+	EdelweissErrProto   = &cg.GoTypeRef{PkgPath: EdelweissServicesPkg, TypeName: "ErrProto"}
+	EdelweissErrService = &cg.GoTypeRef{PkgPath: EdelweissServicesPkg, TypeName: "ErrService"}
 )

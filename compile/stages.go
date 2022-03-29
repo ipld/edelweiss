@@ -237,12 +237,12 @@ func provisionService(p *genPlan, named string, s defs.Service) (plans.Plan, err
 		}
 		fn := plans.Fn{Arg: argRef, Return: returnRef}
 		plan.Methods[i] = plans.Method{Name: m.Name, Type: fn}
-		callCases[i] = plans.Case{Name: m.Name + "Request", Type: argRef}
-		returnCases[i] = plans.Case{Name: m.Name + "Response", Type: returnRef}
+		callCases[i] = plans.Case{Name: m.Name + "Request", GoName: m.Name, Type: argRef}
+		returnCases[i] = plans.Case{Name: m.Name + "Response", GoName: m.Name, Type: returnRef}
 	}
 	errorEnvelope := plans.Structure{
 		Fields: plans.Fields{
-			plans.Field{Name: "Code", Type: plans.String{}},
+			plans.Field{Name: "Code", GoName: "Code", Type: plans.String{}},
 		},
 	}
 	var err error
