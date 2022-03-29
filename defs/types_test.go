@@ -35,8 +35,8 @@ func TestServiceDef(t *testing.T) {
 							Arg: Ref{"PutArgs"},
 							Return: Union{
 								Cases: Cases{
-									Case{"ok", Ref{"ResultOk"}},
-									Case{"error", Ref{"ResultError"}},
+									Case{Name: "ok", Type: Ref{"ResultOk"}},
+									Case{Name: "error", Type: Ref{"ResultError"}},
 								},
 							},
 						},
@@ -48,8 +48,8 @@ func TestServiceDef(t *testing.T) {
 							},
 							Return: Union{
 								Cases: Cases{
-									Case{"ok", Ref{"ResultOk"}},
-									Case{"error", Ref{"ResultError"}},
+									Case{Name: "ok", Type: Ref{"ResultOk"}},
+									Case{Name: "error", Type: Ref{"ResultError"}},
 								},
 							},
 						},
@@ -59,8 +59,8 @@ func TestServiceDef(t *testing.T) {
 							Arg: Ref{"Key"},
 							Return: Union{
 								Cases: Cases{
-									Case{"found", Ref{"ResultOk"}},
-									Case{"not_found", Ref{"ResultError"}},
+									Case{Name: "found", Type: Ref{"ResultOk"}},
+									Case{Name: "not_found", Type: Ref{"ResultError"}},
 								},
 							},
 						},
