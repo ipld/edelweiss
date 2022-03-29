@@ -5,15 +5,27 @@ const PkgPath = "github.com/ipld/edelweiss/services"
 
 // ErrContext wraps context-related errors, like context cancellation.
 type ErrContext struct {
-	error
+	Cause error
+}
+
+func (e ErrContext) Error() string {
+	return e.Cause.Error()
 }
 
 // ErrProto wraps protocol errors, like undecodable messages.
 type ErrProto struct {
-	error
+	Cause error
+}
+
+func (e ErrProto) Error() string {
+	return e.Cause.Error()
 }
 
 // ErrService wraps service-level errors, produced by service implementations.
 type ErrService struct {
-	error
+	Cause error
+}
+
+func (e ErrService) Error() string {
+	return e.Cause.Error()
 }

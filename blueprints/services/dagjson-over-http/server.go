@@ -37,41 +37,51 @@ func (x GoServerImpl) GoDef() cg.Blueprint {
 	methodDecls := make(cg.BlueSlice, len(methods))
 	methodCases := make(cg.BlueSlice, len(methods))
 	for i, m := range methods {
+		// async result type is defined by the client codegen
+		asyncResultRef := &cg.GoTypeRef{PkgPath: x.Ref.PkgPath, TypeName: x.Ref.TypeName + "_" + m.Name + "_AsyncResult"}
 		bmDecl := cg.BlueMap{
-			"MethodName":   cg.V(m.Name),
-			"MethodArg":    x.Lookup.LookupDepGoRef(m.Type.Arg),
-			"MethodReturn": x.Lookup.LookupDepGoRef(m.Type.Return),
+			"MethodName":        cg.V(m.Name),
+			"MethodArg":         x.Lookup.LookupDepGoRef(m.Type.Arg),
+			"MethodReturn":      x.Lookup.LookupDepGoRef(m.Type.Return),
+			"MethodReturnAsync": asyncResultRef,
 			//
 			"LoggerVar":         loggerVar,
+			"ErrorEnvelope":     x.Lookup.LookupDepGoRef(x.Def.ErrorEnvelope),
 			"ReturnEnvelope":    x.Lookup.LookupDepGoRef(x.Def.ReturnEnvelope),
 			"Context":           base.Context,
 			"ContextBackground": base.ContextBackground,
 			"IPLDEncode":        base.IPLDEncode,
 			"DAGJSONEncode":     base.DAGJSONEncode,
+			"EdelweissString":   base.EdelweissString,
 		}
 		methodDecls[i] = cg.T{
 			Data: bmDecl,
-			Src:  `{{.MethodName}}(ctx {{.Context}}, req *{{.MethodArg}}, respCh chan<- *{{.MethodReturn}}) error`,
+			Src:  `{{.MethodName}}(ctx {{.Context}}, req *{{.MethodArg}}, respCh chan<- *{{.MethodReturnAsync}}) error`,
 		}
 		methodCases[i] = cg.T{
 			Data: bmDecl,
 			Src: `
 		case env.{{.MethodName}} != nil:
-			ch := make(chan *{{.MethodReturn}})
+			ch := make(chan *{{.MethodReturnAsync}})
 			if err = s.{{.MethodName}}({{.ContextBackground}}(), env.{{.MethodName}}, ch); err != nil {
 				{{.LoggerVar}}.Errorf("get p2p provider rejected request (%v)", err)
 				writer.WriteHeader(500)
 				return
 			}
 			for resp := range ch {
-				env := &{{.ReturnEnvelope}}{ {{.MethodName}}: resp }
+				var env *{{.ReturnEnvelope}}
+				if resp.Err != nil {
+					env = &{{.ReturnEnvelope}}{ Error: &{{.ErrorEnvelope}}{Code: {{.EdelweissString}}(resp.Err.Error())} }
+				} else {
+					env = &{{.ReturnEnvelope}}{ {{.MethodName}}: resp.Resp }
+				}
 				buf, err := {{.IPLDEncode}}(env, {{.DAGJSONEncode}})
 				if err != nil {
 					{{.LoggerVar}}.Errorf("cannot encode response (%v)", err)
 					continue
 				}
 				writer.Write(buf)
-			}
+		}
 `,
 		}
 	}

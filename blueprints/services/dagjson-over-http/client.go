@@ -38,6 +38,7 @@ func (x GoClientImpl) GoDef() cg.Blueprint {
 	typ := x.Ref.Prepend("client_")
 	loggerVar := cg.GoRef{PkgPath: x.Ref.PkgPath, Name: fmt.Sprintf("logger_client_%s", x.Ref.TypeName)}
 	for i, m := range methods {
+		// async result type is also used by the server code
 		asyncResultRef := &cg.GoTypeRef{PkgPath: x.Ref.PkgPath, TypeName: x.Ref.TypeName + "_" + m.Name + "_AsyncResult"}
 		processAsyncResultRef := &cg.GoRef{PkgPath: x.Ref.PkgPath, Name: "process_" + x.Ref.TypeName + "_" + m.Name + "_AsyncResult"}
 		bmDecl := cg.BlueMap{
@@ -235,7 +236,7 @@ func {{.ProcessReturnAsync}}(ctx {{.Context}}, ch chan<- {{.MethodReturnAsync}},
 	defer close(ch)
 	for {
 		if ctx.Err() != nil {
-			ch <- {{.MethodReturnAsync}}{Err: {{.ErrContext}}{ctx.Err()}} // context cancelled
+			ch <- {{.MethodReturnAsync}}{Err: {{.ErrContext}}{Cause: ctx.Err()}} // context cancelled
 			return
 		}
 
@@ -244,17 +245,17 @@ func {{.ProcessReturnAsync}}(ctx {{.Context}}, ch chan<- {{.MethodReturnAsync}},
 			return
 		}
 		if err != nil {
-			ch <- {{.MethodReturnAsync}}{Err: {{.ErrProto}}{err}} // IPLD decode error
+			ch <- {{.MethodReturnAsync}}{Err: {{.ErrProto}}{Cause: err}} // IPLD decode error
 			return
 		}
 		env := &{{.ReturnEnvelope}}{}
 		if err = env.Parse(n); err != nil {
-			ch <- {{.MethodReturnAsync}}{Err: {{.ErrProto}}{err}} // schema decode error
+			ch <- {{.MethodReturnAsync}}{Err: {{.ErrProto}}{Cause: err}} // schema decode error
 			return
 		}
 
 		if env.Error != nil {
-			ch <- {{.MethodReturnAsync}}{Err: {{.ErrService}}{ {{.ErrorsNew}}(env.Error.Code) }} // service-level error
+			ch <- {{.MethodReturnAsync}}{Err: {{.ErrService}}{Cause: {{.ErrorsNew}}(string(env.Error.Code))}} // service-level error
 			return
 		}
 		if env.{{.MethodName}} == nil {
