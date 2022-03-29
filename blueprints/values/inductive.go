@@ -32,8 +32,12 @@ func (x *GoInductiveImpl) GoDef() cg.Blueprint {
 	cases := x.Def.Cases
 	caseData := make([]cg.BlueMap, len(cases))
 	for i := range cases {
+		goCaseName := cases[i].GoName
+		if goCaseName == "" {
+			goCaseName = cases[i].Name
+		}
 		caseData[i] = cg.BlueMap{
-			"CaseName":        cg.V(cases[i].Name),
+			"CaseName":        cg.V(goCaseName),
 			"CaseNameString":  cg.StringLiteral(cases[i].Name),
 			"CaseType":        x.Lookup.LookupDepGoRef(cases[i].Type),
 			"EdelweissString": base.EdelweissString,

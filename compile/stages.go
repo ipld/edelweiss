@@ -113,7 +113,7 @@ func provision(p *genPlan, named string, s defs.Def) (plans.Plan, error) {
 			if err != nil {
 				return nil, err
 			}
-			casePlans[i] = plans.Case{Name: c.Name, Type: ctp}
+			casePlans[i] = plans.Case{Name: c.Name, GoName: c.GoName, Type: ctp}
 		}
 		return plans.Inductive{Cases: casePlans}, nil
 
@@ -125,7 +125,7 @@ func provision(p *genPlan, named string, s defs.Def) (plans.Plan, error) {
 			if err != nil {
 				return nil, err
 			}
-			casePlans[i] = plans.Case{Name: c.Name, Type: ctp}
+			casePlans[i] = plans.Case{Name: c.Name, GoName: c.GoName, Type: ctp}
 		}
 		return plans.Union{Cases: casePlans}, nil
 

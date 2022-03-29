@@ -131,9 +131,9 @@ func TestUnionAtRunTime(t *testing.T) {
 			Name: "UserUnion",
 			Type: defs.Union{
 				Cases: defs.Cases{
-					defs.Case{Name: "A", Type: defs.Int{}},
-					defs.Case{Name: "B", Type: defs.String{}},
-					defs.Case{Name: "C", Type: defs.Float{}},
+					defs.Case{Name: "a", GoName: "A", Type: defs.Int{}},
+					defs.Case{Name: "B", GoName: "", Type: defs.String{}},
+					defs.Case{Name: "C", GoName: "", Type: defs.Float{}},
 				},
 			},
 		}},
@@ -382,8 +382,8 @@ func TestStructureInductiveAtRunTime(t *testing.T) {
 						Name: "UserInductive",
 						Type: defs.Inductive{
 							Cases: defs.Cases{
-								defs.Case{Name: "X", Type: defs.String{}},
-								defs.Case{Name: "Y", Type: defs.Int{}},
+								defs.Case{Name: "x", GoName: "X", Type: defs.String{}},
+								defs.Case{Name: "Y", GoName: "", Type: defs.Int{}},
 							},
 						}},
 					},
