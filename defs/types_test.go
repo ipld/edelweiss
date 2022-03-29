@@ -11,20 +11,20 @@ func TestServiceDef(t *testing.T) {
 
 		Named{"PutArgs", Structure{
 			Fields: Fields{
-				Field{"key", Ref{"Key"}},
-				Field{"value", Any{}},
+				Field{Name: "key", Type: Ref{"Key"}},
+				Field{Name: "value", Type: Any{}},
 			}}},
 
 		Named{"ResultOk", Structure{
 			Fields: Fields{
-				Field{"status", SingletonString{"ok"}},
-				Field{"value", Any{}},
+				Field{Name: "status", Type: SingletonString{"ok"}},
+				Field{Name: "value", Type: Any{}},
 			}}},
 
 		Named{"ResultError", Structure{
 			Fields{
-				Field{"status", SingletonString{"error"}},
-				Field{"value", String{}},
+				Field{Name: "status", Type: SingletonString{"error"}},
+				Field{Name: "value", Type: String{}},
 			}}},
 
 		Named{"RoutingService",
@@ -35,8 +35,8 @@ func TestServiceDef(t *testing.T) {
 							Arg: Ref{"PutArgs"},
 							Return: Union{
 								Cases: Cases{
-									Case{"ok", Ref{"ResultOk"}},
-									Case{"error", Ref{"ResultError"}},
+									Case{Name: "ok", Type: Ref{"ResultOk"}},
+									Case{Name: "error", Type: Ref{"ResultError"}},
 								},
 							},
 						},
@@ -48,8 +48,8 @@ func TestServiceDef(t *testing.T) {
 							},
 							Return: Union{
 								Cases: Cases{
-									Case{"ok", Ref{"ResultOk"}},
-									Case{"error", Ref{"ResultError"}},
+									Case{Name: "ok", Type: Ref{"ResultOk"}},
+									Case{Name: "error", Type: Ref{"ResultError"}},
 								},
 							},
 						},
@@ -59,8 +59,8 @@ func TestServiceDef(t *testing.T) {
 							Arg: Ref{"Key"},
 							Return: Union{
 								Cases: Cases{
-									Case{"found", Ref{"ResultOk"}},
-									Case{"not_found", Ref{"ResultError"}},
+									Case{Name: "found", Type: Ref{"ResultOk"}},
+									Case{Name: "not_found", Type: Ref{"ResultError"}},
 								},
 							},
 						},

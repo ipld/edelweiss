@@ -89,8 +89,9 @@ func (Structure) Kind() string { return "Structure" }
 type Fields []Field
 
 type Field struct {
-	Name string
-	Type BuiltinOrRefPlan
+	Name   string
+	GoName string
+	Type   BuiltinOrRefPlan
 }
 
 type Inductive struct {
@@ -103,8 +104,9 @@ func (Inductive) Kind() string { return "Inductive" }
 type Cases []Case
 
 type Case struct {
-	Name string
-	Type BuiltinOrRefPlan
+	Name   string
+	GoName string
+	Type   BuiltinOrRefPlan
 }
 
 type List struct {

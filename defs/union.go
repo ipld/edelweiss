@@ -9,8 +9,9 @@ func (Union) Kind() string {
 }
 
 type Case struct {
-	Name string
-	Type Def
+	Name   string // name on the wire
+	GoName string // if not empty, name in Go code
+	Type   Def
 }
 
 type Cases []Case
