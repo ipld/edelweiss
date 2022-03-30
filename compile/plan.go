@@ -39,15 +39,16 @@ func (p *genPlan) Plan() []typePlan {
 	return p.plan
 }
 
-func (p *genPlan) AddNamed(name string, d plans.Plan) error {
+func (p *genPlan) AddNamed(name string, d plans.Plan) (plans.Ref, error) {
 	if _, ok := p.nameToPlan[name]; ok {
-		return fmt.Errorf("name %s already defined", name)
+		return plans.Ref{}, fmt.Errorf("name %s already defined", name)
 	}
 	goTypeRef := cg.GoTypeRef{PkgPath: p.goPkgPath, TypeName: name}
-	p.planToGo[plans.Ref{Name: name}] = goTypeRef
+	ref := plans.Ref{Name: name}
+	p.planToGo[ref] = goTypeRef
 	p.plan = append(p.plan, typePlan{Name: name, Plan: d, GoRef: goTypeRef})
 	p.nameToPlan[name] = d
-	return nil
+	return ref, nil
 }
 
 func (p *genPlan) AddAnonymous(t plans.Plan) plans.Ref {

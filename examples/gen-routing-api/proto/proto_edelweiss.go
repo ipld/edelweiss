@@ -1,28 +1,628 @@
 package proto
 
 import (
-	pd9 "bytes"
+	pd11 "bytes"
 	pd6 "context"
-	pd8 "errors"
+	pd5 "errors"
 	pd3 "fmt"
-	pd12 "github.com/ipfs/go-log"
-	pd2 "github.com/ipld/edelweiss/values"
-	pd5 "github.com/ipld/go-ipld-prime"
-	pd7 "github.com/ipld/go-ipld-prime/codec/dagjson"
-	pd1 "github.com/ipld/go-ipld-prime/datamodel"
-	pd10 "io"
+	pd7 "io"
 	pd4 "net/http"
-	pd11 "net/url"
+	pd9 "net/url"
+
+	pd13 "github.com/ipfs/go-log"
+	pd12 "github.com/ipld/edelweiss/services"
+	pd2 "github.com/ipld/edelweiss/values"
+	pd8 "github.com/ipld/go-ipld-prime"
+	pd10 "github.com/ipld/go-ipld-prime/codec/dagjson"
+	pd1 "github.com/ipld/go-ipld-prime/datamodel"
 )
 
-// -- protocol type AnonInductive0 --
+// -- protocol type DelegatedRouting_IdentifyArg --
 
-type AnonInductive0 struct {
+type DelegatedRouting_IdentifyArg struct {
+}
+
+func (x DelegatedRouting_IdentifyArg) Node() pd1.Node {
+	return x
+}
+
+func (x *DelegatedRouting_IdentifyArg) Parse(n pd1.Node) error {
+	if n.Kind() != pd1.Kind_Map {
+		return pd2.ErrNA
+	}
+	iter := n.MapIterator()
+	fieldMap := map[string]pd2.ParseFunc{}
+	for !iter.Done() {
+		if kn, vn, err := iter.Next(); err != nil {
+			return err
+		} else {
+			if k, err := kn.AsString(); err != nil {
+				return pd3.Errorf("structure map key is not a string")
+			} else {
+				_ = vn
+				switch k {
+
+				}
+			}
+		}
+	}
+	for _, fieldParse := range fieldMap {
+		if err := fieldParse(pd1.Null); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+type DelegatedRouting_IdentifyArg_MapIterator struct {
+	i int64
+	s *DelegatedRouting_IdentifyArg
+}
+
+func (x *DelegatedRouting_IdentifyArg_MapIterator) Next() (key pd1.Node, value pd1.Node, err error) {
+	x.i++
+	switch x.i {
+
+	}
+	return nil, nil, pd2.ErrNA
+}
+
+func (x *DelegatedRouting_IdentifyArg_MapIterator) Done() bool {
+	return x.i+1 >= 0
+}
+
+func (x DelegatedRouting_IdentifyArg) Kind() pd1.Kind {
+	return pd1.Kind_Map
+}
+
+func (x DelegatedRouting_IdentifyArg) LookupByString(key string) (pd1.Node, error) {
+	switch key {
+
+	}
+	return nil, pd2.ErrNA
+}
+
+func (x DelegatedRouting_IdentifyArg) LookupByNode(key pd1.Node) (pd1.Node, error) {
+	switch key.Kind() {
+	case pd1.Kind_String:
+		if s, err := key.AsString(); err != nil {
+			return nil, err
+		} else {
+			return x.LookupByString(s)
+		}
+	case pd1.Kind_Int:
+		if i, err := key.AsInt(); err != nil {
+			return nil, err
+		} else {
+			return x.LookupByIndex(i)
+		}
+	}
+	return nil, pd2.ErrNA
+}
+
+func (x DelegatedRouting_IdentifyArg) LookupByIndex(idx int64) (pd1.Node, error) {
+	switch idx {
+
+	}
+	return nil, pd2.ErrNA
+}
+
+func (x DelegatedRouting_IdentifyArg) LookupBySegment(seg pd1.PathSegment) (pd1.Node, error) {
+	switch seg.String() {
+
+	}
+	return nil, pd2.ErrNA
+}
+
+func (x DelegatedRouting_IdentifyArg) MapIterator() pd1.MapIterator {
+	return &DelegatedRouting_IdentifyArg_MapIterator{-1, &x}
+}
+
+func (x DelegatedRouting_IdentifyArg) ListIterator() pd1.ListIterator {
+	return nil
+}
+
+func (x DelegatedRouting_IdentifyArg) Length() int64 {
+	return 0
+}
+
+func (x DelegatedRouting_IdentifyArg) IsAbsent() bool {
+	return false
+}
+
+func (x DelegatedRouting_IdentifyArg) IsNull() bool {
+	return false
+}
+
+func (x DelegatedRouting_IdentifyArg) AsBool() (bool, error) {
+	return false, pd2.ErrNA
+}
+
+func (x DelegatedRouting_IdentifyArg) AsInt() (int64, error) {
+	return 0, pd2.ErrNA
+}
+
+func (x DelegatedRouting_IdentifyArg) AsFloat() (float64, error) {
+	return 0, pd2.ErrNA
+}
+
+func (x DelegatedRouting_IdentifyArg) AsString() (string, error) {
+	return "", pd2.ErrNA
+}
+
+func (x DelegatedRouting_IdentifyArg) AsBytes() ([]byte, error) {
+	return nil, pd2.ErrNA
+}
+
+func (x DelegatedRouting_IdentifyArg) AsLink() (pd1.Link, error) {
+	return nil, pd2.ErrNA
+}
+
+func (x DelegatedRouting_IdentifyArg) Prototype() pd1.NodePrototype {
+	return nil
+}
+
+// -- protocol type AnonList1 --
+
+type AnonList1 []pd2.String
+
+func (v AnonList1) Node() pd1.Node {
+	return v
+}
+
+func (v *AnonList1) Parse(n pd1.Node) error {
+	if n.Kind() == pd1.Kind_Null {
+		*v = nil
+		return nil
+	}
+	if n.Kind() != pd1.Kind_List {
+		return pd2.ErrNA
+	} else {
+		*v = make(AnonList1, n.Length())
+		iter := n.ListIterator()
+		for !iter.Done() {
+			if i, n, err := iter.Next(); err != nil {
+				return pd2.ErrNA
+			} else if err = (*v)[i].Parse(n); err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+}
+
+func (AnonList1) Kind() pd1.Kind {
+	return pd1.Kind_List
+}
+
+func (AnonList1) LookupByString(string) (pd1.Node, error) {
+	return nil, pd2.ErrNA
+}
+
+func (AnonList1) LookupByNode(key pd1.Node) (pd1.Node, error) {
+	return nil, pd2.ErrNA
+}
+
+func (v AnonList1) LookupByIndex(i int64) (pd1.Node, error) {
+	if i < 0 || i >= v.Length() {
+		return nil, pd2.ErrBounds
+	} else {
+		return v[i].Node(), nil
+	}
+}
+
+func (v AnonList1) LookupBySegment(seg pd1.PathSegment) (pd1.Node, error) {
+	if i, err := seg.Index(); err != nil {
+		return nil, pd2.ErrNA
+	} else {
+		return v.LookupByIndex(i)
+	}
+}
+
+func (AnonList1) MapIterator() pd1.MapIterator {
+	return nil
+}
+
+func (v AnonList1) ListIterator() pd1.ListIterator {
+	return &AnonList1_ListIterator{v, 0}
+}
+
+func (v AnonList1) Length() int64 {
+	return int64(len(v))
+}
+
+func (AnonList1) IsAbsent() bool {
+	return false
+}
+
+func (AnonList1) IsNull() bool {
+	return false
+}
+
+func (v AnonList1) AsBool() (bool, error) {
+	return false, pd2.ErrNA
+}
+
+func (AnonList1) AsInt() (int64, error) {
+	return 0, pd2.ErrNA
+}
+
+func (AnonList1) AsFloat() (float64, error) {
+	return 0, pd2.ErrNA
+}
+
+func (AnonList1) AsString() (string, error) {
+	return "", pd2.ErrNA
+}
+
+func (AnonList1) AsBytes() ([]byte, error) {
+	return nil, pd2.ErrNA
+}
+
+func (AnonList1) AsLink() (pd1.Link, error) {
+	return nil, pd2.ErrNA
+}
+
+func (AnonList1) Prototype() pd1.NodePrototype {
+	return nil // not needed
+}
+
+type AnonList1_ListIterator struct {
+	list AnonList1
+	at   int64
+}
+
+func (iter *AnonList1_ListIterator) Next() (int64, pd1.Node, error) {
+	if iter.Done() {
+		return -1, nil, pd2.ErrBounds
+	}
+	v := iter.list[iter.at]
+	i := int64(iter.at)
+	iter.at++
+	return i, v.Node(), nil
+}
+
+func (iter *AnonList1_ListIterator) Done() bool {
+	return iter.at >= iter.list.Length()
+}
+
+// -- protocol type DelegatedRouting_IdentifyResult --
+
+type DelegatedRouting_IdentifyResult struct {
+	Methods AnonList1
+}
+
+func (x DelegatedRouting_IdentifyResult) Node() pd1.Node {
+	return x
+}
+
+func (x *DelegatedRouting_IdentifyResult) Parse(n pd1.Node) error {
+	if n.Kind() != pd1.Kind_Map {
+		return pd2.ErrNA
+	}
+	iter := n.MapIterator()
+	fieldMap := map[string]pd2.ParseFunc{
+		"Methods": x.Methods.Parse,
+	}
+	for !iter.Done() {
+		if kn, vn, err := iter.Next(); err != nil {
+			return err
+		} else {
+			if k, err := kn.AsString(); err != nil {
+				return pd3.Errorf("structure map key is not a string")
+			} else {
+				_ = vn
+				switch k {
+				case "Methods":
+					if _, notParsed := fieldMap["Methods"]; !notParsed {
+						return pd3.Errorf("field %s already parsed", "Methods")
+					}
+					if err := x.Methods.Parse(vn); err != nil {
+						return err
+					}
+					delete(fieldMap, "Methods")
+
+				}
+			}
+		}
+	}
+	for _, fieldParse := range fieldMap {
+		if err := fieldParse(pd1.Null); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+type DelegatedRouting_IdentifyResult_MapIterator struct {
+	i int64
+	s *DelegatedRouting_IdentifyResult
+}
+
+func (x *DelegatedRouting_IdentifyResult_MapIterator) Next() (key pd1.Node, value pd1.Node, err error) {
+	x.i++
+	switch x.i {
+	case 0:
+		return pd2.String("Methods"), x.s.Methods.Node(), nil
+
+	}
+	return nil, nil, pd2.ErrNA
+}
+
+func (x *DelegatedRouting_IdentifyResult_MapIterator) Done() bool {
+	return x.i+1 >= 1
+}
+
+func (x DelegatedRouting_IdentifyResult) Kind() pd1.Kind {
+	return pd1.Kind_Map
+}
+
+func (x DelegatedRouting_IdentifyResult) LookupByString(key string) (pd1.Node, error) {
+	switch key {
+	case "Methods":
+		return x.Methods.Node(), nil
+
+	}
+	return nil, pd2.ErrNA
+}
+
+func (x DelegatedRouting_IdentifyResult) LookupByNode(key pd1.Node) (pd1.Node, error) {
+	switch key.Kind() {
+	case pd1.Kind_String:
+		if s, err := key.AsString(); err != nil {
+			return nil, err
+		} else {
+			return x.LookupByString(s)
+		}
+	case pd1.Kind_Int:
+		if i, err := key.AsInt(); err != nil {
+			return nil, err
+		} else {
+			return x.LookupByIndex(i)
+		}
+	}
+	return nil, pd2.ErrNA
+}
+
+func (x DelegatedRouting_IdentifyResult) LookupByIndex(idx int64) (pd1.Node, error) {
+	switch idx {
+	case 0:
+		return x.Methods.Node(), nil
+
+	}
+	return nil, pd2.ErrNA
+}
+
+func (x DelegatedRouting_IdentifyResult) LookupBySegment(seg pd1.PathSegment) (pd1.Node, error) {
+	switch seg.String() {
+	case "0", "Methods":
+		return x.Methods.Node(), nil
+
+	}
+	return nil, pd2.ErrNA
+}
+
+func (x DelegatedRouting_IdentifyResult) MapIterator() pd1.MapIterator {
+	return &DelegatedRouting_IdentifyResult_MapIterator{-1, &x}
+}
+
+func (x DelegatedRouting_IdentifyResult) ListIterator() pd1.ListIterator {
+	return nil
+}
+
+func (x DelegatedRouting_IdentifyResult) Length() int64 {
+	return 1
+}
+
+func (x DelegatedRouting_IdentifyResult) IsAbsent() bool {
+	return false
+}
+
+func (x DelegatedRouting_IdentifyResult) IsNull() bool {
+	return false
+}
+
+func (x DelegatedRouting_IdentifyResult) AsBool() (bool, error) {
+	return false, pd2.ErrNA
+}
+
+func (x DelegatedRouting_IdentifyResult) AsInt() (int64, error) {
+	return 0, pd2.ErrNA
+}
+
+func (x DelegatedRouting_IdentifyResult) AsFloat() (float64, error) {
+	return 0, pd2.ErrNA
+}
+
+func (x DelegatedRouting_IdentifyResult) AsString() (string, error) {
+	return "", pd2.ErrNA
+}
+
+func (x DelegatedRouting_IdentifyResult) AsBytes() ([]byte, error) {
+	return nil, pd2.ErrNA
+}
+
+func (x DelegatedRouting_IdentifyResult) AsLink() (pd1.Link, error) {
+	return nil, pd2.ErrNA
+}
+
+func (x DelegatedRouting_IdentifyResult) Prototype() pd1.NodePrototype {
+	return nil
+}
+
+// -- protocol type DelegatedRouting_Error --
+
+type DelegatedRouting_Error struct {
+	Code pd2.String
+}
+
+func (x DelegatedRouting_Error) Node() pd1.Node {
+	return x
+}
+
+func (x *DelegatedRouting_Error) Parse(n pd1.Node) error {
+	if n.Kind() != pd1.Kind_Map {
+		return pd2.ErrNA
+	}
+	iter := n.MapIterator()
+	fieldMap := map[string]pd2.ParseFunc{
+		"Code": x.Code.Parse,
+	}
+	for !iter.Done() {
+		if kn, vn, err := iter.Next(); err != nil {
+			return err
+		} else {
+			if k, err := kn.AsString(); err != nil {
+				return pd3.Errorf("structure map key is not a string")
+			} else {
+				_ = vn
+				switch k {
+				case "Code":
+					if _, notParsed := fieldMap["Code"]; !notParsed {
+						return pd3.Errorf("field %s already parsed", "Code")
+					}
+					if err := x.Code.Parse(vn); err != nil {
+						return err
+					}
+					delete(fieldMap, "Code")
+
+				}
+			}
+		}
+	}
+	for _, fieldParse := range fieldMap {
+		if err := fieldParse(pd1.Null); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+type DelegatedRouting_Error_MapIterator struct {
+	i int64
+	s *DelegatedRouting_Error
+}
+
+func (x *DelegatedRouting_Error_MapIterator) Next() (key pd1.Node, value pd1.Node, err error) {
+	x.i++
+	switch x.i {
+	case 0:
+		return pd2.String("Code"), x.s.Code.Node(), nil
+
+	}
+	return nil, nil, pd2.ErrNA
+}
+
+func (x *DelegatedRouting_Error_MapIterator) Done() bool {
+	return x.i+1 >= 1
+}
+
+func (x DelegatedRouting_Error) Kind() pd1.Kind {
+	return pd1.Kind_Map
+}
+
+func (x DelegatedRouting_Error) LookupByString(key string) (pd1.Node, error) {
+	switch key {
+	case "Code":
+		return x.Code.Node(), nil
+
+	}
+	return nil, pd2.ErrNA
+}
+
+func (x DelegatedRouting_Error) LookupByNode(key pd1.Node) (pd1.Node, error) {
+	switch key.Kind() {
+	case pd1.Kind_String:
+		if s, err := key.AsString(); err != nil {
+			return nil, err
+		} else {
+			return x.LookupByString(s)
+		}
+	case pd1.Kind_Int:
+		if i, err := key.AsInt(); err != nil {
+			return nil, err
+		} else {
+			return x.LookupByIndex(i)
+		}
+	}
+	return nil, pd2.ErrNA
+}
+
+func (x DelegatedRouting_Error) LookupByIndex(idx int64) (pd1.Node, error) {
+	switch idx {
+	case 0:
+		return x.Code.Node(), nil
+
+	}
+	return nil, pd2.ErrNA
+}
+
+func (x DelegatedRouting_Error) LookupBySegment(seg pd1.PathSegment) (pd1.Node, error) {
+	switch seg.String() {
+	case "0", "Code":
+		return x.Code.Node(), nil
+
+	}
+	return nil, pd2.ErrNA
+}
+
+func (x DelegatedRouting_Error) MapIterator() pd1.MapIterator {
+	return &DelegatedRouting_Error_MapIterator{-1, &x}
+}
+
+func (x DelegatedRouting_Error) ListIterator() pd1.ListIterator {
+	return nil
+}
+
+func (x DelegatedRouting_Error) Length() int64 {
+	return 1
+}
+
+func (x DelegatedRouting_Error) IsAbsent() bool {
+	return false
+}
+
+func (x DelegatedRouting_Error) IsNull() bool {
+	return false
+}
+
+func (x DelegatedRouting_Error) AsBool() (bool, error) {
+	return false, pd2.ErrNA
+}
+
+func (x DelegatedRouting_Error) AsInt() (int64, error) {
+	return 0, pd2.ErrNA
+}
+
+func (x DelegatedRouting_Error) AsFloat() (float64, error) {
+	return 0, pd2.ErrNA
+}
+
+func (x DelegatedRouting_Error) AsString() (string, error) {
+	return "", pd2.ErrNA
+}
+
+func (x DelegatedRouting_Error) AsBytes() ([]byte, error) {
+	return nil, pd2.ErrNA
+}
+
+func (x DelegatedRouting_Error) AsLink() (pd1.Link, error) {
+	return nil, pd2.ErrNA
+}
+
+func (x DelegatedRouting_Error) Prototype() pd1.NodePrototype {
+	return nil
+}
+
+// -- protocol type AnonInductive4 --
+
+type AnonInductive4 struct {
+	Identify      *DelegatedRouting_IdentifyArg
 	GetP2PProvide *GetP2PProvideRequest
 }
 
-func (x *AnonInductive0) Parse(n pd1.Node) error {
-	*x = AnonInductive0{}
+func (x *AnonInductive4) Parse(n pd1.Node) error {
+	*x = AnonInductive4{}
 	if n.Kind() != pd1.Kind_Map {
 		return pd2.ErrNA
 	}
@@ -36,7 +636,14 @@ func (x *AnonInductive0) Parse(n pd1.Node) error {
 		return pd3.Errorf("inductive map key is not a string")
 	}
 	switch k {
-	case "GetP2PProvide":
+	case "IdentifyRequest":
+		var y DelegatedRouting_IdentifyArg
+		if err := y.Parse(vn); err != nil {
+			return err
+		}
+		x.Identify = &y
+		return nil
+	case "GetP2PProvideRequest":
 		var y GetP2PProvideRequest
 		if err := y.Parse(vn); err != nil {
 			return err
@@ -48,19 +655,21 @@ func (x *AnonInductive0) Parse(n pd1.Node) error {
 	return pd3.Errorf("inductive map has no applicable keys")
 }
 
-type AnonInductive0_MapIterator struct {
+type AnonInductive4_MapIterator struct {
 	done bool
-	s    *AnonInductive0
+	s    *AnonInductive4
 }
 
-func (x *AnonInductive0_MapIterator) Next() (key pd1.Node, value pd1.Node, err error) {
+func (x *AnonInductive4_MapIterator) Next() (key pd1.Node, value pd1.Node, err error) {
 	if x.done {
 		return nil, nil, pd2.ErrNA
 	} else {
 		x.done = true
 		switch {
+		case x.s.Identify != nil:
+			return pd2.String("IdentifyRequest"), x.s.Identify.Node(), nil
 		case x.s.GetP2PProvide != nil:
-			return pd2.String("GetP2PProvide"), x.s.GetP2PProvide.Node(), nil
+			return pd2.String("GetP2PProvideRequest"), x.s.GetP2PProvide.Node(), nil
 
 		default:
 			return nil, nil, pd3.Errorf("no inductive cases are set")
@@ -68,28 +677,30 @@ func (x *AnonInductive0_MapIterator) Next() (key pd1.Node, value pd1.Node, err e
 	}
 }
 
-func (x *AnonInductive0_MapIterator) Done() bool {
+func (x *AnonInductive4_MapIterator) Done() bool {
 	return x.done
 }
 
-func (x AnonInductive0) Node() pd1.Node {
+func (x AnonInductive4) Node() pd1.Node {
 	return x
 }
 
-func (x AnonInductive0) Kind() pd1.Kind {
+func (x AnonInductive4) Kind() pd1.Kind {
 	return pd1.Kind_Map
 }
 
-func (x AnonInductive0) LookupByString(key string) (pd1.Node, error) {
+func (x AnonInductive4) LookupByString(key string) (pd1.Node, error) {
 	switch {
-	case x.GetP2PProvide != nil && key == "GetP2PProvide":
+	case x.Identify != nil && key == "IdentifyRequest":
+		return x.Identify.Node(), nil
+	case x.GetP2PProvide != nil && key == "GetP2PProvideRequest":
 		return x.GetP2PProvide.Node(), nil
 
 	}
 	return nil, pd2.ErrNA
 }
 
-func (x AnonInductive0) LookupByNode(key pd1.Node) (pd1.Node, error) {
+func (x AnonInductive4) LookupByNode(key pd1.Node) (pd1.Node, error) {
 	if key.Kind() != pd1.Kind_String {
 		return nil, pd2.ErrNA
 	}
@@ -100,75 +711,79 @@ func (x AnonInductive0) LookupByNode(key pd1.Node) (pd1.Node, error) {
 	}
 }
 
-func (x AnonInductive0) LookupByIndex(idx int64) (pd1.Node, error) {
+func (x AnonInductive4) LookupByIndex(idx int64) (pd1.Node, error) {
 	return nil, pd2.ErrNA
 }
 
-func (x AnonInductive0) LookupBySegment(seg pd1.PathSegment) (pd1.Node, error) {
+func (x AnonInductive4) LookupBySegment(seg pd1.PathSegment) (pd1.Node, error) {
 	switch seg.String() {
-	case "GetP2PProvide":
+	case "IdentifyRequest":
+		return x.Identify.Node(), nil
+	case "GetP2PProvideRequest":
 		return x.GetP2PProvide.Node(), nil
 
 	}
 	return nil, pd2.ErrNA
 }
 
-func (x AnonInductive0) MapIterator() pd1.MapIterator {
-	return &AnonInductive0_MapIterator{false, &x}
+func (x AnonInductive4) MapIterator() pd1.MapIterator {
+	return &AnonInductive4_MapIterator{false, &x}
 }
 
-func (x AnonInductive0) ListIterator() pd1.ListIterator {
+func (x AnonInductive4) ListIterator() pd1.ListIterator {
 	return nil
 }
 
-func (x AnonInductive0) Length() int64 {
+func (x AnonInductive4) Length() int64 {
 	return 1
 }
 
-func (x AnonInductive0) IsAbsent() bool {
+func (x AnonInductive4) IsAbsent() bool {
 	return false
 }
 
-func (x AnonInductive0) IsNull() bool {
+func (x AnonInductive4) IsNull() bool {
 	return false
 }
 
-func (x AnonInductive0) AsBool() (bool, error) {
+func (x AnonInductive4) AsBool() (bool, error) {
 	return false, pd2.ErrNA
 }
 
-func (x AnonInductive0) AsInt() (int64, error) {
+func (x AnonInductive4) AsInt() (int64, error) {
 	return 0, pd2.ErrNA
 }
 
-func (x AnonInductive0) AsFloat() (float64, error) {
+func (x AnonInductive4) AsFloat() (float64, error) {
 	return 0, pd2.ErrNA
 }
 
-func (x AnonInductive0) AsString() (string, error) {
+func (x AnonInductive4) AsString() (string, error) {
 	return "", pd2.ErrNA
 }
 
-func (x AnonInductive0) AsBytes() ([]byte, error) {
+func (x AnonInductive4) AsBytes() ([]byte, error) {
 	return nil, pd2.ErrNA
 }
 
-func (x AnonInductive0) AsLink() (pd1.Link, error) {
+func (x AnonInductive4) AsLink() (pd1.Link, error) {
 	return nil, pd2.ErrNA
 }
 
-func (x AnonInductive0) Prototype() pd1.NodePrototype {
+func (x AnonInductive4) Prototype() pd1.NodePrototype {
 	return nil
 }
 
-// -- protocol type AnonInductive1 --
+// -- protocol type AnonInductive5 --
 
-type AnonInductive1 struct {
+type AnonInductive5 struct {
+	Identify      *DelegatedRouting_IdentifyResult
 	GetP2PProvide *GetP2PProvideResponse
+	Error         *DelegatedRouting_Error
 }
 
-func (x *AnonInductive1) Parse(n pd1.Node) error {
-	*x = AnonInductive1{}
+func (x *AnonInductive5) Parse(n pd1.Node) error {
+	*x = AnonInductive5{}
 	if n.Kind() != pd1.Kind_Map {
 		return pd2.ErrNA
 	}
@@ -182,31 +797,49 @@ func (x *AnonInductive1) Parse(n pd1.Node) error {
 		return pd3.Errorf("inductive map key is not a string")
 	}
 	switch k {
-	case "GetP2PProvide":
+	case "IdentifyResponse":
+		var y DelegatedRouting_IdentifyResult
+		if err := y.Parse(vn); err != nil {
+			return err
+		}
+		x.Identify = &y
+		return nil
+	case "GetP2PProvideResponse":
 		var y GetP2PProvideResponse
 		if err := y.Parse(vn); err != nil {
 			return err
 		}
 		x.GetP2PProvide = &y
 		return nil
+	case "Error":
+		var y DelegatedRouting_Error
+		if err := y.Parse(vn); err != nil {
+			return err
+		}
+		x.Error = &y
+		return nil
 
 	}
 	return pd3.Errorf("inductive map has no applicable keys")
 }
 
-type AnonInductive1_MapIterator struct {
+type AnonInductive5_MapIterator struct {
 	done bool
-	s    *AnonInductive1
+	s    *AnonInductive5
 }
 
-func (x *AnonInductive1_MapIterator) Next() (key pd1.Node, value pd1.Node, err error) {
+func (x *AnonInductive5_MapIterator) Next() (key pd1.Node, value pd1.Node, err error) {
 	if x.done {
 		return nil, nil, pd2.ErrNA
 	} else {
 		x.done = true
 		switch {
+		case x.s.Identify != nil:
+			return pd2.String("IdentifyResponse"), x.s.Identify.Node(), nil
 		case x.s.GetP2PProvide != nil:
-			return pd2.String("GetP2PProvide"), x.s.GetP2PProvide.Node(), nil
+			return pd2.String("GetP2PProvideResponse"), x.s.GetP2PProvide.Node(), nil
+		case x.s.Error != nil:
+			return pd2.String("Error"), x.s.Error.Node(), nil
 
 		default:
 			return nil, nil, pd3.Errorf("no inductive cases are set")
@@ -214,28 +847,32 @@ func (x *AnonInductive1_MapIterator) Next() (key pd1.Node, value pd1.Node, err e
 	}
 }
 
-func (x *AnonInductive1_MapIterator) Done() bool {
+func (x *AnonInductive5_MapIterator) Done() bool {
 	return x.done
 }
 
-func (x AnonInductive1) Node() pd1.Node {
+func (x AnonInductive5) Node() pd1.Node {
 	return x
 }
 
-func (x AnonInductive1) Kind() pd1.Kind {
+func (x AnonInductive5) Kind() pd1.Kind {
 	return pd1.Kind_Map
 }
 
-func (x AnonInductive1) LookupByString(key string) (pd1.Node, error) {
+func (x AnonInductive5) LookupByString(key string) (pd1.Node, error) {
 	switch {
-	case x.GetP2PProvide != nil && key == "GetP2PProvide":
+	case x.Identify != nil && key == "IdentifyResponse":
+		return x.Identify.Node(), nil
+	case x.GetP2PProvide != nil && key == "GetP2PProvideResponse":
 		return x.GetP2PProvide.Node(), nil
+	case x.Error != nil && key == "Error":
+		return x.Error.Node(), nil
 
 	}
 	return nil, pd2.ErrNA
 }
 
-func (x AnonInductive1) LookupByNode(key pd1.Node) (pd1.Node, error) {
+func (x AnonInductive5) LookupByNode(key pd1.Node) (pd1.Node, error) {
 	if key.Kind() != pd1.Kind_String {
 		return nil, pd2.ErrNA
 	}
@@ -246,73 +883,86 @@ func (x AnonInductive1) LookupByNode(key pd1.Node) (pd1.Node, error) {
 	}
 }
 
-func (x AnonInductive1) LookupByIndex(idx int64) (pd1.Node, error) {
+func (x AnonInductive5) LookupByIndex(idx int64) (pd1.Node, error) {
 	return nil, pd2.ErrNA
 }
 
-func (x AnonInductive1) LookupBySegment(seg pd1.PathSegment) (pd1.Node, error) {
+func (x AnonInductive5) LookupBySegment(seg pd1.PathSegment) (pd1.Node, error) {
 	switch seg.String() {
-	case "GetP2PProvide":
+	case "IdentifyResponse":
+		return x.Identify.Node(), nil
+	case "GetP2PProvideResponse":
 		return x.GetP2PProvide.Node(), nil
+	case "Error":
+		return x.Error.Node(), nil
 
 	}
 	return nil, pd2.ErrNA
 }
 
-func (x AnonInductive1) MapIterator() pd1.MapIterator {
-	return &AnonInductive1_MapIterator{false, &x}
+func (x AnonInductive5) MapIterator() pd1.MapIterator {
+	return &AnonInductive5_MapIterator{false, &x}
 }
 
-func (x AnonInductive1) ListIterator() pd1.ListIterator {
+func (x AnonInductive5) ListIterator() pd1.ListIterator {
 	return nil
 }
 
-func (x AnonInductive1) Length() int64 {
+func (x AnonInductive5) Length() int64 {
 	return 1
 }
 
-func (x AnonInductive1) IsAbsent() bool {
+func (x AnonInductive5) IsAbsent() bool {
 	return false
 }
 
-func (x AnonInductive1) IsNull() bool {
+func (x AnonInductive5) IsNull() bool {
 	return false
 }
 
-func (x AnonInductive1) AsBool() (bool, error) {
+func (x AnonInductive5) AsBool() (bool, error) {
 	return false, pd2.ErrNA
 }
 
-func (x AnonInductive1) AsInt() (int64, error) {
+func (x AnonInductive5) AsInt() (int64, error) {
 	return 0, pd2.ErrNA
 }
 
-func (x AnonInductive1) AsFloat() (float64, error) {
+func (x AnonInductive5) AsFloat() (float64, error) {
 	return 0, pd2.ErrNA
 }
 
-func (x AnonInductive1) AsString() (string, error) {
+func (x AnonInductive5) AsString() (string, error) {
 	return "", pd2.ErrNA
 }
 
-func (x AnonInductive1) AsBytes() ([]byte, error) {
+func (x AnonInductive5) AsBytes() ([]byte, error) {
 	return nil, pd2.ErrNA
 }
 
-func (x AnonInductive1) AsLink() (pd1.Link, error) {
+func (x AnonInductive5) AsLink() (pd1.Link, error) {
 	return nil, pd2.ErrNA
 }
 
-func (x AnonInductive1) Prototype() pd1.NodePrototype {
+func (x AnonInductive5) Prototype() pd1.NodePrototype {
 	return nil
 }
 
-var logger_client_DelegatedRouting = pd12.Logger("service/client/DelegatedRouting")
+var logger_client_DelegatedRouting = pd13.Logger("service/client/DelegatedRouting")
 
 type DelegatedRouting_Client interface {
+	Identify(ctx pd6.Context, req *DelegatedRouting_IdentifyArg) ([]*DelegatedRouting_IdentifyResult, error)
+
 	GetP2PProvide(ctx pd6.Context, req *GetP2PProvideRequest) ([]*GetP2PProvideResponse, error)
 
+	Identify_Async(ctx pd6.Context, req *DelegatedRouting_IdentifyArg) (<-chan DelegatedRouting_Identify_AsyncResult, error)
+
 	GetP2PProvide_Async(ctx pd6.Context, req *GetP2PProvideRequest) (<-chan DelegatedRouting_GetP2PProvide_AsyncResult, error)
+}
+
+type DelegatedRouting_Identify_AsyncResult struct {
+	Resp *DelegatedRouting_IdentifyResult
+	Err  error
 }
 
 type DelegatedRouting_GetP2PProvide_AsyncResult struct {
@@ -324,7 +974,7 @@ type DelegatedRouting_ClientOption func(*client_DelegatedRouting) error
 
 type client_DelegatedRouting struct {
 	httpClient *pd4.Client
-	endpoint   *pd11.URL
+	endpoint   *pd9.URL
 }
 
 func DelegatedRouting_Client_WithHTTPClient(hc *pd4.Client) DelegatedRouting_ClientOption {
@@ -335,7 +985,7 @@ func DelegatedRouting_Client_WithHTTPClient(hc *pd4.Client) DelegatedRouting_Cli
 }
 
 func New_DelegatedRouting_Client(endpoint string, opts ...DelegatedRouting_ClientOption) (*client_DelegatedRouting, error) {
-	u, err := pd11.Parse(endpoint)
+	u, err := pd9.Parse(endpoint)
 	if err != nil {
 		return nil, err
 	}
@@ -346,6 +996,98 @@ func New_DelegatedRouting_Client(endpoint string, opts ...DelegatedRouting_Clien
 		}
 	}
 	return c, nil
+}
+
+func (c *client_DelegatedRouting) Identify(ctx pd6.Context, req *DelegatedRouting_IdentifyArg) ([]*DelegatedRouting_IdentifyResult, error) {
+	ctx, cancel := pd6.WithCancel(ctx)
+	defer cancel()
+	ch, err := c.Identify_Async(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	var resps []*DelegatedRouting_IdentifyResult
+	for {
+		select {
+		case r, ok := <-ch:
+			if !ok {
+				cancel()
+				return resps, nil
+			} else {
+				if r.Err == nil {
+					resps = append(resps, r.Resp)
+				} else {
+					logger_client_DelegatedRouting.Errorf("client received erro response (%v)", r.Err)
+					cancel()
+					return resps, r.Err
+				}
+			}
+		case <-ctx.Done():
+			return resps, ctx.Err()
+		}
+	}
+}
+
+func (c *client_DelegatedRouting) Identify_Async(ctx pd6.Context, req *DelegatedRouting_IdentifyArg) (<-chan DelegatedRouting_Identify_AsyncResult, error) {
+	envelope := &AnonInductive4{
+		Identify: req,
+	}
+
+	buf, err := pd8.Encode(envelope, pd10.Encode)
+	if err != nil {
+		return nil, pd3.Errorf("unexpected serialization error (%v)", err)
+	}
+
+	// encode request in URL
+	u := *c.endpoint
+	q := pd9.Values{}
+	q.Set("q", string(buf))
+	u.RawQuery = q.Encode()
+	httpReq, err := pd4.NewRequestWithContext(ctx, "POST", u.String(), pd11.NewReader(buf))
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := c.httpClient.Do(httpReq)
+	if err != nil {
+		return nil, pd3.Errorf("sending HTTP request (%v)", err)
+	}
+
+	ch := make(chan DelegatedRouting_Identify_AsyncResult, 1)
+	go process_DelegatedRouting_Identify_AsyncResult(ctx, ch, resp.Body)
+	return ch, nil
+}
+
+func process_DelegatedRouting_Identify_AsyncResult(ctx pd6.Context, ch chan<- DelegatedRouting_Identify_AsyncResult, r pd7.Reader) {
+	defer close(ch)
+	for {
+		if ctx.Err() != nil {
+			ch <- DelegatedRouting_Identify_AsyncResult{Err: pd12.ErrContext{Cause: ctx.Err()}} // context cancelled
+			return
+		}
+
+		n, err := pd8.DecodeStreaming(r, pd10.Decode)
+		if pd5.Is(err, pd7.EOF) || pd5.Is(err, pd7.ErrUnexpectedEOF) {
+			return
+		}
+		if err != nil {
+			ch <- DelegatedRouting_Identify_AsyncResult{Err: pd12.ErrProto{Cause: err}} // IPLD decode error
+			return
+		}
+		env := &AnonInductive5{}
+		if err = env.Parse(n); err != nil {
+			ch <- DelegatedRouting_Identify_AsyncResult{Err: pd12.ErrProto{Cause: err}} // schema decode error
+			return
+		}
+
+		if env.Error != nil {
+			ch <- DelegatedRouting_Identify_AsyncResult{Err: pd12.ErrService{Cause: pd5.New(string(env.Error.Code))}} // service-level error
+			return
+		}
+		if env.Identify == nil {
+			continue
+		}
+		ch <- DelegatedRouting_Identify_AsyncResult{Resp: env.Identify}
+	}
 }
 
 func (c *client_DelegatedRouting) GetP2PProvide(ctx pd6.Context, req *GetP2PProvideRequest) ([]*GetP2PProvideResponse, error) {
@@ -366,7 +1108,9 @@ func (c *client_DelegatedRouting) GetP2PProvide(ctx pd6.Context, req *GetP2PProv
 				if r.Err == nil {
 					resps = append(resps, r.Resp)
 				} else {
-					logger_client_DelegatedRouting.Errorf("client received invalid response (%v)", r.Err)
+					logger_client_DelegatedRouting.Errorf("client received erro response (%v)", r.Err)
+					cancel()
+					return resps, r.Err
 				}
 			}
 		case <-ctx.Done():
@@ -376,21 +1120,21 @@ func (c *client_DelegatedRouting) GetP2PProvide(ctx pd6.Context, req *GetP2PProv
 }
 
 func (c *client_DelegatedRouting) GetP2PProvide_Async(ctx pd6.Context, req *GetP2PProvideRequest) (<-chan DelegatedRouting_GetP2PProvide_AsyncResult, error) {
-	envelope := &AnonInductive0{
+	envelope := &AnonInductive4{
 		GetP2PProvide: req,
 	}
 
-	buf, err := pd5.Encode(envelope, pd7.Encode)
+	buf, err := pd8.Encode(envelope, pd10.Encode)
 	if err != nil {
 		return nil, pd3.Errorf("unexpected serialization error (%v)", err)
 	}
 
 	// encode request in URL
 	u := *c.endpoint
-	q := pd11.Values{}
+	q := pd9.Values{}
 	q.Set("q", string(buf))
 	u.RawQuery = q.Encode()
-	httpReq, err := pd4.NewRequestWithContext(ctx, "GET", u.String(), pd9.NewReader(buf))
+	httpReq, err := pd4.NewRequestWithContext(ctx, "POST", u.String(), pd11.NewReader(buf))
 	if err != nil {
 		return nil, err
 	}
@@ -405,27 +1149,32 @@ func (c *client_DelegatedRouting) GetP2PProvide_Async(ctx pd6.Context, req *GetP
 	return ch, nil
 }
 
-func process_DelegatedRouting_GetP2PProvide_AsyncResult(ctx pd6.Context, ch chan<- DelegatedRouting_GetP2PProvide_AsyncResult, r pd10.Reader) {
+func process_DelegatedRouting_GetP2PProvide_AsyncResult(ctx pd6.Context, ch chan<- DelegatedRouting_GetP2PProvide_AsyncResult, r pd7.Reader) {
 	defer close(ch)
 	for {
 		if ctx.Err() != nil {
+			ch <- DelegatedRouting_GetP2PProvide_AsyncResult{Err: pd12.ErrContext{Cause: ctx.Err()}} // context cancelled
 			return
 		}
 
-		n, err := pd5.DecodeStreaming(r, pd7.Decode)
-		if pd8.Is(err, pd10.EOF) || pd8.Is(err, pd10.ErrUnexpectedEOF) {
+		n, err := pd8.DecodeStreaming(r, pd10.Decode)
+		if pd5.Is(err, pd7.EOF) || pd5.Is(err, pd7.ErrUnexpectedEOF) {
 			return
 		}
 		if err != nil {
-			ch <- DelegatedRouting_GetP2PProvide_AsyncResult{Err: err}
+			ch <- DelegatedRouting_GetP2PProvide_AsyncResult{Err: pd12.ErrProto{Cause: err}} // IPLD decode error
 			return
 		}
-		env := &AnonInductive1{}
+		env := &AnonInductive5{}
 		if err = env.Parse(n); err != nil {
-			ch <- DelegatedRouting_GetP2PProvide_AsyncResult{Err: err}
+			ch <- DelegatedRouting_GetP2PProvide_AsyncResult{Err: pd12.ErrProto{Cause: err}} // schema decode error
 			return
 		}
 
+		if env.Error != nil {
+			ch <- DelegatedRouting_GetP2PProvide_AsyncResult{Err: pd12.ErrService{Cause: pd5.New(string(env.Error.Code))}} // service-level error
+			return
+		}
 		if env.GetP2PProvide == nil {
 			continue
 		}
@@ -433,23 +1182,23 @@ func process_DelegatedRouting_GetP2PProvide_AsyncResult(ctx pd6.Context, ch chan
 	}
 }
 
-var logger_server_DelegatedRouting = pd12.Logger("service/server/DelegatedRouting")
+var logger_server_DelegatedRouting = pd13.Logger("service/server/DelegatedRouting")
 
 type DelegatedRouting_Server interface {
-	GetP2PProvide(ctx pd6.Context, req *GetP2PProvideRequest, respCh chan<- *GetP2PProvideResponse) error
+	GetP2PProvide(ctx pd6.Context, req *GetP2PProvideRequest, respCh chan<- *DelegatedRouting_GetP2PProvide_AsyncResult) error
 }
 
 func DelegatedRouting_AsyncHandler(s DelegatedRouting_Server) pd4.HandlerFunc {
 	return func(writer pd4.ResponseWriter, request *pd4.Request) {
 		// parse request
 		msg := request.URL.Query().Get("q")
-		n, err := pd5.Decode([]byte(msg), pd7.Decode)
+		n, err := pd8.Decode([]byte(msg), pd10.Decode)
 		if err != nil {
 			logger_server_DelegatedRouting.Errorf("received request not decodeable (%v)", err)
 			writer.WriteHeader(400)
 			return
 		}
-		env := &AnonInductive0{}
+		env := &AnonInductive4{}
 		if err = env.Parse(n); err != nil {
 			logger_server_DelegatedRouting.Errorf("parsing call envelope (%v)", err)
 			writer.WriteHeader(400)
@@ -460,21 +1209,43 @@ func DelegatedRouting_AsyncHandler(s DelegatedRouting_Server) pd4.HandlerFunc {
 		switch {
 
 		case env.GetP2PProvide != nil:
-			ch := make(chan *GetP2PProvideResponse)
+			ch := make(chan *DelegatedRouting_GetP2PProvide_AsyncResult)
 			if err = s.GetP2PProvide(pd6.Background(), env.GetP2PProvide, ch); err != nil {
 				logger_server_DelegatedRouting.Errorf("get p2p provider rejected request (%v)", err)
 				writer.WriteHeader(500)
 				return
 			}
 			for resp := range ch {
-				env := &AnonInductive1{GetP2PProvide: resp}
-				buf, err := pd5.Encode(env, pd7.Encode)
+				var env *AnonInductive5
+				if resp.Err != nil {
+					env = &AnonInductive5{Error: &DelegatedRouting_Error{Code: pd2.String(resp.Err.Error())}}
+				} else {
+					env = &AnonInductive5{GetP2PProvide: resp.Resp}
+				}
+				buf, err := pd8.Encode(env, pd10.Encode)
 				if err != nil {
 					logger_server_DelegatedRouting.Errorf("cannot encode response (%v)", err)
 					continue
 				}
 				writer.Write(buf)
 			}
+
+		case env.Identify != nil:
+			var env *AnonInductive5
+			env = &AnonInductive5{
+				Identify: &DelegatedRouting_IdentifyResult{
+					Methods: []pd2.String{
+						"GetP2PProvide",
+					},
+				},
+			}
+			buf, err := pd8.Encode(env, pd10.Encode)
+			if err != nil {
+				logger_server_DelegatedRouting.Errorf("cannot encode identify response (%v)", err)
+				writer.WriteHeader(500)
+				return
+			}
+			writer.Write(buf)
 
 		default:
 			logger_server_DelegatedRouting.Errorf("missing or unknown request")
@@ -483,19 +1254,23 @@ func DelegatedRouting_AsyncHandler(s DelegatedRouting_Server) pd4.HandlerFunc {
 	}
 }
 
-// -- protocol type AnonList3 --
+// -- protocol type AnonList7 --
 
-type AnonList3 []Multihash
+type AnonList7 []Multihash
 
-func (v AnonList3) Node() pd1.Node {
+func (v AnonList7) Node() pd1.Node {
 	return v
 }
 
-func (v *AnonList3) Parse(n pd1.Node) error {
+func (v *AnonList7) Parse(n pd1.Node) error {
+	if n.Kind() == pd1.Kind_Null {
+		*v = nil
+		return nil
+	}
 	if n.Kind() != pd1.Kind_List {
 		return pd2.ErrNA
 	} else {
-		*v = make(AnonList3, n.Length())
+		*v = make(AnonList7, n.Length())
 		iter := n.ListIterator()
 		for !iter.Done() {
 			if i, n, err := iter.Next(); err != nil {
@@ -508,19 +1283,19 @@ func (v *AnonList3) Parse(n pd1.Node) error {
 	}
 }
 
-func (AnonList3) Kind() pd1.Kind {
+func (AnonList7) Kind() pd1.Kind {
 	return pd1.Kind_List
 }
 
-func (AnonList3) LookupByString(string) (pd1.Node, error) {
+func (AnonList7) LookupByString(string) (pd1.Node, error) {
 	return nil, pd2.ErrNA
 }
 
-func (AnonList3) LookupByNode(key pd1.Node) (pd1.Node, error) {
+func (AnonList7) LookupByNode(key pd1.Node) (pd1.Node, error) {
 	return nil, pd2.ErrNA
 }
 
-func (v AnonList3) LookupByIndex(i int64) (pd1.Node, error) {
+func (v AnonList7) LookupByIndex(i int64) (pd1.Node, error) {
 	if i < 0 || i >= v.Length() {
 		return nil, pd2.ErrBounds
 	} else {
@@ -528,7 +1303,7 @@ func (v AnonList3) LookupByIndex(i int64) (pd1.Node, error) {
 	}
 }
 
-func (v AnonList3) LookupBySegment(seg pd1.PathSegment) (pd1.Node, error) {
+func (v AnonList7) LookupBySegment(seg pd1.PathSegment) (pd1.Node, error) {
 	if i, err := seg.Index(); err != nil {
 		return nil, pd2.ErrNA
 	} else {
@@ -536,60 +1311,60 @@ func (v AnonList3) LookupBySegment(seg pd1.PathSegment) (pd1.Node, error) {
 	}
 }
 
-func (AnonList3) MapIterator() pd1.MapIterator {
+func (AnonList7) MapIterator() pd1.MapIterator {
 	return nil
 }
 
-func (v AnonList3) ListIterator() pd1.ListIterator {
-	return &AnonList3_ListIterator{v, 0}
+func (v AnonList7) ListIterator() pd1.ListIterator {
+	return &AnonList7_ListIterator{v, 0}
 }
 
-func (v AnonList3) Length() int64 {
+func (v AnonList7) Length() int64 {
 	return int64(len(v))
 }
 
-func (AnonList3) IsAbsent() bool {
+func (AnonList7) IsAbsent() bool {
 	return false
 }
 
-func (AnonList3) IsNull() bool {
+func (AnonList7) IsNull() bool {
 	return false
 }
 
-func (v AnonList3) AsBool() (bool, error) {
+func (v AnonList7) AsBool() (bool, error) {
 	return false, pd2.ErrNA
 }
 
-func (AnonList3) AsInt() (int64, error) {
+func (AnonList7) AsInt() (int64, error) {
 	return 0, pd2.ErrNA
 }
 
-func (AnonList3) AsFloat() (float64, error) {
+func (AnonList7) AsFloat() (float64, error) {
 	return 0, pd2.ErrNA
 }
 
-func (AnonList3) AsString() (string, error) {
+func (AnonList7) AsString() (string, error) {
 	return "", pd2.ErrNA
 }
 
-func (AnonList3) AsBytes() ([]byte, error) {
+func (AnonList7) AsBytes() ([]byte, error) {
 	return nil, pd2.ErrNA
 }
 
-func (AnonList3) AsLink() (pd1.Link, error) {
+func (AnonList7) AsLink() (pd1.Link, error) {
 	return nil, pd2.ErrNA
 }
 
-func (AnonList3) Prototype() pd1.NodePrototype {
+func (AnonList7) Prototype() pd1.NodePrototype {
 	return nil // not needed
 }
 
-type AnonList3_ListIterator struct {
-	list AnonList3
+type AnonList7_ListIterator struct {
+	list AnonList7
 	at   int64
 }
 
-func (iter *AnonList3_ListIterator) Next() (int64, pd1.Node, error) {
+func (iter *AnonList7_ListIterator) Next() (int64, pd1.Node, error) {
 	if iter.Done() {
 		return -1, nil, pd2.ErrBounds
 	}
@@ -599,14 +1374,14 @@ func (iter *AnonList3_ListIterator) Next() (int64, pd1.Node, error) {
 	return i, v.Node(), nil
 }
 
-func (iter *AnonList3_ListIterator) Done() bool {
+func (iter *AnonList7_ListIterator) Done() bool {
 	return iter.at >= iter.list.Length()
 }
 
 // -- protocol type GetP2PProvideRequest --
 
 type GetP2PProvideRequest struct {
-	Keys AnonList3
+	Keys AnonList7
 }
 
 func (x GetP2PProvideRequest) Node() pd1.Node {
@@ -618,7 +1393,9 @@ func (x *GetP2PProvideRequest) Parse(n pd1.Node) error {
 		return pd2.ErrNA
 	}
 	iter := n.MapIterator()
-	nfields := 0
+	fieldMap := map[string]pd2.ParseFunc{
+		"Keys": x.Keys.Parse,
+	}
 	for !iter.Done() {
 		if kn, vn, err := iter.Next(); err != nil {
 			return err
@@ -629,20 +1406,24 @@ func (x *GetP2PProvideRequest) Parse(n pd1.Node) error {
 				_ = vn
 				switch k {
 				case "Keys":
+					if _, notParsed := fieldMap["Keys"]; !notParsed {
+						return pd3.Errorf("field %s already parsed", "Keys")
+					}
 					if err := x.Keys.Parse(vn); err != nil {
 						return err
 					}
-					nfields++
+					delete(fieldMap, "Keys")
 
 				}
 			}
 		}
 	}
-	if nfields != 1 {
-		return pd2.ErrNA
-	} else {
-		return nil
+	for _, fieldParse := range fieldMap {
+		if err := fieldParse(pd1.Null); err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
 type GetP2PProvideRequest_MapIterator struct {
@@ -761,19 +1542,23 @@ func (x GetP2PProvideRequest) Prototype() pd1.NodePrototype {
 	return nil
 }
 
-// -- protocol type AnonList5 --
+// -- protocol type AnonList9 --
 
-type AnonList5 []ProvidersByKey
+type AnonList9 []ProvidersByKey
 
-func (v AnonList5) Node() pd1.Node {
+func (v AnonList9) Node() pd1.Node {
 	return v
 }
 
-func (v *AnonList5) Parse(n pd1.Node) error {
+func (v *AnonList9) Parse(n pd1.Node) error {
+	if n.Kind() == pd1.Kind_Null {
+		*v = nil
+		return nil
+	}
 	if n.Kind() != pd1.Kind_List {
 		return pd2.ErrNA
 	} else {
-		*v = make(AnonList5, n.Length())
+		*v = make(AnonList9, n.Length())
 		iter := n.ListIterator()
 		for !iter.Done() {
 			if i, n, err := iter.Next(); err != nil {
@@ -786,19 +1571,19 @@ func (v *AnonList5) Parse(n pd1.Node) error {
 	}
 }
 
-func (AnonList5) Kind() pd1.Kind {
+func (AnonList9) Kind() pd1.Kind {
 	return pd1.Kind_List
 }
 
-func (AnonList5) LookupByString(string) (pd1.Node, error) {
+func (AnonList9) LookupByString(string) (pd1.Node, error) {
 	return nil, pd2.ErrNA
 }
 
-func (AnonList5) LookupByNode(key pd1.Node) (pd1.Node, error) {
+func (AnonList9) LookupByNode(key pd1.Node) (pd1.Node, error) {
 	return nil, pd2.ErrNA
 }
 
-func (v AnonList5) LookupByIndex(i int64) (pd1.Node, error) {
+func (v AnonList9) LookupByIndex(i int64) (pd1.Node, error) {
 	if i < 0 || i >= v.Length() {
 		return nil, pd2.ErrBounds
 	} else {
@@ -806,7 +1591,7 @@ func (v AnonList5) LookupByIndex(i int64) (pd1.Node, error) {
 	}
 }
 
-func (v AnonList5) LookupBySegment(seg pd1.PathSegment) (pd1.Node, error) {
+func (v AnonList9) LookupBySegment(seg pd1.PathSegment) (pd1.Node, error) {
 	if i, err := seg.Index(); err != nil {
 		return nil, pd2.ErrNA
 	} else {
@@ -814,60 +1599,60 @@ func (v AnonList5) LookupBySegment(seg pd1.PathSegment) (pd1.Node, error) {
 	}
 }
 
-func (AnonList5) MapIterator() pd1.MapIterator {
+func (AnonList9) MapIterator() pd1.MapIterator {
 	return nil
 }
 
-func (v AnonList5) ListIterator() pd1.ListIterator {
-	return &AnonList5_ListIterator{v, 0}
+func (v AnonList9) ListIterator() pd1.ListIterator {
+	return &AnonList9_ListIterator{v, 0}
 }
 
-func (v AnonList5) Length() int64 {
+func (v AnonList9) Length() int64 {
 	return int64(len(v))
 }
 
-func (AnonList5) IsAbsent() bool {
+func (AnonList9) IsAbsent() bool {
 	return false
 }
 
-func (AnonList5) IsNull() bool {
+func (AnonList9) IsNull() bool {
 	return false
 }
 
-func (v AnonList5) AsBool() (bool, error) {
+func (v AnonList9) AsBool() (bool, error) {
 	return false, pd2.ErrNA
 }
 
-func (AnonList5) AsInt() (int64, error) {
+func (AnonList9) AsInt() (int64, error) {
 	return 0, pd2.ErrNA
 }
 
-func (AnonList5) AsFloat() (float64, error) {
+func (AnonList9) AsFloat() (float64, error) {
 	return 0, pd2.ErrNA
 }
 
-func (AnonList5) AsString() (string, error) {
+func (AnonList9) AsString() (string, error) {
 	return "", pd2.ErrNA
 }
 
-func (AnonList5) AsBytes() ([]byte, error) {
+func (AnonList9) AsBytes() ([]byte, error) {
 	return nil, pd2.ErrNA
 }
 
-func (AnonList5) AsLink() (pd1.Link, error) {
+func (AnonList9) AsLink() (pd1.Link, error) {
 	return nil, pd2.ErrNA
 }
 
-func (AnonList5) Prototype() pd1.NodePrototype {
+func (AnonList9) Prototype() pd1.NodePrototype {
 	return nil // not needed
 }
 
-type AnonList5_ListIterator struct {
-	list AnonList5
+type AnonList9_ListIterator struct {
+	list AnonList9
 	at   int64
 }
 
-func (iter *AnonList5_ListIterator) Next() (int64, pd1.Node, error) {
+func (iter *AnonList9_ListIterator) Next() (int64, pd1.Node, error) {
 	if iter.Done() {
 		return -1, nil, pd2.ErrBounds
 	}
@@ -877,14 +1662,14 @@ func (iter *AnonList5_ListIterator) Next() (int64, pd1.Node, error) {
 	return i, v.Node(), nil
 }
 
-func (iter *AnonList5_ListIterator) Done() bool {
+func (iter *AnonList9_ListIterator) Done() bool {
 	return iter.at >= iter.list.Length()
 }
 
 // -- protocol type GetP2PProvideResponse --
 
 type GetP2PProvideResponse struct {
-	ProvidersByKey AnonList5
+	ProvidersByKey AnonList9
 }
 
 func (x GetP2PProvideResponse) Node() pd1.Node {
@@ -896,7 +1681,9 @@ func (x *GetP2PProvideResponse) Parse(n pd1.Node) error {
 		return pd2.ErrNA
 	}
 	iter := n.MapIterator()
-	nfields := 0
+	fieldMap := map[string]pd2.ParseFunc{
+		"ProvidersByKey": x.ProvidersByKey.Parse,
+	}
 	for !iter.Done() {
 		if kn, vn, err := iter.Next(); err != nil {
 			return err
@@ -907,20 +1694,24 @@ func (x *GetP2PProvideResponse) Parse(n pd1.Node) error {
 				_ = vn
 				switch k {
 				case "ProvidersByKey":
+					if _, notParsed := fieldMap["ProvidersByKey"]; !notParsed {
+						return pd3.Errorf("field %s already parsed", "ProvidersByKey")
+					}
 					if err := x.ProvidersByKey.Parse(vn); err != nil {
 						return err
 					}
-					nfields++
+					delete(fieldMap, "ProvidersByKey")
 
 				}
 			}
 		}
 	}
-	if nfields != 1 {
-		return pd2.ErrNA
-	} else {
-		return nil
+	for _, fieldParse := range fieldMap {
+		if err := fieldParse(pd1.Null); err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
 type GetP2PProvideResponse_MapIterator struct {
@@ -1055,7 +1846,10 @@ func (x *ProvidersByKey) Parse(n pd1.Node) error {
 		return pd2.ErrNA
 	}
 	iter := n.MapIterator()
-	nfields := 0
+	fieldMap := map[string]pd2.ParseFunc{
+		"Key":      x.Key.Parse,
+		"Provider": x.Provider.Parse,
+	}
 	for !iter.Done() {
 		if kn, vn, err := iter.Next(); err != nil {
 			return err
@@ -1066,25 +1860,32 @@ func (x *ProvidersByKey) Parse(n pd1.Node) error {
 				_ = vn
 				switch k {
 				case "Key":
+					if _, notParsed := fieldMap["Key"]; !notParsed {
+						return pd3.Errorf("field %s already parsed", "Key")
+					}
 					if err := x.Key.Parse(vn); err != nil {
 						return err
 					}
-					nfields++
+					delete(fieldMap, "Key")
 				case "Provider":
+					if _, notParsed := fieldMap["Provider"]; !notParsed {
+						return pd3.Errorf("field %s already parsed", "Provider")
+					}
 					if err := x.Provider.Parse(vn); err != nil {
 						return err
 					}
-					nfields++
+					delete(fieldMap, "Provider")
 
 				}
 			}
 		}
 	}
-	if nfields != 2 {
-		return pd2.ErrNA
-	} else {
-		return nil
+	for _, fieldParse := range fieldMap {
+		if err := fieldParse(pd1.Null); err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
 type ProvidersByKey_MapIterator struct {
@@ -1226,7 +2027,9 @@ func (x *Multihash) Parse(n pd1.Node) error {
 		return pd2.ErrNA
 	}
 	iter := n.MapIterator()
-	nfields := 0
+	fieldMap := map[string]pd2.ParseFunc{
+		"Bytes": x.Bytes.Parse,
+	}
 	for !iter.Done() {
 		if kn, vn, err := iter.Next(); err != nil {
 			return err
@@ -1237,20 +2040,24 @@ func (x *Multihash) Parse(n pd1.Node) error {
 				_ = vn
 				switch k {
 				case "Bytes":
+					if _, notParsed := fieldMap["Bytes"]; !notParsed {
+						return pd3.Errorf("field %s already parsed", "Bytes")
+					}
 					if err := x.Bytes.Parse(vn); err != nil {
 						return err
 					}
-					nfields++
+					delete(fieldMap, "Bytes")
 
 				}
 			}
 		}
 	}
-	if nfields != 1 {
-		return pd2.ErrNA
-	} else {
-		return nil
+	for _, fieldParse := range fieldMap {
+		if err := fieldParse(pd1.Null); err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
 type Multihash_MapIterator struct {
@@ -1369,19 +2176,23 @@ func (x Multihash) Prototype() pd1.NodePrototype {
 	return nil
 }
 
-// -- protocol type AnonList9 --
+// -- protocol type AnonList13 --
 
-type AnonList9 []Node
+type AnonList13 []Node
 
-func (v AnonList9) Node() pd1.Node {
+func (v AnonList13) Node() pd1.Node {
 	return v
 }
 
-func (v *AnonList9) Parse(n pd1.Node) error {
+func (v *AnonList13) Parse(n pd1.Node) error {
+	if n.Kind() == pd1.Kind_Null {
+		*v = nil
+		return nil
+	}
 	if n.Kind() != pd1.Kind_List {
 		return pd2.ErrNA
 	} else {
-		*v = make(AnonList9, n.Length())
+		*v = make(AnonList13, n.Length())
 		iter := n.ListIterator()
 		for !iter.Done() {
 			if i, n, err := iter.Next(); err != nil {
@@ -1394,19 +2205,19 @@ func (v *AnonList9) Parse(n pd1.Node) error {
 	}
 }
 
-func (AnonList9) Kind() pd1.Kind {
+func (AnonList13) Kind() pd1.Kind {
 	return pd1.Kind_List
 }
 
-func (AnonList9) LookupByString(string) (pd1.Node, error) {
+func (AnonList13) LookupByString(string) (pd1.Node, error) {
 	return nil, pd2.ErrNA
 }
 
-func (AnonList9) LookupByNode(key pd1.Node) (pd1.Node, error) {
+func (AnonList13) LookupByNode(key pd1.Node) (pd1.Node, error) {
 	return nil, pd2.ErrNA
 }
 
-func (v AnonList9) LookupByIndex(i int64) (pd1.Node, error) {
+func (v AnonList13) LookupByIndex(i int64) (pd1.Node, error) {
 	if i < 0 || i >= v.Length() {
 		return nil, pd2.ErrBounds
 	} else {
@@ -1414,7 +2225,7 @@ func (v AnonList9) LookupByIndex(i int64) (pd1.Node, error) {
 	}
 }
 
-func (v AnonList9) LookupBySegment(seg pd1.PathSegment) (pd1.Node, error) {
+func (v AnonList13) LookupBySegment(seg pd1.PathSegment) (pd1.Node, error) {
 	if i, err := seg.Index(); err != nil {
 		return nil, pd2.ErrNA
 	} else {
@@ -1422,60 +2233,60 @@ func (v AnonList9) LookupBySegment(seg pd1.PathSegment) (pd1.Node, error) {
 	}
 }
 
-func (AnonList9) MapIterator() pd1.MapIterator {
+func (AnonList13) MapIterator() pd1.MapIterator {
 	return nil
 }
 
-func (v AnonList9) ListIterator() pd1.ListIterator {
-	return &AnonList9_ListIterator{v, 0}
+func (v AnonList13) ListIterator() pd1.ListIterator {
+	return &AnonList13_ListIterator{v, 0}
 }
 
-func (v AnonList9) Length() int64 {
+func (v AnonList13) Length() int64 {
 	return int64(len(v))
 }
 
-func (AnonList9) IsAbsent() bool {
+func (AnonList13) IsAbsent() bool {
 	return false
 }
 
-func (AnonList9) IsNull() bool {
+func (AnonList13) IsNull() bool {
 	return false
 }
 
-func (v AnonList9) AsBool() (bool, error) {
+func (v AnonList13) AsBool() (bool, error) {
 	return false, pd2.ErrNA
 }
 
-func (AnonList9) AsInt() (int64, error) {
+func (AnonList13) AsInt() (int64, error) {
 	return 0, pd2.ErrNA
 }
 
-func (AnonList9) AsFloat() (float64, error) {
+func (AnonList13) AsFloat() (float64, error) {
 	return 0, pd2.ErrNA
 }
 
-func (AnonList9) AsString() (string, error) {
+func (AnonList13) AsString() (string, error) {
 	return "", pd2.ErrNA
 }
 
-func (AnonList9) AsBytes() ([]byte, error) {
+func (AnonList13) AsBytes() ([]byte, error) {
 	return nil, pd2.ErrNA
 }
 
-func (AnonList9) AsLink() (pd1.Link, error) {
+func (AnonList13) AsLink() (pd1.Link, error) {
 	return nil, pd2.ErrNA
 }
 
-func (AnonList9) Prototype() pd1.NodePrototype {
+func (AnonList13) Prototype() pd1.NodePrototype {
 	return nil // not needed
 }
 
-type AnonList9_ListIterator struct {
-	list AnonList9
+type AnonList13_ListIterator struct {
+	list AnonList13
 	at   int64
 }
 
-func (iter *AnonList9_ListIterator) Next() (int64, pd1.Node, error) {
+func (iter *AnonList13_ListIterator) Next() (int64, pd1.Node, error) {
 	if iter.Done() {
 		return -1, nil, pd2.ErrBounds
 	}
@@ -1485,23 +2296,27 @@ func (iter *AnonList9_ListIterator) Next() (int64, pd1.Node, error) {
 	return i, v.Node(), nil
 }
 
-func (iter *AnonList9_ListIterator) Done() bool {
+func (iter *AnonList13_ListIterator) Done() bool {
 	return iter.at >= iter.list.Length()
 }
 
-// -- protocol type AnonList10 --
+// -- protocol type AnonList14 --
 
-type AnonList10 []TransferProto
+type AnonList14 []TransferProto
 
-func (v AnonList10) Node() pd1.Node {
+func (v AnonList14) Node() pd1.Node {
 	return v
 }
 
-func (v *AnonList10) Parse(n pd1.Node) error {
+func (v *AnonList14) Parse(n pd1.Node) error {
+	if n.Kind() == pd1.Kind_Null {
+		*v = nil
+		return nil
+	}
 	if n.Kind() != pd1.Kind_List {
 		return pd2.ErrNA
 	} else {
-		*v = make(AnonList10, n.Length())
+		*v = make(AnonList14, n.Length())
 		iter := n.ListIterator()
 		for !iter.Done() {
 			if i, n, err := iter.Next(); err != nil {
@@ -1514,19 +2329,19 @@ func (v *AnonList10) Parse(n pd1.Node) error {
 	}
 }
 
-func (AnonList10) Kind() pd1.Kind {
+func (AnonList14) Kind() pd1.Kind {
 	return pd1.Kind_List
 }
 
-func (AnonList10) LookupByString(string) (pd1.Node, error) {
+func (AnonList14) LookupByString(string) (pd1.Node, error) {
 	return nil, pd2.ErrNA
 }
 
-func (AnonList10) LookupByNode(key pd1.Node) (pd1.Node, error) {
+func (AnonList14) LookupByNode(key pd1.Node) (pd1.Node, error) {
 	return nil, pd2.ErrNA
 }
 
-func (v AnonList10) LookupByIndex(i int64) (pd1.Node, error) {
+func (v AnonList14) LookupByIndex(i int64) (pd1.Node, error) {
 	if i < 0 || i >= v.Length() {
 		return nil, pd2.ErrBounds
 	} else {
@@ -1534,7 +2349,7 @@ func (v AnonList10) LookupByIndex(i int64) (pd1.Node, error) {
 	}
 }
 
-func (v AnonList10) LookupBySegment(seg pd1.PathSegment) (pd1.Node, error) {
+func (v AnonList14) LookupBySegment(seg pd1.PathSegment) (pd1.Node, error) {
 	if i, err := seg.Index(); err != nil {
 		return nil, pd2.ErrNA
 	} else {
@@ -1542,60 +2357,60 @@ func (v AnonList10) LookupBySegment(seg pd1.PathSegment) (pd1.Node, error) {
 	}
 }
 
-func (AnonList10) MapIterator() pd1.MapIterator {
+func (AnonList14) MapIterator() pd1.MapIterator {
 	return nil
 }
 
-func (v AnonList10) ListIterator() pd1.ListIterator {
-	return &AnonList10_ListIterator{v, 0}
+func (v AnonList14) ListIterator() pd1.ListIterator {
+	return &AnonList14_ListIterator{v, 0}
 }
 
-func (v AnonList10) Length() int64 {
+func (v AnonList14) Length() int64 {
 	return int64(len(v))
 }
 
-func (AnonList10) IsAbsent() bool {
+func (AnonList14) IsAbsent() bool {
 	return false
 }
 
-func (AnonList10) IsNull() bool {
+func (AnonList14) IsNull() bool {
 	return false
 }
 
-func (v AnonList10) AsBool() (bool, error) {
+func (v AnonList14) AsBool() (bool, error) {
 	return false, pd2.ErrNA
 }
 
-func (AnonList10) AsInt() (int64, error) {
+func (AnonList14) AsInt() (int64, error) {
 	return 0, pd2.ErrNA
 }
 
-func (AnonList10) AsFloat() (float64, error) {
+func (AnonList14) AsFloat() (float64, error) {
 	return 0, pd2.ErrNA
 }
 
-func (AnonList10) AsString() (string, error) {
+func (AnonList14) AsString() (string, error) {
 	return "", pd2.ErrNA
 }
 
-func (AnonList10) AsBytes() ([]byte, error) {
+func (AnonList14) AsBytes() ([]byte, error) {
 	return nil, pd2.ErrNA
 }
 
-func (AnonList10) AsLink() (pd1.Link, error) {
+func (AnonList14) AsLink() (pd1.Link, error) {
 	return nil, pd2.ErrNA
 }
 
-func (AnonList10) Prototype() pd1.NodePrototype {
+func (AnonList14) Prototype() pd1.NodePrototype {
 	return nil // not needed
 }
 
-type AnonList10_ListIterator struct {
-	list AnonList10
+type AnonList14_ListIterator struct {
+	list AnonList14
 	at   int64
 }
 
-func (iter *AnonList10_ListIterator) Next() (int64, pd1.Node, error) {
+func (iter *AnonList14_ListIterator) Next() (int64, pd1.Node, error) {
 	if iter.Done() {
 		return -1, nil, pd2.ErrBounds
 	}
@@ -1605,15 +2420,15 @@ func (iter *AnonList10_ListIterator) Next() (int64, pd1.Node, error) {
 	return i, v.Node(), nil
 }
 
-func (iter *AnonList10_ListIterator) Done() bool {
+func (iter *AnonList14_ListIterator) Done() bool {
 	return iter.at >= iter.list.Length()
 }
 
 // -- protocol type Provider --
 
 type Provider struct {
-	Nodes AnonList9
-	Proto AnonList10
+	Nodes AnonList13
+	Proto AnonList14
 }
 
 func (x Provider) Node() pd1.Node {
@@ -1625,7 +2440,10 @@ func (x *Provider) Parse(n pd1.Node) error {
 		return pd2.ErrNA
 	}
 	iter := n.MapIterator()
-	nfields := 0
+	fieldMap := map[string]pd2.ParseFunc{
+		"Nodes": x.Nodes.Parse,
+		"Proto": x.Proto.Parse,
+	}
 	for !iter.Done() {
 		if kn, vn, err := iter.Next(); err != nil {
 			return err
@@ -1636,25 +2454,32 @@ func (x *Provider) Parse(n pd1.Node) error {
 				_ = vn
 				switch k {
 				case "Nodes":
+					if _, notParsed := fieldMap["Nodes"]; !notParsed {
+						return pd3.Errorf("field %s already parsed", "Nodes")
+					}
 					if err := x.Nodes.Parse(vn); err != nil {
 						return err
 					}
-					nfields++
+					delete(fieldMap, "Nodes")
 				case "Proto":
+					if _, notParsed := fieldMap["Proto"]; !notParsed {
+						return pd3.Errorf("field %s already parsed", "Proto")
+					}
 					if err := x.Proto.Parse(vn); err != nil {
 						return err
 					}
-					nfields++
+					delete(fieldMap, "Proto")
 
 				}
 			}
 		}
 	}
-	if nfields != 2 {
-		return pd2.ErrNA
-	} else {
-		return nil
+	for _, fieldParse := range fieldMap {
+		if err := fieldParse(pd1.Null); err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
 type Provider_MapIterator struct {
@@ -1927,19 +2752,23 @@ func (x Node) Prototype() pd1.NodePrototype {
 	return nil
 }
 
-// -- protocol type AnonList13 --
+// -- protocol type AnonList17 --
 
-type AnonList13 []pd2.Bytes
+type AnonList17 []pd2.Bytes
 
-func (v AnonList13) Node() pd1.Node {
+func (v AnonList17) Node() pd1.Node {
 	return v
 }
 
-func (v *AnonList13) Parse(n pd1.Node) error {
+func (v *AnonList17) Parse(n pd1.Node) error {
+	if n.Kind() == pd1.Kind_Null {
+		*v = nil
+		return nil
+	}
 	if n.Kind() != pd1.Kind_List {
 		return pd2.ErrNA
 	} else {
-		*v = make(AnonList13, n.Length())
+		*v = make(AnonList17, n.Length())
 		iter := n.ListIterator()
 		for !iter.Done() {
 			if i, n, err := iter.Next(); err != nil {
@@ -1952,19 +2781,19 @@ func (v *AnonList13) Parse(n pd1.Node) error {
 	}
 }
 
-func (AnonList13) Kind() pd1.Kind {
+func (AnonList17) Kind() pd1.Kind {
 	return pd1.Kind_List
 }
 
-func (AnonList13) LookupByString(string) (pd1.Node, error) {
+func (AnonList17) LookupByString(string) (pd1.Node, error) {
 	return nil, pd2.ErrNA
 }
 
-func (AnonList13) LookupByNode(key pd1.Node) (pd1.Node, error) {
+func (AnonList17) LookupByNode(key pd1.Node) (pd1.Node, error) {
 	return nil, pd2.ErrNA
 }
 
-func (v AnonList13) LookupByIndex(i int64) (pd1.Node, error) {
+func (v AnonList17) LookupByIndex(i int64) (pd1.Node, error) {
 	if i < 0 || i >= v.Length() {
 		return nil, pd2.ErrBounds
 	} else {
@@ -1972,7 +2801,7 @@ func (v AnonList13) LookupByIndex(i int64) (pd1.Node, error) {
 	}
 }
 
-func (v AnonList13) LookupBySegment(seg pd1.PathSegment) (pd1.Node, error) {
+func (v AnonList17) LookupBySegment(seg pd1.PathSegment) (pd1.Node, error) {
 	if i, err := seg.Index(); err != nil {
 		return nil, pd2.ErrNA
 	} else {
@@ -1980,60 +2809,60 @@ func (v AnonList13) LookupBySegment(seg pd1.PathSegment) (pd1.Node, error) {
 	}
 }
 
-func (AnonList13) MapIterator() pd1.MapIterator {
+func (AnonList17) MapIterator() pd1.MapIterator {
 	return nil
 }
 
-func (v AnonList13) ListIterator() pd1.ListIterator {
-	return &AnonList13_ListIterator{v, 0}
+func (v AnonList17) ListIterator() pd1.ListIterator {
+	return &AnonList17_ListIterator{v, 0}
 }
 
-func (v AnonList13) Length() int64 {
+func (v AnonList17) Length() int64 {
 	return int64(len(v))
 }
 
-func (AnonList13) IsAbsent() bool {
+func (AnonList17) IsAbsent() bool {
 	return false
 }
 
-func (AnonList13) IsNull() bool {
+func (AnonList17) IsNull() bool {
 	return false
 }
 
-func (v AnonList13) AsBool() (bool, error) {
+func (v AnonList17) AsBool() (bool, error) {
 	return false, pd2.ErrNA
 }
 
-func (AnonList13) AsInt() (int64, error) {
+func (AnonList17) AsInt() (int64, error) {
 	return 0, pd2.ErrNA
 }
 
-func (AnonList13) AsFloat() (float64, error) {
+func (AnonList17) AsFloat() (float64, error) {
 	return 0, pd2.ErrNA
 }
 
-func (AnonList13) AsString() (string, error) {
+func (AnonList17) AsString() (string, error) {
 	return "", pd2.ErrNA
 }
 
-func (AnonList13) AsBytes() ([]byte, error) {
+func (AnonList17) AsBytes() ([]byte, error) {
 	return nil, pd2.ErrNA
 }
 
-func (AnonList13) AsLink() (pd1.Link, error) {
+func (AnonList17) AsLink() (pd1.Link, error) {
 	return nil, pd2.ErrNA
 }
 
-func (AnonList13) Prototype() pd1.NodePrototype {
+func (AnonList17) Prototype() pd1.NodePrototype {
 	return nil // not needed
 }
 
-type AnonList13_ListIterator struct {
-	list AnonList13
+type AnonList17_ListIterator struct {
+	list AnonList17
 	at   int64
 }
 
-func (iter *AnonList13_ListIterator) Next() (int64, pd1.Node, error) {
+func (iter *AnonList17_ListIterator) Next() (int64, pd1.Node, error) {
 	if iter.Done() {
 		return -1, nil, pd2.ErrBounds
 	}
@@ -2043,7 +2872,7 @@ func (iter *AnonList13_ListIterator) Next() (int64, pd1.Node, error) {
 	return i, v.Node(), nil
 }
 
-func (iter *AnonList13_ListIterator) Done() bool {
+func (iter *AnonList17_ListIterator) Done() bool {
 	return iter.at >= iter.list.Length()
 }
 
@@ -2051,7 +2880,7 @@ func (iter *AnonList13_ListIterator) Done() bool {
 
 type Peer struct {
 	ID             pd2.Bytes
-	Multiaddresses AnonList13
+	Multiaddresses AnonList17
 }
 
 func (x Peer) Node() pd1.Node {
@@ -2063,7 +2892,10 @@ func (x *Peer) Parse(n pd1.Node) error {
 		return pd2.ErrNA
 	}
 	iter := n.MapIterator()
-	nfields := 0
+	fieldMap := map[string]pd2.ParseFunc{
+		"ID":             x.ID.Parse,
+		"Multiaddresses": x.Multiaddresses.Parse,
+	}
 	for !iter.Done() {
 		if kn, vn, err := iter.Next(); err != nil {
 			return err
@@ -2074,25 +2906,32 @@ func (x *Peer) Parse(n pd1.Node) error {
 				_ = vn
 				switch k {
 				case "ID":
+					if _, notParsed := fieldMap["ID"]; !notParsed {
+						return pd3.Errorf("field %s already parsed", "ID")
+					}
 					if err := x.ID.Parse(vn); err != nil {
 						return err
 					}
-					nfields++
+					delete(fieldMap, "ID")
 				case "Multiaddresses":
+					if _, notParsed := fieldMap["Multiaddresses"]; !notParsed {
+						return pd3.Errorf("field %s already parsed", "Multiaddresses")
+					}
 					if err := x.Multiaddresses.Parse(vn); err != nil {
 						return err
 					}
-					nfields++
+					delete(fieldMap, "Multiaddresses")
 
 				}
 			}
 		}
 	}
-	if nfields != 2 {
-		return pd2.ErrNA
-	} else {
-		return nil
+	for _, fieldParse := range fieldMap {
+		if err := fieldParse(pd1.Null); err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
 type Peer_MapIterator struct {
@@ -2379,7 +3218,7 @@ func (x *BitswapTransfer) Parse(n pd1.Node) error {
 		return pd2.ErrNA
 	}
 	iter := n.MapIterator()
-	nfields := 0
+	fieldMap := map[string]pd2.ParseFunc{}
 	for !iter.Done() {
 		if kn, vn, err := iter.Next(); err != nil {
 			return err
@@ -2394,11 +3233,12 @@ func (x *BitswapTransfer) Parse(n pd1.Node) error {
 			}
 		}
 	}
-	if nfields != 0 {
-		return pd2.ErrNA
-	} else {
-		return nil
+	for _, fieldParse := range fieldMap {
+		if err := fieldParse(pd1.Null); err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
 type BitswapTransfer_MapIterator struct {

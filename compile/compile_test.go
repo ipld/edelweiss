@@ -237,8 +237,9 @@ func TestServiceAtCompileTime(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	_, err = goFile.Generate()
+	buf, err := goFile.Generate()
 	if err != nil {
 		t.Fatal(err)
 	}
+	println(string(buf))
 }

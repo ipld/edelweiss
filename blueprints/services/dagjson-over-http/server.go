@@ -34,46 +34,79 @@ func (x GoServerImpl) GoDef() cg.Blueprint {
 	loggerVar := cg.GoRef{PkgPath: x.Ref.PkgPath, Name: fmt.Sprintf("logger_server_%s", x.Ref.TypeName)}
 	//
 	methods := x.Def.Methods
-	methodDecls := make(cg.BlueSlice, len(methods))
-	methodCases := make(cg.BlueSlice, len(methods))
-	for i, m := range methods {
+	methodDecls := cg.BlueSlice{}
+	methodCases := cg.BlueSlice{}
+	for _, m := range methods {
+		if m.Name == x.Def.Identify.Name {
+			continue
+		}
+		// async result type is defined by the client codegen
+		asyncResultRef := &cg.GoTypeRef{PkgPath: x.Ref.PkgPath, TypeName: x.Ref.TypeName + "_" + m.Name + "_AsyncResult"}
 		bmDecl := cg.BlueMap{
-			"MethodName":   cg.V(m.Name),
-			"MethodArg":    x.Lookup.LookupDepGoRef(m.Type.Arg),
-			"MethodReturn": x.Lookup.LookupDepGoRef(m.Type.Return),
+			"MethodName":        cg.V(m.Name),
+			"MethodArg":         x.Lookup.LookupDepGoRef(m.Type.Arg),
+			"MethodReturn":      x.Lookup.LookupDepGoRef(m.Type.Return),
+			"MethodReturnAsync": asyncResultRef,
 			//
 			"LoggerVar":         loggerVar,
+			"ErrorEnvelope":     x.Lookup.LookupDepGoRef(x.Def.ErrorEnvelope),
 			"ReturnEnvelope":    x.Lookup.LookupDepGoRef(x.Def.ReturnEnvelope),
 			"Context":           base.Context,
 			"ContextBackground": base.ContextBackground,
 			"IPLDEncode":        base.IPLDEncode,
 			"DAGJSONEncode":     base.DAGJSONEncode,
+			"EdelweissString":   base.EdelweissString,
 		}
-		methodDecls[i] = cg.T{
+		methodDecls = append(methodDecls, cg.T{
 			Data: bmDecl,
-			Src:  `{{.MethodName}}(ctx {{.Context}}, req *{{.MethodArg}}, respCh chan<- *{{.MethodReturn}}) error`,
-		}
-		methodCases[i] = cg.T{
+			Src:  `{{.MethodName}}(ctx {{.Context}}, req *{{.MethodArg}}, respCh chan<- *{{.MethodReturnAsync}}) error`,
+		})
+		methodCases = append(methodCases, cg.T{
 			Data: bmDecl,
 			Src: `
 		case env.{{.MethodName}} != nil:
-			ch := make(chan *{{.MethodReturn}})
+			ch := make(chan *{{.MethodReturnAsync}})
 			if err = s.{{.MethodName}}({{.ContextBackground}}(), env.{{.MethodName}}, ch); err != nil {
 				{{.LoggerVar}}.Errorf("get p2p provider rejected request (%v)", err)
 				writer.WriteHeader(500)
 				return
 			}
 			for resp := range ch {
-				env := &{{.ReturnEnvelope}}{ {{.MethodName}}: resp }
+				var env *{{.ReturnEnvelope}}
+				if resp.Err != nil {
+					env = &{{.ReturnEnvelope}}{ Error: &{{.ErrorEnvelope}}{Code: {{.EdelweissString}}(resp.Err.Error())} }
+				} else {
+					env = &{{.ReturnEnvelope}}{ {{.MethodName}}: resp.Resp }
+				}
 				buf, err := {{.IPLDEncode}}(env, {{.DAGJSONEncode}})
 				if err != nil {
 					{{.LoggerVar}}.Errorf("cannot encode response (%v)", err)
 					continue
 				}
 				writer.Write(buf)
-			}
-`,
 		}
+`,
+		})
+	}
+	//
+	methodNameStrings := cg.BlueSlice{}
+	for _, m := range methods {
+		if m.Name == x.Def.Identify.Name {
+			continue
+		}
+		methodNameStrings = append(methodNameStrings, cg.StringLiteral(m.Name))
+	}
+	identifyData := cg.BlueMap{
+		"LoggerVar":       loggerVar,
+		"ReturnEnvelope":  x.Lookup.LookupDepGoRef(x.Def.ReturnEnvelope),
+		"IPLDEncode":      base.IPLDEncode,
+		"DAGJSONEncode":   base.DAGJSONEncode,
+		"EdelweissString": base.EdelweissString,
+		//
+		"IdentifyMethodName":   cg.V(x.Def.Identify.Name),
+		"IdentifyMethodArg":    x.Lookup.LookupDepGoRef(x.Def.Identify.Type.Arg),
+		"IdentifyMethodReturn": x.Lookup.LookupDepGoRef(x.Def.Identify.Type.Return),
+		"MethodNameStrings":    methodNameStrings,
 	}
 	//
 	data := cg.BlueMap{
@@ -93,6 +126,7 @@ func (x GoServerImpl) GoDef() cg.Blueprint {
 		"CallEnvelope": x.Lookup.LookupDepGoRef(x.Def.CallEnvelope),
 		"MethodDecls":  methodDecls,
 		"MethodCases":  methodCases,
+		"IdentifyCase": cg.T{Data: identifyData, Src: goIdentifyCaseTemplate},
 	}
 	return cg.T{Data: data, Src: goServerTemplate}
 }
@@ -126,11 +160,31 @@ func {{.AsyncHandler}}(s {{.Interface}}) {{.HTTPHandlerFunc}} {
 		// demultiplex request
 		switch {
 {{range .MethodCases}}{{.}}{{end}}
+{{.IdentifyCase}}
 		default:
 			{{.LoggerVar}}.Errorf("missing or unknown request")
 			writer.WriteHeader(404)
 		}
 	}
 }
+`
+	goIdentifyCaseTemplate = `
+		case env.{{.IdentifyMethodName}} != nil:
+			var env *{{.ReturnEnvelope}}
+			env = &{{.ReturnEnvelope}}{
+				{{.IdentifyMethodName}}: &{{.IdentifyMethodReturn}}{
+					Methods: []{{.EdelweissString}}{
+{{range .MethodNameStrings}}						{{.}},
+{{end}}
+					},
+				},
+			}
+			buf, err := {{.IPLDEncode}}(env, {{.DAGJSONEncode}})
+			if err != nil {
+				{{.LoggerVar}}.Errorf("cannot encode identify response (%v)", err)
+				writer.WriteHeader(500)
+				return
+			}
+			writer.Write(buf)
 `
 )

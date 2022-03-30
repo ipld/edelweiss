@@ -51,6 +51,7 @@ var (
 )
 
 var (
-	Errorf   = &cg.GoRef{PkgPath: "fmt", Name: "Errorf"}
-	ErrorsIs = &cg.GoRef{PkgPath: "errors", Name: "Is"}
+	Errorf    = &cg.GoRef{PkgPath: "fmt", Name: "Errorf"}
+	ErrorsIs  = &cg.GoRef{PkgPath: "errors", Name: "Is"}
+	ErrorsNew = &cg.GoRef{PkgPath: "errors", Name: "New"}
 )

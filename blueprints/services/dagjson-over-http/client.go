@@ -38,6 +38,7 @@ func (x GoClientImpl) GoDef() cg.Blueprint {
 	typ := x.Ref.Prepend("client_")
 	loggerVar := cg.GoRef{PkgPath: x.Ref.PkgPath, Name: fmt.Sprintf("logger_client_%s", x.Ref.TypeName)}
 	for i, m := range methods {
+		// async result type is also used by the server code
 		asyncResultRef := &cg.GoTypeRef{PkgPath: x.Ref.PkgPath, TypeName: x.Ref.TypeName + "_" + m.Name + "_AsyncResult"}
 		processAsyncResultRef := &cg.GoRef{PkgPath: x.Ref.PkgPath, Name: "process_" + x.Ref.TypeName + "_" + m.Name + "_AsyncResult"}
 		bmDecl := cg.BlueMap{
@@ -83,10 +84,15 @@ func (x GoClientImpl) GoDef() cg.Blueprint {
 		methodAsyncDecls[i] = asyncMethodDecl
 		bmImpl := cg.MergeBlueMaps(bmDecl,
 			cg.BlueMap{
+				"ErrorEnvelope":   x.Lookup.LookupDepGoRef(x.Def.ErrorEnvelope),
 				"CallEnvelope":    x.Lookup.LookupDepGoRef(x.Def.CallEnvelope),
 				"ReturnEnvelope":  x.Lookup.LookupDepGoRef(x.Def.ReturnEnvelope),
 				"SyncMethodDecl":  syncMethodDecl,
 				"AsyncMethodDecl": asyncMethodDecl,
+				"ErrContext":      base.EdelweissErrContext,
+				"ErrProto":        base.EdelweissErrProto,
+				"ErrService":      base.EdelweissErrService,
+				"ErrorsNew":       base.ErrorsNew,
 			},
 		)
 		methodImpls[i] = cg.T{Data: bmImpl, Src: goClientMethodImplTemplate}
@@ -185,7 +191,9 @@ func (c *{{.Type}}) {{.SyncMethodDecl}} {
 				if r.Err == nil {
 					resps = append(resps, r.Resp)
 				} else {
-					{{.LoggerVar}}.Errorf("client received invalid response (%v)", r.Err)
+					{{.LoggerVar}}.Errorf("client received erro response (%v)", r.Err)
+					cancel()
+					return resps, r.Err
 				}
 			}
 		case <-ctx.Done():
@@ -209,7 +217,7 @@ func (c *{{.Type}}) {{.AsyncMethodDecl}} {
 	q := {{.URLValues}}{}
 	q.Set("q", string(buf))
 	u.RawQuery = q.Encode()
-	httpReq, err := {{.HTTPNewRequestWithContext}}(ctx, "GET", u.String(), {{.BytesNewReader}}(buf))
+	httpReq, err := {{.HTTPNewRequestWithContext}}(ctx, "POST", u.String(), {{.BytesNewReader}}(buf))
 	if err != nil {
 		return nil, err
 	}
@@ -228,6 +236,7 @@ func {{.ProcessReturnAsync}}(ctx {{.Context}}, ch chan<- {{.MethodReturnAsync}},
 	defer close(ch)
 	for {
 		if ctx.Err() != nil {
+			ch <- {{.MethodReturnAsync}}{Err: {{.ErrContext}}{Cause: ctx.Err()}} // context cancelled
 			return
 		}
 
@@ -236,15 +245,19 @@ func {{.ProcessReturnAsync}}(ctx {{.Context}}, ch chan<- {{.MethodReturnAsync}},
 			return
 		}
 		if err != nil {
-			ch <- {{.MethodReturnAsync}}{Err: err}
+			ch <- {{.MethodReturnAsync}}{Err: {{.ErrProto}}{Cause: err}} // IPLD decode error
 			return
 		}
 		env := &{{.ReturnEnvelope}}{}
 		if err = env.Parse(n); err != nil {
-			ch <- {{.MethodReturnAsync}}{Err: err}
+			ch <- {{.MethodReturnAsync}}{Err: {{.ErrProto}}{Cause: err}} // schema decode error
 			return
 		}
 
+		if env.Error != nil {
+			ch <- {{.MethodReturnAsync}}{Err: {{.ErrService}}{Cause: {{.ErrorsNew}}(string(env.Error.Code))}} // service-level error
+			return
+		}
 		if env.{{.MethodName}} == nil {
 			continue
 		}
