@@ -34,9 +34,9 @@ func (x GoServerImpl) GoDef() cg.Blueprint {
 	loggerVar := cg.GoRef{PkgPath: x.Ref.PkgPath, Name: fmt.Sprintf("logger_server_%s", x.Ref.TypeName)}
 	//
 	methods := x.Def.Methods
-	methodDecls := make(cg.BlueSlice, len(methods))
-	methodCases := make(cg.BlueSlice, len(methods))
-	for i, m := range methods {
+	methodDecls := cg.BlueSlice{}
+	methodCases := cg.BlueSlice{}
+	for _, m := range methods {
 		if m.Name == x.Def.Identify.Name {
 			continue
 		}
@@ -57,11 +57,11 @@ func (x GoServerImpl) GoDef() cg.Blueprint {
 			"DAGJSONEncode":     base.DAGJSONEncode,
 			"EdelweissString":   base.EdelweissString,
 		}
-		methodDecls[i] = cg.T{
+		methodDecls = append(methodDecls, cg.T{
 			Data: bmDecl,
 			Src:  `{{.MethodName}}(ctx {{.Context}}, req *{{.MethodArg}}, respCh chan<- *{{.MethodReturnAsync}}) error`,
-		}
-		methodCases[i] = cg.T{
+		})
+		methodCases = append(methodCases, cg.T{
 			Data: bmDecl,
 			Src: `
 		case env.{{.MethodName}} != nil:
@@ -86,7 +86,27 @@ func (x GoServerImpl) GoDef() cg.Blueprint {
 				writer.Write(buf)
 		}
 `,
+		})
+	}
+	//
+	methodNameStrings := cg.BlueSlice{}
+	for _, m := range methods {
+		if m.Name == x.Def.Identify.Name {
+			continue
 		}
+		methodNameStrings = append(methodNameStrings, cg.StringLiteral(m.Name))
+	}
+	identifyData := cg.BlueMap{
+		"LoggerVar":       loggerVar,
+		"ReturnEnvelope":  x.Lookup.LookupDepGoRef(x.Def.ReturnEnvelope),
+		"IPLDEncode":      base.IPLDEncode,
+		"DAGJSONEncode":   base.DAGJSONEncode,
+		"EdelweissString": base.EdelweissString,
+		//
+		"IdentifyMethodName":   cg.V(x.Def.Identify.Name),
+		"IdentifyMethodArg":    x.Lookup.LookupDepGoRef(x.Def.Identify.Type.Arg),
+		"IdentifyMethodReturn": x.Lookup.LookupDepGoRef(x.Def.Identify.Type.Return),
+		"MethodNameStrings":    methodNameStrings,
 	}
 	//
 	data := cg.BlueMap{
@@ -106,10 +126,7 @@ func (x GoServerImpl) GoDef() cg.Blueprint {
 		"CallEnvelope": x.Lookup.LookupDepGoRef(x.Def.CallEnvelope),
 		"MethodDecls":  methodDecls,
 		"MethodCases":  methodCases,
-		//
-		"IdentifyMethodName":   cg.V(x.Def.Identify.Name),
-		"IdentifyMethodArg":    x.Lookup.LookupDepGoRef(x.Def.Identify.Type.Arg),
-		"IdentifyMethodReturn": x.Lookup.LookupDepGoRef(x.Def.Identify.Type.Return),
+		"IdentifyCase": cg.T{Data: identifyData, Src: goIdentifyCaseTemplate},
 	}
 	return cg.T{Data: data, Src: goServerTemplate}
 }
@@ -143,11 +160,31 @@ func {{.AsyncHandler}}(s {{.Interface}}) {{.HTTPHandlerFunc}} {
 		// demultiplex request
 		switch {
 {{range .MethodCases}}{{.}}{{end}}
+{{.IdentifyCase}}
 		default:
 			{{.LoggerVar}}.Errorf("missing or unknown request")
 			writer.WriteHeader(404)
 		}
 	}
 }
+`
+	goIdentifyCaseTemplate = `
+		case env.{{.IdentifyMethodName}} != nil:
+			var env *{{.ReturnEnvelope}}
+			env = &{{.ReturnEnvelope}}{
+				{{.IdentifyMethodName}}: &{{.IdentifyMethodReturn}}{
+					Methods: []{{.EdelweissString}}{
+{{range .MethodNameStrings}}						{{.}},
+{{end}}
+					},
+				},
+			}
+			buf, err := {{.IPLDEncode}}(env, {{.DAGJSONEncode}})
+			if err != nil {
+				{{.LoggerVar}}.Errorf("cannot encode identify response (%v)", err)
+				writer.WriteHeader(500)
+				return
+			}
+			writer.Write(buf)
 `
 )

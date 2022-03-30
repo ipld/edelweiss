@@ -102,7 +102,7 @@ func flattenBlueprint(ctx GoFileContext, b Blueprint) (Blueprint, error) {
 		}
 		return V(buf.String()), nil
 	}
-	panic("not a blue value")
+	panic(fmt.Sprintf("not a blue value: %#v", b))
 }
 
 func flattenBlueMap(ctx GoFileContext, bm BlueMap) (BlueMap, error) {
