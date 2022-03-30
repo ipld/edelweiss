@@ -217,7 +217,7 @@ func (c *{{.Type}}) {{.AsyncMethodDecl}} {
 	q := {{.URLValues}}{}
 	q.Set("q", string(buf))
 	u.RawQuery = q.Encode()
-	httpReq, err := {{.HTTPNewRequestWithContext}}(ctx, "GET", u.String(), {{.BytesNewReader}}(buf))
+	httpReq, err := {{.HTTPNewRequestWithContext}}(ctx, "POST", u.String(), {{.BytesNewReader}}(buf))
 	if err != nil {
 		return nil, err
 	}
