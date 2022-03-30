@@ -231,10 +231,16 @@ func provisionService(p *genPlan, named string, s defs.Service) (plans.Plan, err
 		defs.Method{
 			Name: plans.IdentifyName,
 			Type: defs.Fn{
-				Arg: defs.Structure{},
-				Return: defs.Structure{
-					Fields: defs.Fields{
-						defs.Field{Name: "Methods", GoName: "Methods", Type: defs.List{Element: defs.String{}}},
+				Arg: defs.Named{
+					Name: fmt.Sprintf("%s_IdentifyArg", named),
+					Type: defs.Structure{},
+				},
+				Return: defs.Named{
+					Name: fmt.Sprintf("%s_IdentifyResult", named),
+					Type: defs.Structure{
+						Fields: defs.Fields{
+							defs.Field{Name: "Methods", GoName: "Methods", Type: defs.List{Element: defs.String{}}},
+						},
 					},
 				},
 			},

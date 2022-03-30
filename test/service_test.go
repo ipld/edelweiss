@@ -42,6 +42,10 @@ func (TestService_ServerImpl) Method2(ctx context.Context, req *values.String, r
 	return nil
 }
 
+var testServiceIdentifyResult = &TestService_IdentifyResult{
+	Methods: []values.String{"Method1", "Method2"},
+}
+
 func TestRoundtrip(t *testing.T) {
 
 	s := httptest.NewServer(TestService_AsyncHandler(TestService_ServerImpl{}))
@@ -76,6 +80,17 @@ func TestRoundtrip(t *testing.T) {
 	// if *r2[1] != values.Float(4.56) {
 	// 	t.Fatalf("expecting 4.56, got %v", *r2[1])
 	// }
+
+	r3, err := c.Identify(ctx, &TestService_IdentifyArg{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(r3) != 1 {
+		t.Fatalf("expecting 1 results, got %d", len(r3))
+	}
+	if !ipld.DeepEqual(r3[0], testServiceIdentifyResult) {
+		t.Fatalf("expecting #%v, got %v", testServiceIdentifyResult, r3[0])
+	}
 
 }`
 	RunGenTest(t, defs, testSrc)
