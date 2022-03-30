@@ -37,6 +37,9 @@ func (x GoServerImpl) GoDef() cg.Blueprint {
 	methodDecls := make(cg.BlueSlice, len(methods))
 	methodCases := make(cg.BlueSlice, len(methods))
 	for i, m := range methods {
+		if m.Name == x.Def.Identify.Name {
+			continue
+		}
 		// async result type is defined by the client codegen
 		asyncResultRef := &cg.GoTypeRef{PkgPath: x.Ref.PkgPath, TypeName: x.Ref.TypeName + "_" + m.Name + "_AsyncResult"}
 		bmDecl := cg.BlueMap{
@@ -103,6 +106,10 @@ func (x GoServerImpl) GoDef() cg.Blueprint {
 		"CallEnvelope": x.Lookup.LookupDepGoRef(x.Def.CallEnvelope),
 		"MethodDecls":  methodDecls,
 		"MethodCases":  methodCases,
+		//
+		"IdentifyMethodName":   cg.V(x.Def.Identify.Name),
+		"IdentifyMethodArg":    x.Lookup.LookupDepGoRef(x.Def.Identify.Type.Arg),
+		"IdentifyMethodReturn": x.Lookup.LookupDepGoRef(x.Def.Identify.Type.Return),
 	}
 	return cg.T{Data: data, Src: goServerTemplate}
 }

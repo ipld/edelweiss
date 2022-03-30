@@ -221,7 +221,27 @@ func provision(p *genPlan, named string, s defs.Def) (plans.Plan, error) {
 }
 
 func provisionService(p *genPlan, named string, s defs.Service) (plans.Plan, error) {
-	methods := s.Methods
+	// inject identify method
+	for _, m := range s.Methods {
+		if m.Name == plans.IdentifyName {
+			return nil, fmt.Errorf("method Identify is reserved")
+		}
+	}
+	methods := append(defs.Methods{
+		defs.Method{
+			Name: plans.IdentifyName,
+			Type: defs.Fn{
+				Arg: defs.Structure{},
+				Return: defs.Structure{
+					Fields: defs.Fields{
+						defs.Field{Name: "Methods", GoName: "Methods", Type: defs.List{Element: defs.String{}}},
+					},
+				},
+			},
+		},
+	}, s.Methods...)
+
+	// prepare service plan
 	plan := plans.Service{
 		Methods: make(plans.Methods, len(methods)),
 	}
@@ -236,6 +256,9 @@ func provisionService(p *genPlan, named string, s defs.Service) (plans.Plan, err
 			return nil, fmt.Errorf("generating method return (%v)", err)
 		}
 		fn := plans.Fn{Arg: argRef, Return: returnRef}
+		if m.Name == plans.IdentifyName {
+			plan.Identify = plans.Method{Name: plans.IdentifyName, Type: fn}
+		}
 		plan.Methods[i] = plans.Method{Name: m.Name, Type: fn}
 		callCases[i] = plans.Case{Name: m.Name + "Request", GoName: m.Name, Type: argRef}
 		returnCases[i] = plans.Case{Name: m.Name + "Response", GoName: m.Name, Type: returnRef}
