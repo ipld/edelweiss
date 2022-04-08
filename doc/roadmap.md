@@ -6,7 +6,7 @@ For the time being, we are not yet planning (or including here) milestones that 
 
 Milestones 2 and 3 below may be re-ordered. We will determine which is more critical to the PL ecosystem after polling/interviewing a larger audience of stakeholders.
 
-## Milestone 1: An RPC protocol compiler for IPLD
+## Milestone 1: An RPC protocol compiler for IPLD (√)
 
 The goal of this milestone is to accomplish a production-grade code generator for RPC APIs based on IPLD. We plan to support a core type system, which is a superset of the familiar IPLD schema types, wherein each type uses a canonical representation to IPLD. Canonical representations will match chosen pre-existing IPLD Schema representations.
 
