@@ -18,6 +18,7 @@ var (
 	URL                       = cg.GoTypeRef{PkgPath: "net/url", TypeName: "URL"}
 	URLParse                  = cg.GoRef{PkgPath: "net/url", Name: "Parse"}
 	URLValues                 = cg.GoRef{PkgPath: "net/url", Name: "Values"}
+	BytesBuffer               = cg.GoTypeRef{PkgPath: "bytes", TypeName: "Buffer"}
 	BytesNewReader            = cg.GoRef{PkgPath: "bytes", Name: "NewReader"}
 )
 
