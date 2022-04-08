@@ -64,6 +64,8 @@ func (x GoClientImpl) GoDef() cg.Blueprint {
 			"ErrorsIs":                  base.ErrorsIs,
 			"IOEOF":                     base.IOEOF,
 			"IOErrUnexpectedEOF":        base.IOErrUnexpectedEOF,
+			//
+			"AcceptContentType": cg.StringLiteral(ContentTypeV1),
 		}
 		methodAsyncResultDefs[i] = cg.T{
 			Data: bmDecl,
@@ -191,7 +193,7 @@ func (c *{{.Type}}) {{.SyncMethodDecl}} {
 				if r.Err == nil {
 					resps = append(resps, r.Resp)
 				} else {
-					{{.LoggerVar}}.Errorf("client received erro response (%v)", r.Err)
+					{{.LoggerVar}}.Errorf("client received error response (%v)", r.Err)
 					cancel()
 					return resps, r.Err
 				}
@@ -220,6 +222,11 @@ func (c *{{.Type}}) {{.AsyncMethodDecl}} {
 	httpReq, err := {{.HTTPNewRequestWithContext}}(ctx, "POST", u.String(), {{.BytesNewReader}}(buf))
 	if err != nil {
 		return nil, err
+	}
+	httpReq.Header = map[string][]string{
+		"Accept": {
+			{{.AcceptContentType}},
+		},
 	}
 
 	resp, err := c.httpClient.Do(httpReq)

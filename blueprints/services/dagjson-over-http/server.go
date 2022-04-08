@@ -127,6 +127,8 @@ func (x GoServerImpl) GoDef() cg.Blueprint {
 		"MethodDecls":  methodDecls,
 		"MethodCases":  methodCases,
 		"IdentifyCase": cg.T{Data: identifyData, Src: goIdentifyCaseTemplate},
+		//
+		"ContentType": cg.StringLiteral(ContentTypeV1),
 	}
 	return cg.T{Data: data, Src: goServerTemplate}
 }
@@ -155,6 +157,10 @@ func {{.AsyncHandler}}(s {{.Interface}}) {{.HTTPHandlerFunc}} {
 			{{.LoggerVar}}.Errorf("parsing call envelope (%v)", err)
 			writer.WriteHeader(400)
 			return
+		}
+
+		writer.Header()["Content-Type"] = []string{
+			{{.ContentType}},
 		}
 
 		// demultiplex request
