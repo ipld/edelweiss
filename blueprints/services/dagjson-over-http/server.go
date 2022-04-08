@@ -48,14 +48,15 @@ func (x GoServerImpl) GoDef() cg.Blueprint {
 			"MethodReturn":      x.Lookup.LookupDepGoRef(m.Type.Return),
 			"MethodReturnAsync": asyncResultRef,
 			//
-			"LoggerVar":         loggerVar,
-			"ErrorEnvelope":     x.Lookup.LookupDepGoRef(x.Def.ErrorEnvelope),
-			"ReturnEnvelope":    x.Lookup.LookupDepGoRef(x.Def.ReturnEnvelope),
-			"Context":           base.Context,
-			"ContextBackground": base.ContextBackground,
-			"IPLDEncode":        base.IPLDEncode,
-			"DAGJSONEncode":     base.DAGJSONEncode,
-			"EdelweissString":   base.EdelweissString,
+			"LoggerVar":           loggerVar,
+			"ErrorEnvelope":       x.Lookup.LookupDepGoRef(x.Def.ErrorEnvelope),
+			"ReturnEnvelope":      x.Lookup.LookupDepGoRef(x.Def.ReturnEnvelope),
+			"Context":             base.Context,
+			"ContextBackground":   base.ContextBackground,
+			"IPLDEncodeStreaming": base.IPLDEncodeStreaming,
+			"DAGJSONEncode":       base.DAGJSONEncode,
+			"EdelweissString":     base.EdelweissString,
+			"BytesBuffer":         base.BytesBuffer,
 		}
 		methodDecls = append(methodDecls, cg.T{
 			Data: bmDecl,
@@ -78,12 +79,13 @@ func (x GoServerImpl) GoDef() cg.Blueprint {
 				} else {
 					env = &{{.ReturnEnvelope}}{ {{.MethodName}}: resp.Resp }
 				}
-				buf, err := {{.IPLDEncode}}(env, {{.DAGJSONEncode}})
-				if err != nil {
+				var buf {{.BytesBuffer}}
+				if err = {{.IPLDEncodeStreaming}}(&buf, env, {{.DAGJSONEncode}}); err != nil {
 					{{.LoggerVar}}.Errorf("cannot encode response (%v)", err)
 					continue
 				}
-				writer.Write(buf)
+				buf.WriteByte("\n"[0])
+				writer.Write(buf.Bytes())
 		}
 `,
 		})
@@ -97,11 +99,12 @@ func (x GoServerImpl) GoDef() cg.Blueprint {
 		methodNameStrings = append(methodNameStrings, cg.StringLiteral(m.Name))
 	}
 	identifyData := cg.BlueMap{
-		"LoggerVar":       loggerVar,
-		"ReturnEnvelope":  x.Lookup.LookupDepGoRef(x.Def.ReturnEnvelope),
-		"IPLDEncode":      base.IPLDEncode,
-		"DAGJSONEncode":   base.DAGJSONEncode,
-		"EdelweissString": base.EdelweissString,
+		"LoggerVar":           loggerVar,
+		"ReturnEnvelope":      x.Lookup.LookupDepGoRef(x.Def.ReturnEnvelope),
+		"IPLDEncodeStreaming": base.IPLDEncodeStreaming,
+		"DAGJSONEncode":       base.DAGJSONEncode,
+		"EdelweissString":     base.EdelweissString,
+		"BytesBuffer":         base.BytesBuffer,
 		//
 		"IdentifyMethodName":   cg.V(x.Def.Identify.Name),
 		"IdentifyMethodArg":    x.Lookup.LookupDepGoRef(x.Def.Identify.Type.Arg),
@@ -185,12 +188,13 @@ func {{.AsyncHandler}}(s {{.Interface}}) {{.HTTPHandlerFunc}} {
 					},
 				},
 			}
-			buf, err := {{.IPLDEncode}}(env, {{.DAGJSONEncode}})
-			if err != nil {
+			var buf {{.BytesBuffer}}
+			if err = {{.IPLDEncodeStreaming}}(&buf, env, {{.DAGJSONEncode}}); err != nil {
 				{{.LoggerVar}}.Errorf("cannot encode identify response (%v)", err)
 				writer.WriteHeader(500)
 				return
 			}
-			writer.Write(buf)
+			buf.WriteByte("\n"[0])
+			writer.Write(buf.Bytes())
 `
 )
