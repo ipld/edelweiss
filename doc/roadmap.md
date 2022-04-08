@@ -34,6 +34,21 @@ This milestone will be ready for production use before the end of Q1 of 2022.
 
 We have commitments from the Delegated Routing and Indexer projects in PL to be the first users of this milestone. Delegated Routing will enable all IPFS nodes to delegate routing to third parties, using a code-generated RPC API. Indexers will use the same framework to act as a third-party routing provider for the IPFS Hydra nodes.
 
+## Milestone 1.1: Source syntax
+
+Popular demand has informed us that having source syntax for Edelweiss protocol definitions will go a long way to facilitate and accelerate adoption. There are two ways in which syntax can be used: to communicate protocol definitions in human-readable documents (usually specs), and to codify protocols for the purpose of automatic code generation and type checking.
+
+In the context of the PL ecosystem, the pre-existing IPLD Schema source syntax is widely used in both of these capacities. This has motivated us to implement a source parser for Edelweiss which fully supports the IPLD Schema source syntax. In addition to this, we plan to add new syntax for the various features that Edelweiss supports that are not present in IPLD Schema (e.g. functions, services, methods, lambdas, packaging, etc).
+
+### Summary of included features:
+
+- Full support for the IPLD Schema source syntax
+- Syntax for Edelweiss-only features
+
+### Stakeholders and applications
+
+Filecoin protocols [are described as IPLD structures](https://github.com/ipld/ipld/tree/master/_legacy/specs/data-structures/filecoin). The ability to parse these would enable a seamless transition of Filecoin protocol code to an Edelweiss code-generated approach.
+
 ## Milestone 2: Feature parity with IPLD schema and the fastest IPLD de/serializer
 
 In this milestone, we will introduce the notion of [_transforms_](transforms.md) which are a generalization of IPLD schema representations. Transforms are user-defined middleware, decoupled from types, which mutates IPLD schema on-the-fly with zero-allocations. Combinging types with transforms enables users to de/serialize any specific IPLD representation strategy to a desired user-facing type schema. This feature will bring the protocol compiler to feature parity with IPLD schema.
