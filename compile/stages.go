@@ -115,7 +115,25 @@ func provision(p *genPlan, named string, s defs.Def) (plans.Plan, error) {
 			}
 			casePlans[i] = plans.Case{Name: c.Name, GoName: c.GoName, Type: ctp}
 		}
-		return plans.Inductive{Cases: casePlans}, nil
+		var dp plans.BuiltinOrRefPlan
+		switch {
+		case t.Default.GoKeyName == "" && t.Default.GoValueName == "" && t.Default.Type == nil:
+		case t.Default.GoKeyName != "" && t.Default.GoValueName != "" && t.Default.Type != nil:
+			var err error
+			if dp, err = generate(p, t.Default.Type); err != nil {
+				return nil, err
+			}
+		default:
+			return nil, fmt.Errorf("invalid inductive default case definition")
+		}
+		return plans.Inductive{
+			Cases: casePlans,
+			Default: plans.DefaultCase{
+				GoKeyName:   t.Default.GoKeyName,
+				GoValueName: t.Default.GoValueName,
+				Type:        dp,
+			},
+		}, nil
 
 	case defs.Union:
 		cases := t.Cases

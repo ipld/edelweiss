@@ -80,6 +80,38 @@ func TestInductiveAtCompileTime(t *testing.T) {
 	}
 }
 
+func TestInductiveWithDefaultAtCompileTime(t *testing.T) {
+	defs := defs.Defs{
+		defs.Named{
+			Name: "S1",
+			Type: defs.Inductive{
+				Cases: defs.Cases{
+					defs.Case{Name: "Int", Type: defs.Int{}},
+					defs.Case{Name: "Bool", Type: defs.Bool{}},
+				},
+				Default: defs.DefaultCase{
+					GoKeyName:   "DefaultKey",
+					GoValueName: "DefaultValue",
+					Type:        defs.Any{},
+				},
+			},
+		},
+	}
+	x := &GoPkgCodegen{
+		GoPkgDirPath: "",
+		GoPkgPath:    "test",
+		Defs:         defs,
+	}
+	goFile, err := x.Compile()
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = goFile.Generate()
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestUnionAtCompileTime(t *testing.T) {
 	defs := defs.Defs{
 		defs.Named{

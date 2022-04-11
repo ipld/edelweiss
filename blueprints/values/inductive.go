@@ -96,6 +96,18 @@ func (x *GoInductiveImpl) GoDef() cg.Blueprint {
 `,
 		}
 	}
+
+	// default case
+	var defaultData cg.BlueMap
+	if x.Def.Default.Type != nil {
+		defaultData = cg.BlueMap{
+			"DefaultKeyName":   cg.V(x.Def.Default.GoKeyName),
+			"DefaultValueName": cg.V(x.Def.Default.GoValueName),
+			"DefaultType":      x.Lookup.LookupDepGoRef(x.Def.Default.Type),
+			"EdelweissString":  base.EdelweissString,
+		}
+	}
+
 	// build type definition
 	data := cg.BlueMap{
 		"Type":            cg.V(x.Ref.TypeName),
@@ -112,12 +124,14 @@ func (x *GoInductiveImpl) GoDef() cg.Blueprint {
 		"NodePrototype":   base.IPLDNodePrototypeType,
 		"EdelweissString": base.EdelweissString,
 		"Errorf":          base.Errorf,
-		//
+		// cases
 		"CaseDecls":                caseDecls,
 		"CaseParseCases":           caseParseCases,
 		"CaseNextCases":            caseNextCases,
 		"CaseLookupByStringCases":  caseLookupByStringCases,
 		"CaseLookupBySegmentCases": caseLookupBySegmentCases,
+		// default case, if present
+		"Default": defaultData,
 	}
 	return cg.T{
 		Data: data,
@@ -126,6 +140,10 @@ func (x *GoInductiveImpl) GoDef() cg.Blueprint {
 
 type {{.Type}} struct {
 {{range .CaseDecls}}	{{.}}{{end}}
+{{with .Default}}
+		{{.DefaultKeyName}} string
+		{{.DefaultValueName}} *{{.DefaultType}}
+{{end}}
 }
 
 func (x *{{.Type}}) Parse(n {{.Node}}) error {
@@ -144,6 +162,16 @@ func (x *{{.Type}}) Parse(n {{.Node}}) error {
 	}
 	switch k {
 {{range .CaseParseCases}}	{{.}}{{end}}
+{{with .Default}}
+	default:
+		var y {{.DefaultType}}
+		if err := y.Parse(vn); err != nil {
+			return err
+		}
+		x.{{.DefaultKeyName}} = k
+		x.{{.DefaultValueName}} = &y
+		return nil
+{{end}}
 	}
 	return {{.Errorf}}("inductive map has no applicable keys")
 }
@@ -160,6 +188,10 @@ func (x *{{.Type}}_MapIterator) Next() (key {{.Node}}, value {{.Node}}, err erro
 		x.done = true
 		switch {
 {{range .CaseNextCases}}	{{.}}{{end}}
+{{with .Default}}
+	case x.s.{{.DefaultValueName}} != nil:
+		return {{.EdelweissString}}(x.s.{{.DefaultKeyName}}), x.s.{{.DefaultValueName}}.Node(), nil
+{{end}}
 		default:
 			return nil, nil, {{.Errorf}}("no inductive cases are set")
 		}
@@ -181,6 +213,10 @@ func (x {{.Type}}) Kind() {{.KindType}} {
 func (x {{.Type}}) LookupByString(key string) ({{.Node}}, error) {
 	switch {
 {{range .CaseLookupByStringCases}}	{{.}}{{end}}
+{{with .Default}}
+	case x.{{.DefaultValueName}} != nil && key == x.{{.DefaultKeyName}}:
+		return x.{{.DefaultValueName}}.Node(), nil
+{{end}}
 	}
 	return nil, {{.ErrNA}}
 }
@@ -203,6 +239,10 @@ func (x {{.Type}}) LookupByIndex(idx int64) ({{.Node}}, error) {
 func (x {{.Type}}) LookupBySegment(seg {{.PathSegment}}) ({{.Node}}, error) {
 	switch seg.String() {
 {{range .CaseLookupBySegmentCases}}	{{.}}{{end}}
+{{with .Default}}
+	case x.{{.DefaultKeyName}}:
+		return x.{{.DefaultValueName}}.Node(), nil
+{{end}}
 	}
 	return nil, {{.ErrNA}}
 }
