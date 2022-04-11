@@ -95,7 +95,14 @@ type Field struct {
 }
 
 type Inductive struct {
-	Cases Cases
+	Cases   Cases
+	Default DefaultCase
+}
+
+type DefaultCase struct {
+	GoKeyName   string
+	GoValueName string
+	Type        BuiltinOrRefPlan
 }
 
 func (Inductive) IAmPlan()     {}

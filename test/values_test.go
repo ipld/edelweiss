@@ -125,6 +125,56 @@ func TestInductiveAtRunTime(t *testing.T) {
 	}
 }
 
+func TestInductiveWithDefaultAtRunTime(t *testing.T) {
+	defs := []defs.Defs{
+		{
+			defs.Named{
+				Name: "UserInductive",
+				Type: defs.Inductive{
+					Cases: defs.Cases{
+						defs.Case{Name: "A", Type: defs.Int{}},
+						defs.Case{Name: "B", Type: defs.String{}},
+						defs.Case{Name: "C", Type: defs.Float{}},
+						defs.Case{Name: "D", Type: defs.Byte{}},
+						defs.Case{Name: "E", Type: defs.Char{}},
+					},
+					Default: defs.DefaultCase{
+						GoKeyName:   "DefaultKey",
+						GoValueName: "DefaultValue",
+						Type:        defs.Any{},
+					},
+				},
+			},
+		},
+	}
+	testSrc := `
+	var x1 UserInductive
+	var w values.Any
+	var y values.String = "abc"
+	w.Value = y
+	x1.DefaultKey = "default"
+	x1.DefaultValue = &w
+	buf, err := ipld.Encode(x1, dagjson.Encode)
+	if err != nil {
+		t.Fatalf("encoding (%v)", err)
+	}
+	var x2 UserInductive
+	n, err := ipld.Decode(buf, dagjson.Decode)
+	if err != nil {
+		t.Fatalf("decoding (%v)", err)
+	}
+	if err = x2.Parse(n); err != nil {
+		t.Fatalf("parsing (%v)", err)
+	}
+	if !ipld.DeepEqual(x1, x2) {
+		t.Errorf("ipld values are not equal")
+	}
+`
+	for _, d := range defs {
+		RunSingleGenTest(t, d, testSrc)
+	}
+}
+
 func TestUnionAtRunTime(t *testing.T) {
 	defs := []defs.Defs{
 		{defs.Named{
