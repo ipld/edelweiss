@@ -173,7 +173,9 @@ func (x *{{.Type}}) Parse(n {{.Node}}) error {
 		return nil
 {{end}}
 	}
+{{if .Default}}{{else}}
 	return {{.Errorf}}("inductive map has no applicable keys")
+{{end}}
 }
 
 type {{.Type}}_MapIterator struct {
