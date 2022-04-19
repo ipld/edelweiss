@@ -10,7 +10,7 @@ import (
 
 var serverLogger = log.Logger("server/GreetingService")
 
-var flagAddress = flag.String("http", ":8080", "http bind address")
+var flagAddress = flag.String("bind", ":8080", "http bind address")
 
 func main() {
 	flag.Parse()
