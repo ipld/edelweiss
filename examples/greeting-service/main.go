@@ -1,5 +1,0 @@
-package helloservice
-
-func main() {
-
-}

@@ -13,7 +13,7 @@ var proto = defs.Defs{
 
 	// hello service definition
 	defs.Named{
-		Name: "Greeting",
+		Name: "GreetingService",
 		Type: defs.Service{
 			Methods: defs.Methods{
 				defs.Method{

@@ -1,4 +1,4 @@
-package server
+package main
 
 import (
 	"context"
@@ -8,9 +8,9 @@ import (
 	"github.com/ipld/edelweiss/values"
 )
 
-type HelloServiceImplementation struct{}
+type GreetingServiceImplementation struct{}
 
-func (HelloServiceImplementation) Hello(ctx context.Context, req *proto.HelloRequest, respCh chan<- *proto.Greeting_Hello_AsyncResult) error {
+func (GreetingServiceImplementation) Hello(ctx context.Context, req *proto.HelloRequest, respCh chan<- *proto.GreetingService_Hello_AsyncResult) error {
 	name := req.Name
 	resp := &proto.HelloResponse{}
 	switch {
