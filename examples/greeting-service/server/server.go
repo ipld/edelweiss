@@ -11,6 +11,8 @@ import (
 type GreetingServiceImplementation struct{}
 
 func (GreetingServiceImplementation) Hello(ctx context.Context, req *proto.HelloRequest, respCh chan<- *proto.GreetingService_Hello_AsyncResult) error {
+	defer close(respCh)
+	serverLogger.Infof("received request: %#v\n", req)
 	name := req.Name
 	resp := &proto.HelloResponse{}
 	switch {
@@ -26,12 +28,17 @@ func (GreetingServiceImplementation) Hello(ctx context.Context, req *proto.Hello
 		}
 		greeting := values.String(fmt.Sprintf("Hello %s, from %s, US!", name, state))
 		resp.English = &greeting
+		respCh <- &proto.GreetingService_Hello_AsyncResult{Resp: resp}
 	case req.Address.SK != nil:
 		greeting := values.String(fmt.Sprintf("Hello %s, from %s, South Korea!", name, req.Address.SK.Province))
 		resp.Korean = &greeting
+		respCh <- &proto.GreetingService_Hello_AsyncResult{Resp: resp}
 	case req.Address.OtherAddress != nil:
 		greeting := values.String(fmt.Sprintf("Hello %s, from %s!", name, req.Address.OtherCountry))
 		resp.English = &greeting
+		respCh <- &proto.GreetingService_Hello_AsyncResult{Resp: resp}
+	default:
+		return fmt.Errorf("no valid address")
 	}
-	return fmt.Errorf("no valid address")
+	return nil
 }

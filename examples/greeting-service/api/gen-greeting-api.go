@@ -38,13 +38,25 @@ var proto = defs.Defs{
 				},
 				defs.Field{
 					Name: "Address",
-					Type: defs.Inductive{
-						Cases: defs.Cases{
-							defs.Case{Name: "US", GoName: "US", Type: defs.Ref{Name: "USAddress"}},
-							defs.Case{Name: "SouthKorea", GoName: "SK", Type: defs.Ref{Name: "SKAddress"}},
-						},
-						Default: defs.DefaultCase{GoKeyName: "OtherCountry", GoValueName: "OtherAddress", Type: defs.List{Element: defs.String{}}},
-					},
+					Type: defs.Ref{Name: "Address"},
+				},
+			},
+		},
+	},
+
+	defs.Named{
+		Name: "Address",
+		Type: defs.Inductive{
+			Cases: defs.Cases{
+				defs.Case{Name: "US", GoName: "US", Type: defs.Ref{Name: "USAddress"}},
+				defs.Case{Name: "SouthKorea", GoName: "SK", Type: defs.Ref{Name: "SKAddress"}},
+			},
+			Default: defs.DefaultCase{
+				GoKeyName:   "OtherCountry",
+				GoValueName: "OtherAddress",
+				Type: defs.Named{ // type AddressLines is defined and named inline
+					Name: "AddressLines",
+					Type: defs.List{Element: defs.String{}},
 				},
 			},
 		},
@@ -66,9 +78,24 @@ var proto = defs.Defs{
 		Name: "State",
 		Type: defs.Union{
 			Cases: defs.Cases{
-				defs.Case{Name: "ca", GoName: "CA", Type: defs.SingletonString{String: "CA"}},
-				defs.Case{Name: "ny", GoName: "NY", Type: defs.SingletonString{String: "NY"}},
-				defs.Case{Name: "other", GoName: "Other", Type: defs.String{}},
+				defs.Case{
+					Name: "ca", GoName: "CA",
+					Type: defs.Named{ // inline definition and naming of type StateCA
+						Name: "StateCA",
+						Type: defs.SingletonString{String: "CA"},
+					},
+				},
+				defs.Case{
+					Name: "ny", GoName: "NY",
+					Type: defs.Named{ // inline definition and naming of type StateNY
+						Name: "StateNY",
+						Type: defs.SingletonString{String: "NY"},
+					},
+				},
+				defs.Case{
+					Name: "other", GoName: "Other",
+					Type: defs.String{},
+				},
 			},
 		},
 	},
