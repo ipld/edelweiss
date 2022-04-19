@@ -9,6 +9,8 @@ import (
 	log "github.com/ipfs/go-log"
 	"github.com/ipld/edelweiss/examples/greeting-service/api/proto"
 	"github.com/ipld/edelweiss/values"
+	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/codec/dagjson"
 )
 
 var flagAddress = flag.String("http", "http://localhost:8080", "http server address")
@@ -55,5 +57,11 @@ func main() {
 	if err != nil {
 		clientLogger.Fatal(err)
 	}
-	fmt.Printf("greeting response: %#v\n", results)
+	for i, r := range results {
+		buf, err := ipld.Encode(r, dagjson.Encode)
+		if err != nil {
+			clientLogger.Fatal(err)
+		}
+		fmt.Printf("greeting response #%d: %s\n", i+1, string(buf))
+	}
 }
