@@ -63,11 +63,11 @@ var proto = defs.Defs{
 	},
 
 	defs.Named{
-		Name: "USAddress",
+		Name: "State",
 		Type: defs.Union{
 			Cases: defs.Cases{
-				defs.Case{Name: "ca", GoName: "CA", Type: defs.SingletonString{"CA"}},
-				defs.Case{Name: "ny", GoName: "NY", Type: defs.SingletonString{"NY"}},
+				defs.Case{Name: "ca", GoName: "CA", Type: defs.SingletonString{String: "CA"}},
+				defs.Case{Name: "ny", GoName: "NY", Type: defs.SingletonString{String: "NY"}},
 				defs.Case{Name: "other", GoName: "Other", Type: defs.String{}},
 			},
 		},
@@ -90,7 +90,8 @@ var proto = defs.Defs{
 		Name: "HelloResponse",
 		Type: defs.Union{
 			Cases: defs.Cases{
-				defs.Case{Name: "", GoName: "", Type: XXX},
+				defs.Case{Name: "english", GoName: "English", Type: defs.String{}},
+				defs.Case{Name: "korean", GoName: "Korean", Type: defs.String{}},
 			},
 		},
 	},
