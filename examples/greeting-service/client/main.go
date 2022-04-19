@@ -33,19 +33,19 @@ func main() {
 	switch strings.ToLower(*flagCountry) {
 	case "us":
 		req.Address.US = &proto.USAddress{
-			Street: values.String("1955 Valley Dr"),
-			City:   values.String("Mariposa"),
+			Street: "1955 Valley Dr",
+			City:   "Mariposa",
 			State: proto.State{
 				CA: &proto.StateCA{},
 			},
-			ZIP: values.Int(22355),
+			ZIP: 22355,
 		}
 	case "sk":
 		req.Address.SK = &proto.SKAddress{
-			Street:     values.String("Gangnam"),
-			City:       values.String("Cheongju"),
-			Province:   values.String("충청북도"),
-			PostalCode: values.Int(123),
+			Street:     "Gangnam",
+			City:       "Cheongju",
+			Province:   "충청북도",
+			PostalCode: 123,
 		}
 	default:
 		req.Address.OtherCountry = *flagCountry

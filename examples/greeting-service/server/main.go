@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"flag"
@@ -6,6 +6,7 @@ import (
 
 	log "github.com/ipfs/go-log"
 	"github.com/ipld/edelweiss/examples/greeting-service/api/proto"
+	"github.com/ipld/edelweiss/examples/greeting-service/service"
 )
 
 var serverLogger = log.Logger("server/GreetingService")
@@ -17,7 +18,7 @@ func main() {
 	serverLogger.Infof("Starting GreetingService on %s", *flagAddress)
 	s := &http.Server{
 		Addr:    *flagAddress,
-		Handler: proto.GreetingService_AsyncHandler(GreetingServiceImplementation{}),
+		Handler: proto.GreetingService_AsyncHandler(service.GreetingServiceImplementation{}),
 	}
 	serverLogger.Fatal(s.ListenAndServe())
 	<-(chan int)(nil)

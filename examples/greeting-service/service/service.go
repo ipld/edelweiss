@@ -1,14 +1,18 @@
-package main
+package service
 
 import (
 	"context"
 	"fmt"
+
+	log "github.com/ipfs/go-log"
 
 	"github.com/ipld/edelweiss/examples/greeting-service/api/proto"
 	"github.com/ipld/edelweiss/values"
 	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/codec/dagjson"
 )
+
+var serverLogger = log.Logger("service/GreetingService")
 
 type GreetingServiceImplementation struct{}
 
