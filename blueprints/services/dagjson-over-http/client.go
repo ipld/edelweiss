@@ -2,6 +2,7 @@ package dagjsonoverhttp
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/ipld/edelweiss/blueprints/base"
 	cg "github.com/ipld/edelweiss/codegen"
@@ -114,7 +115,7 @@ func (x GoClientImpl) GoDef() cg.Blueprint {
 		"WithHTTPClient": x.Ref.Append("_Client").Append("_WithHTTPClient"),
 		//
 		"Logger":     cg.GoRef{PkgPath: "github.com/ipfs/go-log", Name: "Logger"},
-		"LoggerName": cg.StringLiteral(fmt.Sprintf("service/client/%s", x.Ref.TypeName)),
+		"LoggerName": cg.StringLiteral(fmt.Sprintf("service/client/%s", strings.ToLower(x.Ref.TypeName))),
 		"LoggerVar":  loggerVar,
 		//
 		"MethodSyncDecls":       methodSyncDecls,
