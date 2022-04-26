@@ -21,7 +21,7 @@ func TestService(t *testing.T) {
 
 type TestService_ServerImpl struct{}
 
-func (TestService_ServerImpl) Method1(ctx context.Context, req *values.Int) (chan<- *TestService_Method1_AsyncResult, error) {
+func (TestService_ServerImpl) Method1(ctx context.Context, req *values.Int) (<-chan *TestService_Method1_AsyncResult, error) {
 	respCh := make(chan *TestService_Method1_AsyncResult)
 	go func() {
 		defer close(respCh)
@@ -31,7 +31,7 @@ func (TestService_ServerImpl) Method1(ctx context.Context, req *values.Int) (cha
 	return respCh, nil
 }
 
-func (TestService_ServerImpl) Method2(ctx context.Context, req *values.String) (chan<- *TestService_Method2_AsyncResult, error) {
+func (TestService_ServerImpl) Method2(ctx context.Context, req *values.String) (<-chan *TestService_Method2_AsyncResult, error) {
 	respCh := make(chan *TestService_Method2_AsyncResult)
 	go func() {
 		defer close(respCh)
