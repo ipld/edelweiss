@@ -45,6 +45,7 @@ func (x GoClientImpl) GoDef() cg.Blueprint {
 		bmDecl := cg.BlueMap{
 			"Type":               typ,
 			"MethodName":         cg.V(m.Name),
+			"MethodNameString":   cg.StringLiteral(m.Name),
 			"MethodArg":          x.Lookup.LookupDepGoRef(m.Type.Arg),
 			"MethodReturn":       x.Lookup.LookupDepGoRef(m.Type.Return),
 			"MethodReturnAsync":  asyncResultRef,
@@ -96,6 +97,7 @@ func (x GoClientImpl) GoDef() cg.Blueprint {
 				"ErrProto":        base.EdelweissErrProto,
 				"ErrService":      base.EdelweissErrService,
 				"ErrorsNew":       base.ErrorsNew,
+				"ErrSchema":       base.EdelweissErrSchema,
 			},
 		)
 		methodImpls[i] = cg.T{Data: bmImpl, Src: goClientMethodImplTemplate}
@@ -107,6 +109,7 @@ func (x GoClientImpl) GoDef() cg.Blueprint {
 		"HTTPDefaultClient": base.HTTPDefaultClient,
 		"URL":               base.URL,
 		"URLParse":          base.URLParse,
+		"SyncMutex":         base.SyncMutex,
 		//
 		"Interface":      x.Ref.Append("_Client"),
 		"Type":           typ,
@@ -148,6 +151,8 @@ type {{.Option}} func(*{{.Type}}) error
 type {{.Type}} struct {
 	httpClient       *{{.HTTPClient}}
 	endpoint     *{{.URL}}
+	ulk      {{.SyncMutex}}
+	unsupported map[string]bool // cache of methods not supported by server
 }
 
 func {{.WithHTTPClient}}(hc *{{.HTTPClient}}) {{.Option}} {
@@ -162,7 +167,7 @@ func {{.New}}(endpoint string, opts ...{{.Option}}) (*{{.Type}}, error) {
 	if err != nil {
 		return nil, err
 	}
-	c := &{{.Type}}{endpoint: u, httpClient: {{.HTTPDefaultClient}}}
+	c := &{{.Type}}{endpoint: u, httpClient: {{.HTTPDefaultClient}}, unsupported: make(map[string]bool)}
 	for _, o := range opts {
 		if err := o(c); err != nil {
 			return nil, err
@@ -206,6 +211,14 @@ func (c *{{.Type}}) {{.SyncMethodDecl}} {
 }
 
 func (c *{{.Type}}) {{.AsyncMethodDecl}} {
+	// check if we have memoized that this method is not supported by the server
+	c.ulk.Lock()
+	notSupported := c.unsupported[{{.MethodNameString}}]
+	c.ulk.Unlock()
+	if notSupported {
+		return nil, {{.ErrSchema}}
+	}
+
 	envelope := &{{.CallEnvelope}}{
 		{{.MethodName}}: req,
 	}
@@ -233,6 +246,16 @@ func (c *{{.Type}}) {{.AsyncMethodDecl}} {
 	resp, err := c.httpClient.Do(httpReq)
 	if err != nil {
 		return nil, {{.Errorf}}("sending HTTP request (%v)", err)
+	}
+
+	// HTTP codes 400 and 404 correspond to unrecognized method or request schema
+	if resp.StatusCode == 400 || resp.StatusCode == 404 {
+		resp.Body.Close()
+		// memoize that this method is not supported by the server
+		c.ulk.Lock()
+		c.unsupported[{{.MethodNameString}}] = true
+		c.ulk.Unlock()
+		return nil, {{.ErrSchema}}
 	}
 
 	ch := make(chan {{.MethodReturnAsync}}, 1)
