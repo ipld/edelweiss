@@ -74,6 +74,7 @@ import (
 	"github.com/ipld/go-ipld-prime/codec/dagjson"
 	"github.com/ipld/go-ipld-prime/codec/dagcbor"
 	"github.com/ipld/edelweiss/values"
+	"github.com/ipld/edelweiss/services"
 	cid "github.com/ipfs/go-cid"
 )
 
@@ -89,6 +90,7 @@ var (
 	_ = basicnode.Prototype
 	_ = cid.NewCidV1
 	_ = httptest.NewServer
+	_ = services.ErrSchema
 )
 
 %s
