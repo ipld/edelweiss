@@ -6,6 +6,7 @@ import (
 )
 
 var (
+	SyncMutex                 = cg.GoTypeRef{PkgPath: "sync", TypeName: "Mutex"}
 	Context                   = cg.GoTypeRef{PkgPath: "context", TypeName: "Context"}
 	ContextWithCancel         = cg.GoTypeRef{PkgPath: "context", TypeName: "WithCancel"}
 	ContextBackground         = cg.GoTypeRef{PkgPath: "context", TypeName: "Background"}
@@ -34,4 +35,5 @@ var (
 	EdelweissErrContext = &cg.GoTypeRef{PkgPath: EdelweissServicesPkg, TypeName: "ErrContext"}
 	EdelweissErrProto   = &cg.GoTypeRef{PkgPath: EdelweissServicesPkg, TypeName: "ErrProto"}
 	EdelweissErrService = &cg.GoTypeRef{PkgPath: EdelweissServicesPkg, TypeName: "ErrService"}
+	EdelweissErrSchema  = &cg.GoRef{PkgPath: EdelweissServicesPkg, Name: "ErrSchema"}
 )

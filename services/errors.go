@@ -1,5 +1,7 @@
 package services
 
+import "fmt"
+
 // PkgPath is the fully-qualified name of this package.
 const PkgPath = "github.com/ipld/edelweiss/services"
 
@@ -29,3 +31,6 @@ type ErrService struct {
 func (e ErrService) Error() string {
 	return e.Cause.Error()
 }
+
+// ErrSchema is returned by the code-generated client to indicate that the server does not support the request method or schema.
+var ErrSchema = fmt.Errorf("unrecognized schema or method")
