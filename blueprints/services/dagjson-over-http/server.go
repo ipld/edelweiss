@@ -61,7 +61,7 @@ func (x GoServerImpl) GoDef() cg.Blueprint {
 		}
 		methodDecls = append(methodDecls, cg.T{
 			Data: bmDecl,
-			Src:  `{{.MethodName}}(ctx {{.Context}}, req *{{.MethodArg}}) (chan<- *{{.MethodReturnAsync}}, error)`,
+			Src:  `{{.MethodName}}(ctx {{.Context}}, req *{{.MethodArg}}) (<-chan *{{.MethodReturnAsync}}, error)`,
 		})
 		methodCases = append(methodCases, cg.T{
 			Data: bmDecl,
