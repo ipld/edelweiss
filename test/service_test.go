@@ -21,16 +21,18 @@ func TestService(t *testing.T) {
 
 type TestService_ServerImpl struct{}
 
-func (TestService_ServerImpl) Method1(ctx context.Context, req *values.Int, respCh chan<- *TestService_Method1_AsyncResult) error {
+func (TestService_ServerImpl) Method1(ctx context.Context, req *values.Int) (<-chan *TestService_Method1_AsyncResult, error) {
+	respCh := make(chan *TestService_Method1_AsyncResult)
 	go func() {
 		defer close(respCh)
 		var r1 values.Bool = true
 		respCh <- &TestService_Method1_AsyncResult{ Resp: &r1 }
 	}()
-	return nil
+	return respCh, nil
 }
 
-func (TestService_ServerImpl) Method2(ctx context.Context, req *values.String, respCh chan<- *TestService_Method2_AsyncResult) error {
+func (TestService_ServerImpl) Method2(ctx context.Context, req *values.String) (<-chan *TestService_Method2_AsyncResult, error) {
+	respCh := make(chan *TestService_Method2_AsyncResult)
 	go func() {
 		defer close(respCh)
 		var r1 values.Float = 1.23
@@ -39,7 +41,7 @@ func (TestService_ServerImpl) Method2(ctx context.Context, req *values.String, r
 		// var r2 values.Float = 4.56
 		// respCh <- &TestService_Method2_AsyncResult{ Resp: &r2 }
 	}()
-	return nil
+	return respCh, nil
 }
 
 var testServiceIdentifyResult = &TestService_IdentifyResult{

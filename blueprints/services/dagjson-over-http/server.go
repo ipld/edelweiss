@@ -61,14 +61,14 @@ func (x GoServerImpl) GoDef() cg.Blueprint {
 		}
 		methodDecls = append(methodDecls, cg.T{
 			Data: bmDecl,
-			Src:  `{{.MethodName}}(ctx {{.Context}}, req *{{.MethodArg}}, respCh chan<- *{{.MethodReturnAsync}}) error`,
+			Src:  `{{.MethodName}}(ctx {{.Context}}, req *{{.MethodArg}}) (<-chan *{{.MethodReturnAsync}}, error)`,
 		})
 		methodCases = append(methodCases, cg.T{
 			Data: bmDecl,
 			Src: `
 		case env.{{.MethodName}} != nil:
-			ch := make(chan *{{.MethodReturnAsync}})
-			if err = s.{{.MethodName}}({{.ContextBackground}}(), env.{{.MethodName}}, ch); err != nil {
+			ch, err := s.{{.MethodName}}({{.ContextBackground}}(), env.{{.MethodName}})
+			if err != nil {
 				{{.LoggerVar}}.Errorf("get p2p provider rejected request (%v)", err)
 				writer.WriteHeader(500)
 				return

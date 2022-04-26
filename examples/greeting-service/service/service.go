@@ -16,7 +16,8 @@ var serverLogger = log.Logger("service/GreetingService")
 
 type GreetingServiceImplementation struct{}
 
-func (GreetingServiceImplementation) Hello(ctx context.Context, req *proto.HelloRequest, respCh chan<- *proto.GreetingService_Hello_AsyncResult) error {
+func (GreetingServiceImplementation) Hello(ctx context.Context, req *proto.HelloRequest) (<-chan *proto.GreetingService_Hello_AsyncResult, error) {
+	respCh := make(chan *proto.GreetingService_Hello_AsyncResult)
 	go func() {
 		defer close(respCh)
 
@@ -53,5 +54,5 @@ func (GreetingServiceImplementation) Hello(ctx context.Context, req *proto.Hello
 			respCh <- &proto.GreetingService_Hello_AsyncResult{Err: fmt.Errorf("no valid address")}
 		}
 	}()
-	return nil
+	return respCh, nil
 }
