@@ -6,7 +6,7 @@ import (
 	"github.com/ipld/edelweiss/defs"
 )
 
-func TestService(t *testing.T) {
+func TestServiceWithoutErrors(t *testing.T) {
 	defs := defs.Defs{
 		defs.Named{Name: "TestService1",
 			Type: defs.Service{
@@ -115,6 +115,73 @@ func TestRoundtrip(t *testing.T) {
 		t.Errorf("expecting error %v, got %v", services.ErrSchema, err)
 	}
 
+}`
+	RunGenTest(t, defs, testSrc)
+}
+
+func TestServiceWithErrors(t *testing.T) {
+	defs := defs.Defs{
+		defs.Named{Name: "TestService1",
+			Type: defs.Service{
+				Methods: defs.Methods{
+					defs.Method{Name: "Method1", Type: defs.Fn{Arg: defs.Int{}, Return: defs.Bool{}}},
+					defs.Method{Name: "Method2", Type: defs.Fn{Arg: defs.String{}, Return: defs.Float{}}},
+				},
+			},
+		},
+	}
+	testSrc := `
+
+var testAsyncError = "async error"
+var testSyncError = "sync error"
+
+type TestService1_ServerImpl struct{}
+
+func (TestService1_ServerImpl) Method1(ctx context.Context, req *values.Int) (<-chan *TestService1_Method1_AsyncResult, error) {
+	respCh := make(chan *TestService1_Method1_AsyncResult)
+	go func() {
+		defer close(respCh)
+		respCh <- &TestService1_Method1_AsyncResult{ Err: fmt.Errorf(testAsyncError) }
+	}()
+	return respCh, nil
+}
+
+func (TestService1_ServerImpl) Method2(ctx context.Context, req *values.String) (<-chan *TestService1_Method2_AsyncResult, error) {
+	return nil, fmt.Errorf(testSyncError)
+}
+
+func TestRoundtrip(t *testing.T) {
+
+	s := httptest.NewServer(TestService1_AsyncHandler(TestService1_ServerImpl{}))
+	defer s.Close()
+
+	c1, err := New_TestService1_Client(s.URL, TestService1_Client_WithHTTPClient(s.Client()))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	ctx := context.Background()
+
+	ch1, err := c1.Method1_Async(ctx, values.NewInt(5))
+	if err != nil {
+		t.Fatalf("sync error not expected (%v)", err)
+	}
+	for asyncResult := range ch1 {
+		if asyncResult.Err == nil {
+			t.Errorf("async error expectded")
+		}
+		if asyncResult.Err.Error() != testAsyncError {
+			t.Errorf("expected %v, got %v", testAsyncError, asyncResult.Err.Error())
+		}
+	}
+
+	_, err = c1.Method2_Async(ctx, values.NewString("5"))
+	if err == nil {
+		t.Fatalf("sync error expected")
+	}
+	if err.Error() != testSyncError {
+		t.Fatalf("expected %v, got %v", testSyncError, err.Error())
+	}
 }`
 	RunGenTest(t, defs, testSrc)
 }
