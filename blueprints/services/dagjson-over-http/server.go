@@ -69,7 +69,8 @@ func (x GoServerImpl) GoDef() cg.Blueprint {
 		case env.{{.MethodName}} != nil:
 			ch, err := s.{{.MethodName}}({{.ContextBackground}}(), env.{{.MethodName}})
 			if err != nil {
-				{{.LoggerVar}}.Errorf("get p2p provider rejected request (%v)", err)
+				{{.LoggerVar}}.Errorf("service rejected request (%v)", err)
+				writer.Header()["Error"] = []string{err.Error()}
 				writer.WriteHeader(500)
 				return
 			}

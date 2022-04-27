@@ -257,6 +257,21 @@ func (c *{{.Type}}) {{.AsyncMethodDecl}} {
 		c.ulk.Unlock()
 		return nil, {{.ErrSchema}}
 	}
+	// HTTP codes other than 200 correspond to service implementation rejecting the call when it is received
+	// for reasons unrelated to protocol schema
+	if resp.StatusCode != 200 {
+		resp.Body.Close()
+		if resp.Header != nil {
+			if errValues, ok := resp.Header["Error"]; ok && len(errValues) == 1 {
+				err = {{.ErrService}}{Cause: {{.Errorf}}("%s", errValues[0])}
+			} else {
+				err = {{.Errorf}}("service rejected the call, no cause provided")
+			}
+		} else {
+			err = {{.Errorf}}("service rejected the call")
+		}
+		return nil, err
+	}
 
 	ch := make(chan {{.MethodReturnAsync}}, 1)
 	go {{.ProcessReturnAsync}}(ctx, ch, resp.Body)
