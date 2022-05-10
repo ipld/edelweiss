@@ -12,7 +12,7 @@ For a detailed longer-term roadmap and planned features refer to the [Protocol C
 
 # Documentation
 
-The current state of the language and how to use the compiler is covered in the [Edelweiss for users](doc/slides/user-milestone1-slides.pdf) slides. Examples of the canonical representation of Edelweiss types are provided in [Representations of types](doc/representations.md).
+The current state of the language and how to use the compiler is covered in the [Edelweiss for users](doc/manual-milestone1-slides/manual-milestone1-slides.pdf) slides. Examples of the canonical representation of Edelweiss types are provided in [Representations of types](doc/representations.md).
 
 A [complete working example](examples/greeting-service/) — which defines a greeting service API, and implements a sample client and server cli tools — is provided in this repo. The [resulting generated code](examples/greeting-service/api/proto/proto_edelweiss.go) is also included in the repo for your viewing convenience.
 
