@@ -10,6 +10,15 @@ theme:  default
 Petar Maymounkov petar@protocol.ai
 
 ---
+# What is a protocol compiler?
+
+- **Define protocols formally**
+  - Verify properties (e.g. different versions are interoperable)
+- **Generate implementations**
+  - Data serialization
+  - RPC services
+
+---
 # Challenges of decentralized development
 
 - **Brokering across multiple data models**
