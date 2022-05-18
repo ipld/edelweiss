@@ -12,9 +12,9 @@ Petar Maymounkov petar@protocol.ai
 ---
 # Challenges of decentralized development
 
-- **Interaction with multiple protocols, using different data models**
-  - _IPLD, Protobuf, FlatBuffers, JSON, Apache Avro, Apache Arrow, etc._
-  - _read from Git format, write IPLD to IPFS/Filecoin_
+- **Brokering across multiple data models**
+  - _IPLD, Protobuf, FlatBuffers, XML, JSON, MessagePack, Apache Avro/Arrow/Parquet, etc._
+  - _read from Git or Bittorrent, write IPLD to IPFS/Filecoin_
 - **Implementations in different languages**
   - _Go, JavaScript/TypeScript, Rust, Python, etc._
 - **Variety of RPC networking stacks**
@@ -29,17 +29,18 @@ Petar Maymounkov petar@protocol.ai
 
 - **Unified type system**
      _Strict and expressive type system, decoupled from serialization technology_
+     _Facilitate bridging the same schema from one data model into another_
 - **Code-generating**
      _De/serialization and RPC code is generated for multiple target languages_
 - **Modular**
      _Custom code-generation backends for different (a) serialization formats, (b) RPC networking stacks and (c) target languages_
 - **Extensible**
-     _New types can be added, as needed_
+     _New types can be added as needed_
 
 ---
 # User workflow
 
-1. Define data and services types
+1. Define data and services types (aka, the user's schema)
 2. Pick a backend
    - programming language (Go)
    - serialization (IPLD)
@@ -132,7 +133,7 @@ Structure{
 - Encodes as IPLD map
 
 **Programmatically:**
-- Code-generated Go `struct`
+- Code-generated Go `struct`. Field values are embedded (non-pointers).
 
 ---
 # Singletons
@@ -158,11 +159,11 @@ SingletonString{STRING_VALUE}
 # Union
 
 **Semantically:**
-- One of a list of name/value pairs _distinguished by their value_, written as
+- One of a list of possible types, written as
 ```go
 Union{
      Cases: Cases{
-          Case{Name: "NAME", Type: TYPE_DEF_OR_REF},
+          Case{GoName: "NAME", Type: TYPE_DEF_OR_REF},
           ...
      }
 }
