@@ -129,9 +129,9 @@ Named{
 # Significance of types
 
 1. Semantics of data (agnostic to programming language)
-2. Representation of data in IPLD Data Model (encoding/decoding)
+2. Representation of data in the IPLD Data Model (encoding/decoding)
    Note: _"Transforms" (introduced later) can alter representation._
-3. Representation of data in user's programming language
+3. Representation of data in the target programming language
 
 ---
 # Types
@@ -170,39 +170,39 @@ type Byte byte
 ---
 # Char
 
-Semantically:
+**Semantically:**
 - a character is not an integer
 
-Representationally:
+**Representationally:**
 - encoded as an IPLD integer which is a valid UTF8
 
-Programmatically:
+**Programmatically:**
 - Implemented by `type Char rune` in package `edelweiss/values`
 
 ---
 # String
 
-Semantically:
+**Semantically:**
 - `String{}` is equivalent to `List{Element: Char{}}`
 
-Representationally:
+**Representationally:**
 - Encodes to IPLD string
 - Decodes from a UTF8 IPLD string or the IPLD encoding of `List{Element: Char{}}`
 
-Programmatically:
+**Programmatically:**
 - Implemented by `type String string` in package `edelweiss/values`
 
 ---
 # Bytes
 
-Semantically:
+**Semantically:**
 - `Bytes{}` is equivalent to `List{Element: Byte{}}`
 
-Representationally:
+**Representationally:**
 - Encodes to IPLD bytes
 - Decodes from IPLD bytes or the IPLD encoding of `List{Element: Byte{}}`
 
-Programmatically:
+**Programmatically:**
 - Implemented by `type Bytes []byte` in package `edelweiss/values`
 
 ---
@@ -211,13 +211,13 @@ Programmatically:
 ---
 # Nothing
 
-Semantically:
+**Semantically:**
 - `Nothing{}` holds no value
 
-Representationally:
+**Representationally:**
 - Encodes as IPLD nothing
 
-Programmatically:
+**Programmatically:**
 - Implemented by `type Nothing struct{}`
 
 E.g. use in conjunction with `Inductive` types to describe enumerations.
@@ -226,7 +226,7 @@ E.g. use in conjunction with `Union` types to describe optional values.
 ---
 # Any
 
-Semantically:
+**Semantically:**
 - `Any{}` can hold any IPLD value
 - IPLD kinds are in one-to-one mapping with types in this type sytem:
   - IPLD bool, int, float, string, bytes map to `Bool{}`, `Int{}`, `Float{}`, `String{}`, `Bytes{}`
@@ -235,7 +235,7 @@ Semantically:
   - IPLD map maps to `Map{Key: Any{}, Value: Any{}}`
   - IPLD nothing maps to `Nothing{}`
 
-Programmatically:
+**Programmatically:**
 - Implemented by `type Any struct{ Value }`  where `Value` is an interface
 
 ---
@@ -244,13 +244,13 @@ Programmatically:
 ---
 # Link
 
-Semantically:
+**Semantically:**
 - `Link{To: TYPE_DEF_OR_REF}`
 
-Representationally:
+**Representationally:**
 - Encodes as IPLD link
 
-Programmatically:
+**Programmatically:**
 - Code-generated Go `struct` which holds a `Cid`
 
 Use `Link{To: Any{}}` when the link target is of unknown type.
@@ -258,31 +258,31 @@ Use `Link{To: Any{}}` when the link target is of unknown type.
 ---
 # List
 
-Semantically:
+**Semantically:**
 - `List{Element: TYPE_DEF_OR_REF}`
 
-Representationally:
+**Representationally:**
 - Encodes as IPLD list
 
-Programmatically:
+**Programmatically:**
 - Code-generated Go alias for a slice type
 
 ---
 # Map
 
-Semantically:
+**Semantically:**
 - `Map{Key: TYPE_DEF_OR_REF, Value: TYPE_DEF_OR_REF}`
 
-Representationally:
+**Representationally:**
 - Encodes as IPLD list of key/value pairs or an IPLD map, if the key is a string
 
-Programmatically:
+**Programmatically:**
 - Code-generated Go slice of key/value pairs or a Go map, if the key is a string
 
 ---
 # Structure
 
-Semantically:
+**Semantically:**
 - A list of named and typed fields, written as
 ```go
 Structure{
@@ -293,16 +293,16 @@ Structure{
 }
 ```
 
-Representationally:
+**Representationally:**
 - Encodes as IPLD map
 
-Programmatically:
+**Programmatically:**
 - Code-generated Go `struct`
 
 ---
 # Singletons
 
-Semantically:
+**Semantically:**
 - A builtin value that always equals a given constant, written as
 ```go
 SingletonBool{BOOL_VALUE}
@@ -313,16 +313,16 @@ SingletonFloat{FLOAT_VALUE}
 SingletonString{STRING_VALUE}
 ```
 
-Representationally:
+**Representationally:**
 - Encoded as the correspoding IPLD kind
 
-Programmatically:
+**Programmatically:**
 - Code-generated as an empty Go `struct`
 
 ---
 # Inductive
 
-Semantically:
+**Semantically:**
 - One of a list of name/value pairs _distinguished by their name_, written as
 ```go
 Inductive{
@@ -333,10 +333,10 @@ Inductive{
 }
 ```
 
-Representationally:
+**Representationally:**
 - Encoded as an IPLD map, wrapping the case name and its value
 
-Programmatically:
+**Programmatically:**
 - Code-generated as a Go `struct` with one pointer field per case
 
 _"Inductive" types correspond to IPLD Schema "union" types._
@@ -344,7 +344,7 @@ _"Inductive" types correspond to IPLD Schema "union" types._
 ---
 # Union
 
-Semantically:
+**Semantically:**
 - One of a list of name/value pairs _distinguished by their value_, written as
 ```go
 Union{
@@ -355,11 +355,11 @@ Union{
 }
 ```
 
-Representationally:
+**Representationally:**
 - Encoded as the value of the active case
 - The union itself has _no representational footprint_
 
-Programmatically:
+**Programmatically:**
 - Code-generated as a Go `struct` with one pointer field per case
 
 ---
