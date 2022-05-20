@@ -24,7 +24,7 @@ var (
 )
 
 var (
-	IOReader           = &cg.GoRef{PkgPath: "io", Name: "Reader"}
+	IOReader           = &cg.GoRef{PkgPath: "io", Name: "ReadCloser"}
 	IOEOF              = &cg.GoRef{PkgPath: "io", Name: "EOF"}
 	IOErrUnexpectedEOF = &cg.GoRef{PkgPath: "io", Name: "ErrUnexpectedEOF"}
 )
