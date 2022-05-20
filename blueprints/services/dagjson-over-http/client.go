@@ -280,6 +280,7 @@ func (c *{{.Type}}) {{.AsyncMethodDecl}} {
 
 func {{.ProcessReturnAsync}}(ctx {{.Context}}, ch chan<- {{.MethodReturnAsync}}, r {{.IOReader}}) {
 	defer close(ch)
+	defer r.Close()
 	for {
 		if ctx.Err() != nil {
 			ch <- {{.MethodReturnAsync}}{Err: {{.ErrContext}}{Cause: ctx.Err()}} // context cancelled

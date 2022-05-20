@@ -1,6 +1,7 @@
 package test
 
 import (
+	"bytes"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -13,6 +14,8 @@ import (
 )
 
 func RunSingleGenTest(t *testing.T, defs defs.Defs, testSrc string) {
+	t.Helper()
+
 	testFuncFmt := `func TestMain(t *testing.T) {
 %s
 }`
@@ -20,6 +23,7 @@ func RunSingleGenTest(t *testing.T, defs defs.Defs, testSrc string) {
 }
 
 func RunGenTest(t *testing.T, defs defs.Defs, testSrc string) {
+	t.Helper()
 
 	// create tmp dir
 	dir, err := os.MkdirTemp("", "edelweiss_test")
@@ -109,7 +113,12 @@ var (
 	// run test
 	goTest := exec.Command("go", "test")
 	goTest.Dir = dir
+
+	var outb, errb bytes.Buffer
+	goTest.Stdout = &outb
+	goTest.Stderr = &errb
+
 	if err = goTest.Run(); err != nil {
-		t.Fatalf("go test (%v)", err)
+		t.Fatal("go test (", err, ")\nout:", outb.String(), "err:", errb.String())
 	}
 }
