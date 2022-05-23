@@ -55,7 +55,7 @@ func (x GoClientImpl) GoDef() cg.Blueprint {
 			"Context":                   base.Context,
 			"ContextWithCancel":         base.ContextWithCancel,
 			"LoggerVar":                 loggerVar,
-			"IOReader":                  base.IOReader,
+			"IOReadCloser":              base.IOReadCloser,
 			"IPLDEncode":                base.IPLDEncode,
 			"IPLDDecodeStreaming":       base.IPLDDecodeStreaming,
 			"Errorf":                    base.Errorf,
@@ -278,8 +278,9 @@ func (c *{{.Type}}) {{.AsyncMethodDecl}} {
 	return ch, nil
 }
 
-func {{.ProcessReturnAsync}}(ctx {{.Context}}, ch chan<- {{.MethodReturnAsync}}, r {{.IOReader}}) {
+func {{.ProcessReturnAsync}}(ctx {{.Context}}, ch chan<- {{.MethodReturnAsync}}, r {{.IOReadCloser}}) {
 	defer close(ch)
+	defer r.Close()
 	for {
 		select {
 			case <- ctx.Done():
