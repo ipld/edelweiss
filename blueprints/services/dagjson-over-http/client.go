@@ -281,33 +281,34 @@ func (c *{{.Type}}) {{.AsyncMethodDecl}} {
 func {{.ProcessReturnAsync}}(ctx {{.Context}}, ch chan<- {{.MethodReturnAsync}}, r {{.IOReader}}) {
 	defer close(ch)
 	for {
-		if ctx.Err() != nil {
-			ch <- {{.MethodReturnAsync}}{Err: {{.ErrContext}}{Cause: ctx.Err()}} // context cancelled
-			return
-		}
+		select {
+			case <- ctx.Done():
+				return
+			default:
+				n, err := {{.IPLDDecodeStreaming}}(r, {{.DAGJSONDecode}})
+				if {{.ErrorsIs}}(err, {{.IOEOF}}) || {{.ErrorsIs}}(err, {{.IOErrUnexpectedEOF}}) {
+					return
+				}
+				if err != nil {
+					ch <- {{.MethodReturnAsync}}{Err: {{.ErrProto}}{Cause: err}} // IPLD decode error
+					return
+				}
+				
+				env := &{{.ReturnEnvelope}}{}
+				if err = env.Parse(n); err != nil {
+					ch <- {{.MethodReturnAsync}}{Err: {{.ErrProto}}{Cause: err}} // schema decode error
+					return
+				}
+				if env.Error != nil {
+					ch <- {{.MethodReturnAsync}}{Err: {{.ErrService}}{Cause: {{.ErrorsNew}}(string(env.Error.Code))}} // service-level error
+					return
+				}
+				if env.{{.MethodName}} == nil {
+					continue
+				}
 
-		n, err := {{.IPLDDecodeStreaming}}(r, {{.DAGJSONDecode}})
-		if {{.ErrorsIs}}(err, {{.IOEOF}}) || {{.ErrorsIs}}(err, {{.IOErrUnexpectedEOF}}) {
-			return
+				ch <- {{.MethodReturnAsync}}{Resp: env.{{.MethodName}}}
 		}
-		if err != nil {
-			ch <- {{.MethodReturnAsync}}{Err: {{.ErrProto}}{Cause: err}} // IPLD decode error
-			return
-		}
-		env := &{{.ReturnEnvelope}}{}
-		if err = env.Parse(n); err != nil {
-			ch <- {{.MethodReturnAsync}}{Err: {{.ErrProto}}{Cause: err}} // schema decode error
-			return
-		}
-
-		if env.Error != nil {
-			ch <- {{.MethodReturnAsync}}{Err: {{.ErrService}}{Cause: {{.ErrorsNew}}(string(env.Error.Code))}} // service-level error
-			return
-		}
-		if env.{{.MethodName}} == nil {
-			continue
-		}
-		ch <- {{.MethodReturnAsync}}{Resp: env.{{.MethodName}}}
 	}
 }`
 )
