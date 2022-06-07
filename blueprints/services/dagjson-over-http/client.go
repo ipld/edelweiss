@@ -230,9 +230,6 @@ func (c *{{.Type}}) {{.AsyncMethodDecl}} {
 
 	// encode request in URL
 	u := *c.endpoint
-	q := {{.URLValues}}{}
-	q.Set("q", string(buf))
-	u.RawQuery = q.Encode()
 	httpReq, err := {{.HTTPNewRequestWithContext}}(ctx, "POST", u.String(), {{.BytesNewReader}}(buf))
 	if err != nil {
 		return nil, err
