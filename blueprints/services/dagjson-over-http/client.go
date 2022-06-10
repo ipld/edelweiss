@@ -296,7 +296,7 @@ func {{.ProcessReturnAsync}}(ctx {{.Context}}, ch chan<- {{.MethodReturnAsync}},
 			out = {{.MethodReturnAsync}}{Err: {{.ErrProto}}{Cause: err}} // IPLD decode error
 		} else {
 			var x [1]byte
-			if k, err := r.Read(x[:]); err != nil || k != 1 || x[0] != '\n' {
+			if k, err := r.Read(x[:]); k != 1 || x[0] != '\n' {
 				out = {{.MethodReturnAsync}}{Err: {{.ErrProto}}{Cause: {{.Errorf}}("missing new line after result: err (%v), read (%d), char (%q)", err, k, string(x[:]))}} // Edelweiss decode error
 			} else {
 				env := &{{.ReturnEnvelope}}{}
