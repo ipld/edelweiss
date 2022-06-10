@@ -297,7 +297,7 @@ func {{.ProcessReturnAsync}}(ctx {{.Context}}, ch chan<- {{.MethodReturnAsync}},
 		} else {
 			var x [1]byte
 			if k, err := r.Read(x[:]); err != nil || k != 1 || x[0] != '\n' {
-				out = {{.MethodReturnAsync}}{Err: {{.ErrProto}}{Cause: {{.Errorf}}("missing new line after result")}} // Edelweiss decode error
+				out = {{.MethodReturnAsync}}{Err: {{.ErrProto}}{Cause: {{.Errorf}}("missing new line after result: err (%v), read (%d), char (%q)", err, k, string(x))}} // Edelweiss decode error
 			} else {
 				env := &{{.ReturnEnvelope}}{}
 				if err = env.Parse(n); err != nil {
