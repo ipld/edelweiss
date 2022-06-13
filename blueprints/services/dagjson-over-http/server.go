@@ -58,6 +58,7 @@ func (x GoServerImpl) GoDef() cg.Blueprint {
 			"DAGJSONEncode":       base.DAGJSONEncode,
 			"EdelweissString":     base.EdelweissString,
 			"BytesBuffer":         base.BytesBuffer,
+			"HTTPFlusher":         base.HTTPFlusher,
 		}
 		methodDecls = append(methodDecls, cg.T{
 			Data: bmDecl,
@@ -88,6 +89,9 @@ func (x GoServerImpl) GoDef() cg.Blueprint {
 				}
 				buf.WriteByte("\n"[0])
 				writer.Write(buf.Bytes())
+				if f, ok := writer.({{.HTTPFlusher}}); ok {
+					f.Flush()
+				}
 		}
 `,
 		})
