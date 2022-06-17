@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/ipfs/go-cid v0.2.0
 	github.com/ipfs/go-log v1.0.5
-	github.com/ipld/go-ipld-prime v0.16.1-0.20220607160121-f0c1fdf6c6ad
+	github.com/ipld/go-ipld-prime v0.17.0
 )
 
 require (
