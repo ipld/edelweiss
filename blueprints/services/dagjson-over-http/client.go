@@ -58,6 +58,7 @@ func (x GoClientImpl) GoDef() cg.Blueprint {
 			"IOReadCloser":              base.IOReadCloser,
 			"IPLDEncode":                base.IPLDEncode,
 			"IPLDDecodeStreaming":       base.IPLDDecodeStreaming,
+			"DAGJSONDecodeOptions":      base.DAGJSONDecodeOptions,
 			"Errorf":                    base.Errorf,
 			"URLValues":                 base.URLValues,
 			"HTTPNewRequestWithContext": base.HTTPNewRequestWithContext,
@@ -278,10 +279,15 @@ func (c *{{.Type}}) {{.AsyncMethodDecl}} {
 func {{.ProcessReturnAsync}}(ctx {{.Context}}, ch chan<- {{.MethodReturnAsync}}, r {{.IOReadCloser}}) {
 	defer close(ch)
 	defer r.Close()
+	opt := {{.DAGJSONDecodeOptions}}{
+		ParseLinks: true,
+		ParseBytes: true,
+		DontParseBeyondEnd: true,
+	}
 	for {
 		var out {{.MethodReturnAsync}}
 
-		n, err := {{.IPLDDecodeStreaming}}(r, {{.DAGJSONDecode}})
+		n, err := {{.IPLDDecodeStreaming}}(r, opt.Decode)
 		if {{.ErrorsIs}}(err, {{.IOEOF}}) || {{.ErrorsIs}}(err, {{.IOErrUnexpectedEOF}}) {
 			return
 		}
@@ -289,15 +295,20 @@ func {{.ProcessReturnAsync}}(ctx {{.Context}}, ch chan<- {{.MethodReturnAsync}},
 		if err != nil {
 			out = {{.MethodReturnAsync}}{Err: {{.ErrProto}}{Cause: err}} // IPLD decode error
 		} else {
-			env := &{{.ReturnEnvelope}}{}
-			if err = env.Parse(n); err != nil {
-				out = {{.MethodReturnAsync}}{Err: {{.ErrProto}}{Cause: err}} // schema decode error
-			} else if env.Error != nil {
-				out = {{.MethodReturnAsync}}{Err: {{.ErrService}}{Cause: {{.ErrorsNew}}(string(env.Error.Code))}} // service-level error
-			} else if env.{{.MethodName}} != nil {
-				out = {{.MethodReturnAsync}}{Resp: env.{{.MethodName}}}
+			var x [1]byte
+			if k, err := r.Read(x[:]); k != 1 || x[0] != '\n' {
+				out = {{.MethodReturnAsync}}{Err: {{.ErrProto}}{Cause: {{.Errorf}}("missing new line after result: err (%v), read (%d), char (%q)", err, k, string(x[:]))}} // Edelweiss decode error
 			} else {
-				continue
+				env := &{{.ReturnEnvelope}}{}
+				if err = env.Parse(n); err != nil {
+					out = {{.MethodReturnAsync}}{Err: {{.ErrProto}}{Cause: err}} // schema decode error
+				} else if env.Error != nil {
+					out = {{.MethodReturnAsync}}{Err: {{.ErrService}}{Cause: {{.ErrorsNew}}(string(env.Error.Code))}} // service-level error
+				} else if env.{{.MethodName}} != nil {
+					out = {{.MethodReturnAsync}}{Resp: env.{{.MethodName}}}
+				} else {
+					continue
+				}
 			}
 		}
 

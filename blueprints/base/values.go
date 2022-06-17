@@ -33,13 +33,14 @@ var (
 	IPLDLinkType          = &cg.GoTypeRef{PkgPath: IPLDDatamodelPkg, TypeName: "Link"}
 	IPLDNodePrototypeType = &cg.GoTypeRef{PkgPath: IPLDDatamodelPkg, TypeName: "NodePrototype"}
 
-	IPLDDeepEqual       = &cg.GoRef{PkgPath: IPLDPkg, Name: "DeepEqual"}
-	IPLDEncode          = &cg.GoRef{PkgPath: IPLDPkg, Name: "Encode"}
-	IPLDEncodeStreaming = &cg.GoRef{PkgPath: IPLDPkg, Name: "EncodeStreaming"}
-	IPLDDecode          = &cg.GoRef{PkgPath: IPLDPkg, Name: "Decode"}
-	IPLDDecodeStreaming = &cg.GoRef{PkgPath: IPLDPkg, Name: "DecodeStreaming"}
-	DAGJSONEncode       = cg.GoRef{PkgPath: "github.com/ipld/go-ipld-prime/codec/dagjson", Name: "Encode"}
-	DAGJSONDecode       = cg.GoRef{PkgPath: "github.com/ipld/go-ipld-prime/codec/dagjson", Name: "Decode"}
+	IPLDDeepEqual        = &cg.GoRef{PkgPath: IPLDPkg, Name: "DeepEqual"}
+	IPLDEncode           = &cg.GoRef{PkgPath: IPLDPkg, Name: "Encode"}
+	IPLDEncodeStreaming  = &cg.GoRef{PkgPath: IPLDPkg, Name: "EncodeStreaming"}
+	IPLDDecode           = &cg.GoRef{PkgPath: IPLDPkg, Name: "Decode"}
+	IPLDDecodeStreaming  = &cg.GoRef{PkgPath: IPLDPkg, Name: "DecodeStreaming"}
+	DAGJSONEncode        = cg.GoRef{PkgPath: "github.com/ipld/go-ipld-prime/codec/dagjson", Name: "Encode"}
+	DAGJSONDecode        = cg.GoRef{PkgPath: "github.com/ipld/go-ipld-prime/codec/dagjson", Name: "Decode"}
+	DAGJSONDecodeOptions = cg.GoTypeRef{PkgPath: "github.com/ipld/go-ipld-prime/codec/dagjson", TypeName: "DecodeOptions"}
 )
 
 var (

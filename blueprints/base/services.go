@@ -16,6 +16,7 @@ var (
 	HTTPHandlerFunc           = cg.GoTypeRef{PkgPath: "net/http", TypeName: "HandlerFunc"}
 	HTTPRequest               = cg.GoTypeRef{PkgPath: "net/http", TypeName: "Request"}
 	HTTPResponseWriter        = cg.GoTypeRef{PkgPath: "net/http", TypeName: "ResponseWriter"}
+	HTTPFlusher               = cg.GoTypeRef{PkgPath: "net/http", TypeName: "Flusher"}
 	URL                       = cg.GoTypeRef{PkgPath: "net/url", TypeName: "URL"}
 	URLParse                  = cg.GoRef{PkgPath: "net/url", Name: "Parse"}
 	URLValues                 = cg.GoRef{PkgPath: "net/url", Name: "Values"}

@@ -13,6 +13,7 @@ func TestServiceWithoutErrors(t *testing.T) {
 				Methods: defs.Methods{
 					defs.Method{Name: "Method1", Type: defs.Fn{Arg: defs.Int{}, Return: defs.Bool{}}},
 					defs.Method{Name: "Method2", Type: defs.Fn{Arg: defs.String{}, Return: defs.Float{}}},
+					defs.Method{Name: "Method4", Type: defs.Fn{Arg: defs.String{}, Return: defs.Float{}}},
 				},
 			},
 		},
@@ -22,13 +23,16 @@ func TestServiceWithoutErrors(t *testing.T) {
 					defs.Method{Name: "Method1", Type: defs.Fn{Arg: defs.Int{}, Return: defs.Bool{}}},
 					defs.Method{Name: "Method2", Type: defs.Fn{Arg: defs.String{}, Return: defs.Float{}}},
 					defs.Method{Name: "Method3", Type: defs.Fn{Arg: defs.String{}, Return: defs.String{}}},
+					defs.Method{Name: "Method4", Type: defs.Fn{Arg: defs.String{}, Return: defs.Float{}}},
 				},
 			},
 		},
 	}
 	testSrc := `
 
-type TestService1_ServerImpl struct{}
+type TestService1_ServerImpl struct{
+	Release4 chan struct{}
+}
 
 func (TestService1_ServerImpl) Method1(ctx context.Context, req *values.Int) (<-chan *TestService1_Method1_AsyncResult, error) {
 	respCh := make(chan *TestService1_Method1_AsyncResult)
@@ -46,20 +50,32 @@ func (TestService1_ServerImpl) Method2(ctx context.Context, req *values.String) 
 		defer close(respCh)
 		var r1 values.Float = 1.23
 		respCh <- &TestService1_Method2_AsyncResult{ Resp: &r1 }
-		// TODO: dagjson.Decode does not support multiple streaming values
-		// var r2 values.Float = 4.56
-		// respCh <- &TestService1_Method2_AsyncResult{ Resp: &r2 }
+		var r2 values.Float = 4.56
+		respCh <- &TestService1_Method2_AsyncResult{ Resp: &r2 }
+	}()
+	return respCh, nil
+}
+
+// This method returns one response and stalls. The test verifies that the first response is received.
+func (s TestService1_ServerImpl) Method4(ctx context.Context, req *values.String) (<-chan *TestService1_Method4_AsyncResult, error) {
+	respCh := make(chan *TestService1_Method4_AsyncResult)
+	go func() {
+		defer close(respCh)
+		var r1 values.Float = 1.23
+		respCh <- &TestService1_Method4_AsyncResult{ Resp: &r1 }
+		<-s.Release4
 	}()
 	return respCh, nil
 }
 
 var testServiceIdentifyResult = &TestService1_IdentifyResult{
-	Methods: []values.String{"Method1", "Method2"},
+	Methods: []values.String{"Method1", "Method2", "Method4"},
 }
 
 func TestRoundtrip(t *testing.T) {
 
-	s := httptest.NewServer(TestService1_AsyncHandler(TestService1_ServerImpl{}))
+	svc := TestService1_ServerImpl{Release4: make(chan struct{})}
+	s := httptest.NewServer(TestService1_AsyncHandler(svc))
 	defer s.Close()
 
 	c1, err := New_TestService1_Client(s.URL, TestService1_Client_WithHTTPClient(s.Client()))
@@ -74,6 +90,7 @@ func TestRoundtrip(t *testing.T) {
 
 	ctx := context.Background()
 
+	// test method returning one response
 	r1, err := c1.Method1(ctx, values.NewInt(5))
 	if err != nil {
 		t.Fatal(err)
@@ -82,20 +99,34 @@ func TestRoundtrip(t *testing.T) {
 		t.Errorf("expecting true, fot false")
 	}
 
+	// test method returning two responses
 	r2, err := c1.Method2(ctx, values.NewString("5"))
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(r2) != 1 {
-		t.Fatalf("expecting 1 results, got %d", len(r2))
+	if len(r2) != 2 {
+		t.Fatalf("expecting 2 results, got %d", len(r2))
 	}
 	if *r2[0] != values.Float(1.23) {
 		t.Fatalf("expecting 1.23, got %v", *r2[0])
 	}
-	// TODO: dagjson.Decode does not support multiple streaming values
-	// if *r2[1] != values.Float(4.56) {
-	// 	t.Fatalf("expecting 4.56, got %v", *r2[1])
-	// }
+	if *r2[1] != values.Float(4.56) {
+		t.Fatalf("expecting 4.56, got %v", *r2[1])
+	}
+
+	// test method that returns one response and stalls
+	rch, err := c1.Method4_Async(ctx, values.NewString("5"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	resp := <-rch
+	if resp.Resp == nil {
+		t.Fatalf("expecting response")
+	}
+	if *resp.Resp != values.Float(1.23) {
+		t.Fatalf("expecting 1.23, got %v", *r2[0])
+	}
+	close(svc.Release4)
 
 	// test Identify method
 	r3, err := c1.Identify(ctx, &TestService1_IdentifyArg{})
