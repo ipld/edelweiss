@@ -40,7 +40,7 @@ module test
 go 1.16
 
 require (
-	github.com/ipld/edelweiss 88cdd1ae610f24c0da8f4a85a964f10077a81582
+	github.com/ipld/edelweiss 13981a091ad908bfcbce6e0db02764cdeecaaa9a
 	github.com/ipld/go-ipld-prime v0.14.4
 	github.com/ipfs/go-cid v0.0.4
 )
