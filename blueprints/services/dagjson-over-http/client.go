@@ -50,6 +50,7 @@ func (x GoClientImpl) GoDef() cg.Blueprint {
 			"MethodReturn":       x.Lookup.LookupDepGoRef(m.Type.Return),
 			"MethodReturnAsync":  asyncResultRef,
 			"ProcessReturnAsync": processAsyncResultRef,
+			"MethodCachable":     cg.BlueBool(m.Cachable),
 			//
 			"DAGJSONEncode":             base.DAGJSONEncode,
 			"Context":                   base.Context,
