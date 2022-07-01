@@ -9,7 +9,8 @@ var (
 	SyncMutex                 = cg.GoTypeRef{PkgPath: "sync", TypeName: "Mutex"}
 	Context                   = cg.GoTypeRef{PkgPath: "context", TypeName: "Context"}
 	ContextWithCancel         = cg.GoTypeRef{PkgPath: "context", TypeName: "WithCancel"}
-	ContextBackground         = cg.GoTypeRef{PkgPath: "context", TypeName: "Background"}
+	ContextCanceled           = cg.GoTypeRef{PkgPath: "context", TypeName: "Canceled"}
+	ContextDeadlineExceeded   = cg.GoTypeRef{PkgPath: "context", TypeName: "DeadlineExceeded"}
 	HTTPClient                = cg.GoTypeRef{PkgPath: "net/http", TypeName: "Client"}
 	HTTPDefaultClient         = cg.GoTypeRef{PkgPath: "net/http", TypeName: "DefaultClient"}
 	HTTPNewRequestWithContext = cg.GoRef{PkgPath: "net/http", Name: "NewRequestWithContext"}
