@@ -57,6 +57,7 @@ func (x GoServerImpl) GoDef() cg.Blueprint {
 			"IPLDEncodeStreaming": base.IPLDEncodeStreaming,
 			"DAGJSONEncode":       base.DAGJSONEncode,
 			"EdelweissString":     base.EdelweissString,
+			"EdelweissETag":       base.EdelweissETag,
 			"BytesBuffer":         base.BytesBuffer,
 			"HTTPFlusher":         base.HTTPFlusher,
 		}

@@ -39,4 +39,5 @@ var (
 	EdelweissErrProto   = &cg.GoTypeRef{PkgPath: EdelweissServicesPkg, TypeName: "ErrProto"}
 	EdelweissErrService = &cg.GoTypeRef{PkgPath: EdelweissServicesPkg, TypeName: "ErrService"}
 	EdelweissErrSchema  = &cg.GoRef{PkgPath: EdelweissServicesPkg, Name: "ErrSchema"}
+	EdelweissETag       = &cg.GoRef{PkgPath: EdelweissServicesPkg, Name: "ETag"}
 )
