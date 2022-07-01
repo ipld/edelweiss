@@ -134,10 +134,16 @@ func (x GoServerImpl) GoDef() cg.Blueprint {
 					writer.WriteHeader(500)
 					return
 				}
-				writer.Header()["ETag"] = []string{etag}
-				writer.Write(result)
-				if f, ok := writer.({{.HTTPFlusher}}); ok {
-					f.Flush()
+				// if the request has an If-None-Match header, respond appropriately
+				ifNoneMatchValue := request.Header["If-None-Match"]
+				if len(ifNoneMatchValue) == 1 && ifNoneMatchValue[0] == etag {
+					writer.WriteHeader(304)
+				} else {
+					writer.Header()["ETag"] = []string{etag}
+					writer.Write(result)
+					if f, ok := writer.({{.HTTPFlusher}}); ok {
+						f.Flush()
+					}
 				}
 			}
 `,
@@ -293,10 +299,16 @@ func {{.AsyncHandler}}(s {{.Interface}}) {{.HTTPHandlerFunc}} {
 				writer.WriteHeader(500)
 				return
 			}
-			writer.Header()["ETag"] = []string{etag}
-			writer.Write(result)
-			if f, ok := writer.({{.HTTPFlusher}}); ok {
-				f.Flush()
+			// if the request has an If-None-Match header, respond appropriately
+			ifNoneMatchValue := request.Header["If-None-Match"]
+			if len(ifNoneMatchValue) == 1 && ifNoneMatchValue[0] == etag {
+				writer.WriteHeader(304)
+			} else {
+				writer.Header()["ETag"] = []string{etag}
+				writer.Write(result)
+				if f, ok := writer.({{.HTTPFlusher}}); ok {
+					f.Flush()
+				}
 			}
 `
 )
