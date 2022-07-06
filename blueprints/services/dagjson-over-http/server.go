@@ -53,7 +53,6 @@ func (x GoServerImpl) GoDef() cg.Blueprint {
 			"ErrorEnvelope":       x.Lookup.LookupDepGoRef(x.Def.ErrorEnvelope),
 			"ReturnEnvelope":      x.Lookup.LookupDepGoRef(x.Def.ReturnEnvelope),
 			"Context":             base.Context,
-			"ContextBackground":   base.ContextBackground,
 			"IPLDEncodeStreaming": base.IPLDEncodeStreaming,
 			"DAGJSONEncode":       base.DAGJSONEncode,
 			"EdelweissString":     base.EdelweissString,
@@ -68,31 +67,45 @@ func (x GoServerImpl) GoDef() cg.Blueprint {
 			Data: bmDecl,
 			Src: `
 		case env.{{.MethodName}} != nil:
-			ch, err := s.{{.MethodName}}({{.ContextBackground}}(), env.{{.MethodName}})
+			ch, err := s.{{.MethodName}}(request.Context(), env.{{.MethodName}})
 			if err != nil {
 				{{.LoggerVar}}.Errorf("service rejected request (%v)", err)
 				writer.Header()["Error"] = []string{err.Error()}
 				writer.WriteHeader(500)
 				return
 			}
-			for resp := range ch {
-				var env *{{.ReturnEnvelope}}
-				if resp.Err != nil {
-					env = &{{.ReturnEnvelope}}{ Error: &{{.ErrorEnvelope}}{Code: {{.EdelweissString}}(resp.Err.Error())} }
-				} else {
-					env = &{{.ReturnEnvelope}}{ {{.MethodName}}: resp.Resp }
+
+			writer.WriteHeader(200)
+			if f, ok := writer.({{.HTTPFlusher}}); ok {
+				f.Flush()
+			}
+
+			for {
+				select {
+				case <-request.Context().Done():
+					return
+				case resp, ok := <-ch:
+					if !ok {
+						return
+					}
+					var env *{{.ReturnEnvelope}}
+					if resp.Err != nil {
+						env = &{{.ReturnEnvelope}}{ Error: &{{.ErrorEnvelope}}{Code: {{.EdelweissString}}(resp.Err.Error())} }
+					} else {
+						env = &{{.ReturnEnvelope}}{ {{.MethodName}}: resp.Resp }
+					}
+					var buf {{.BytesBuffer}}
+					if err = {{.IPLDEncodeStreaming}}(&buf, env, {{.DAGJSONEncode}}); err != nil {
+						{{.LoggerVar}}.Errorf("cannot encode response (%v)", err)
+						continue
+					}
+					buf.WriteByte("\n"[0])
+					writer.Write(buf.Bytes())
+					if f, ok := writer.({{.HTTPFlusher}}); ok {
+						f.Flush()
+					}
 				}
-				var buf {{.BytesBuffer}}
-				if err = {{.IPLDEncodeStreaming}}(&buf, env, {{.DAGJSONEncode}}); err != nil {
-					{{.LoggerVar}}.Errorf("cannot encode response (%v)", err)
-					continue
-				}
-				buf.WriteByte("\n"[0])
-				writer.Write(buf.Bytes())
-				if f, ok := writer.({{.HTTPFlusher}}); ok {
-					f.Flush()
-				}
-		}
+			}
 `,
 		})
 	}

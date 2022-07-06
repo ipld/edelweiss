@@ -67,6 +67,8 @@ func (x GoClientImpl) GoDef() cg.Blueprint {
 			"ErrorsIs":                  base.ErrorsIs,
 			"IOEOF":                     base.IOEOF,
 			"IOErrUnexpectedEOF":        base.IOErrUnexpectedEOF,
+			"ContextCanceled":           base.ContextCanceled,
+			"ContextDeadlineExceeded":   base.ContextDeadlineExceeded,
 			//
 			"AcceptContentType": cg.StringLiteral(ContentTypeV1),
 		}
@@ -243,7 +245,7 @@ func (c *{{.Type}}) {{.AsyncMethodDecl}} {
 
 	resp, err := c.httpClient.Do(httpReq)
 	if err != nil {
-		return nil, {{.Errorf}}("sending HTTP request (%v)", err)
+		return nil, {{.Errorf}}("sending HTTP request: %w", err)
 	}
 
 	// HTTP codes 400 and 404 correspond to unrecognized method or request schema
@@ -288,7 +290,8 @@ func {{.ProcessReturnAsync}}(ctx {{.Context}}, ch chan<- {{.MethodReturnAsync}},
 		var out {{.MethodReturnAsync}}
 
 		n, err := {{.IPLDDecodeStreaming}}(r, opt.Decode)
-		if {{.ErrorsIs}}(err, {{.IOEOF}}) || {{.ErrorsIs}}(err, {{.IOErrUnexpectedEOF}}) {
+
+		if {{.ErrorsIs}}(err, {{.IOEOF}}) || {{.ErrorsIs}}(err, {{.IOErrUnexpectedEOF}}) || {{.ErrorsIs}}(err, {{.ContextDeadlineExceeded}}) || {{.ErrorsIs}}(err, {{.ContextCanceled}}) {
 			return
 		}
 
