@@ -41,6 +41,8 @@ var (
 	DAGJSONEncode        = cg.GoRef{PkgPath: "github.com/ipld/go-ipld-prime/codec/dagjson", Name: "Encode"}
 	DAGJSONDecode        = cg.GoRef{PkgPath: "github.com/ipld/go-ipld-prime/codec/dagjson", Name: "Decode"}
 	DAGJSONDecodeOptions = cg.GoTypeRef{PkgPath: "github.com/ipld/go-ipld-prime/codec/dagjson", TypeName: "DecodeOptions"}
+	DAGCBOREncode        = cg.GoRef{PkgPath: "github.com/ipld/go-ipld-prime/codec/dagcbor", Name: "Encode"}
+	DAGCBORDecode        = cg.GoRef{PkgPath: "github.com/ipld/go-ipld-prime/codec/dagcbor", Name: "Decode"}
 )
 
 var (

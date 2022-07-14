@@ -262,6 +262,7 @@ func provisionService(p *genPlan, named string, s defs.Service) (plans.Plan, err
 					},
 				},
 			},
+			Cachable: true,
 		},
 	}, s.Methods...)
 
@@ -283,7 +284,7 @@ func provisionService(p *genPlan, named string, s defs.Service) (plans.Plan, err
 		if m.Name == plans.IdentifyName {
 			plan.Identify = plans.Method{Name: plans.IdentifyName, Type: fn}
 		}
-		plan.Methods[i] = plans.Method{Name: m.Name, Type: fn}
+		plan.Methods[i] = plans.Method{Name: m.Name, Type: fn, Cachable: m.Cachable}
 		callCases[i] = plans.Case{Name: m.Name + "Request", GoName: m.Name, Type: argRef}
 		returnCases[i] = plans.Case{Name: m.Name + "Response", GoName: m.Name, Type: returnRef}
 	}

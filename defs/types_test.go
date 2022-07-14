@@ -30,8 +30,8 @@ func TestServiceDef(t *testing.T) {
 		Named{"RoutingService",
 			Service{
 				Methods: Methods{
-					Method{"Put1",
-						Fn{
+					Method{Name: "Put1",
+						Type: Fn{
 							Arg: Ref{"PutArgs"},
 							Return: Union{
 								Cases: Cases{
@@ -41,8 +41,8 @@ func TestServiceDef(t *testing.T) {
 							},
 						},
 					},
-					Method{"Put2",
-						Fn{
+					Method{Name: "Put2",
+						Type: Fn{
 							Arg: Tuple{
 								Slots: Slots{Ref{"Key"}, Any{}},
 							},
@@ -54,8 +54,8 @@ func TestServiceDef(t *testing.T) {
 							},
 						},
 					},
-					Method{"Get",
-						Fn{
+					Method{Name: "Get",
+						Type: Fn{
 							Arg: Ref{"Key"},
 							Return: Union{
 								Cases: Cases{
@@ -77,8 +77,8 @@ func TestServiceDef2(t *testing.T) {
 		Named{"DelegatedRoutingService",
 			Service{
 				Methods: Methods{
-					Method{"PutP2PProvider", Fn{Arg: Ref{"PutP2PProviderRequest"}, Return: Ref{"PutP2PProviderResponse"}}},
-					Method{"GetP2PProviders", Fn{Arg: Ref{"GetP2PProvidersRequest"}, Return: Ref{"GetP2PProvidersResponse"}}},
+					Method{Name: "PutP2PProvider", Type: Fn{Arg: Ref{"PutP2PProviderRequest"}, Return: Ref{"PutP2PProviderResponse"}}},
+					Method{Name: "GetP2PProviders", Type: Fn{Arg: Ref{"GetP2PProvidersRequest"}, Return: Ref{"GetP2PProvidersResponse"}}},
 				},
 			},
 		},

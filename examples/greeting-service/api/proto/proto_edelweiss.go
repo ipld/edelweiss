@@ -3,21 +3,22 @@
 package proto
 
 import (
-	pd11 "bytes"
-	pd5 "context"
+	pd6 "bytes"
+	pd10 "context"
 	pd7 "errors"
 	pd3 "fmt"
 	pd8 "io"
-	pd15 "io/ioutil"
-	pd9 "net/http"
-	pd10 "net/url"
+	pd16 "io/ioutil"
+	pd4 "net/http"
+	pd12 "net/url"
 	pd14 "sync"
 
-	pd12 "github.com/ipfs/go-log"
+	pd15 "github.com/ipfs/go-log"
 	pd13 "github.com/ipld/edelweiss/services"
 	pd2 "github.com/ipld/edelweiss/values"
-	pd6 "github.com/ipld/go-ipld-prime"
-	pd4 "github.com/ipld/go-ipld-prime/codec/dagjson"
+	pd5 "github.com/ipld/go-ipld-prime"
+	pd11 "github.com/ipld/go-ipld-prime/codec/dagcbor"
+	pd9 "github.com/ipld/go-ipld-prime/codec/dagjson"
 	pd1 "github.com/ipld/go-ipld-prime/datamodel"
 )
 
@@ -956,16 +957,16 @@ func (x AnonInductive5) Prototype() pd1.NodePrototype {
 	return nil
 }
 
-var logger_client_GreetingService = pd12.Logger("service/client/greetingservice")
+var logger_client_GreetingService = pd15.Logger("service/client/greetingservice")
 
 type GreetingService_Client interface {
-	Identify(ctx pd5.Context, req *GreetingService_IdentifyArg) ([]*GreetingService_IdentifyResult, error)
+	Identify(ctx pd10.Context, req *GreetingService_IdentifyArg) ([]*GreetingService_IdentifyResult, error)
 
-	Hello(ctx pd5.Context, req *HelloRequest) ([]*HelloResponse, error)
+	Hello(ctx pd10.Context, req *HelloRequest) ([]*HelloResponse, error)
 
-	Identify_Async(ctx pd5.Context, req *GreetingService_IdentifyArg) (<-chan GreetingService_Identify_AsyncResult, error)
+	Identify_Async(ctx pd10.Context, req *GreetingService_IdentifyArg) (<-chan GreetingService_Identify_AsyncResult, error)
 
-	Hello_Async(ctx pd5.Context, req *HelloRequest) (<-chan GreetingService_Hello_AsyncResult, error)
+	Hello_Async(ctx pd10.Context, req *HelloRequest) (<-chan GreetingService_Hello_AsyncResult, error)
 }
 
 type GreetingService_Identify_AsyncResult struct {
@@ -981,13 +982,13 @@ type GreetingService_Hello_AsyncResult struct {
 type GreetingService_ClientOption func(*client_GreetingService) error
 
 type client_GreetingService struct {
-	httpClient  *pd9.Client
-	endpoint    *pd10.URL
+	httpClient  *pd4.Client
+	endpoint    *pd12.URL
 	ulk         pd14.Mutex
 	unsupported map[string]bool // cache of methods not supported by server
 }
 
-func GreetingService_Client_WithHTTPClient(hc *pd9.Client) GreetingService_ClientOption {
+func GreetingService_Client_WithHTTPClient(hc *pd4.Client) GreetingService_ClientOption {
 	return func(c *client_GreetingService) error {
 		c.httpClient = hc
 		return nil
@@ -995,11 +996,11 @@ func GreetingService_Client_WithHTTPClient(hc *pd9.Client) GreetingService_Clien
 }
 
 func New_GreetingService_Client(endpoint string, opts ...GreetingService_ClientOption) (*client_GreetingService, error) {
-	u, err := pd10.Parse(endpoint)
+	u, err := pd12.Parse(endpoint)
 	if err != nil {
 		return nil, err
 	}
-	c := &client_GreetingService{endpoint: u, httpClient: pd9.DefaultClient, unsupported: make(map[string]bool)}
+	c := &client_GreetingService{endpoint: u, httpClient: pd4.DefaultClient, unsupported: make(map[string]bool)}
 	for _, o := range opts {
 		if err := o(c); err != nil {
 			return nil, err
@@ -1008,8 +1009,8 @@ func New_GreetingService_Client(endpoint string, opts ...GreetingService_ClientO
 	return c, nil
 }
 
-func (c *client_GreetingService) Identify(ctx pd5.Context, req *GreetingService_IdentifyArg) ([]*GreetingService_IdentifyResult, error) {
-	ctx, cancel := pd5.WithCancel(ctx)
+func (c *client_GreetingService) Identify(ctx pd10.Context, req *GreetingService_IdentifyArg) ([]*GreetingService_IdentifyResult, error) {
+	ctx, cancel := pd10.WithCancel(ctx)
 	defer cancel()
 	ch, err := c.Identify_Async(ctx, req)
 	if err != nil {
@@ -1037,7 +1038,7 @@ func (c *client_GreetingService) Identify(ctx pd5.Context, req *GreetingService_
 	}
 }
 
-func (c *client_GreetingService) Identify_Async(ctx pd5.Context, req *GreetingService_IdentifyArg) (<-chan GreetingService_Identify_AsyncResult, error) {
+func (c *client_GreetingService) Identify_Async(ctx pd10.Context, req *GreetingService_IdentifyArg) (<-chan GreetingService_Identify_AsyncResult, error) {
 	// check if we have memoized that this method is not supported by the server
 	c.ulk.Lock()
 	notSupported := c.unsupported["Identify"]
@@ -1050,14 +1051,20 @@ func (c *client_GreetingService) Identify_Async(ctx pd5.Context, req *GreetingSe
 		Identify: req,
 	}
 
-	buf, err := pd6.Encode(envelope, pd4.Encode)
+	buf, err := pd5.Encode(envelope, pd11.Encode) // XXX: apply binary encoding on top?
+
 	if err != nil {
 		return nil, pd3.Errorf("unexpected serialization error (%v)", err)
 	}
 
 	// encode request in URL
 	u := *c.endpoint
-	httpReq, err := pd9.NewRequestWithContext(ctx, "POST", u.String(), pd11.NewReader(buf))
+
+	q := pd12.Values{}
+	q.Set("q", string(buf))
+	u.RawQuery = q.Encode()
+	httpReq, err := pd4.NewRequestWithContext(ctx, "GET", u.String(), nil)
+
 	if err != nil {
 		return nil, err
 	}
@@ -1069,7 +1076,7 @@ func (c *client_GreetingService) Identify_Async(ctx pd5.Context, req *GreetingSe
 
 	resp, err := c.httpClient.Do(httpReq)
 	if err != nil {
-		return nil, pd3.Errorf("sending HTTP request (%v)", err)
+		return nil, pd3.Errorf("sending HTTP request: %w", err)
 	}
 
 	// HTTP codes 400 and 404 correspond to unrecognized method or request schema
@@ -1102,10 +1109,10 @@ func (c *client_GreetingService) Identify_Async(ctx pd5.Context, req *GreetingSe
 	return ch, nil
 }
 
-func process_GreetingService_Identify_AsyncResult(ctx pd5.Context, ch chan<- GreetingService_Identify_AsyncResult, r pd8.ReadCloser) {
+func process_GreetingService_Identify_AsyncResult(ctx pd10.Context, ch chan<- GreetingService_Identify_AsyncResult, r pd8.ReadCloser) {
 	defer close(ch)
 	defer r.Close()
-	opt := pd4.DecodeOptions{
+	opt := pd9.DecodeOptions{
 		ParseLinks:         true,
 		ParseBytes:         true,
 		DontParseBeyondEnd: true,
@@ -1113,8 +1120,9 @@ func process_GreetingService_Identify_AsyncResult(ctx pd5.Context, ch chan<- Gre
 	for {
 		var out GreetingService_Identify_AsyncResult
 
-		n, err := pd6.DecodeStreaming(r, opt.Decode)
-		if pd7.Is(err, pd8.EOF) || pd7.Is(err, pd8.ErrUnexpectedEOF) {
+		n, err := pd5.DecodeStreaming(r, opt.Decode)
+
+		if pd7.Is(err, pd8.EOF) || pd7.Is(err, pd8.ErrUnexpectedEOF) || pd7.Is(err, pd10.DeadlineExceeded) || pd7.Is(err, pd10.Canceled) {
 			return
 		}
 
@@ -1146,8 +1154,8 @@ func process_GreetingService_Identify_AsyncResult(ctx pd5.Context, ch chan<- Gre
 	}
 }
 
-func (c *client_GreetingService) Hello(ctx pd5.Context, req *HelloRequest) ([]*HelloResponse, error) {
-	ctx, cancel := pd5.WithCancel(ctx)
+func (c *client_GreetingService) Hello(ctx pd10.Context, req *HelloRequest) ([]*HelloResponse, error) {
+	ctx, cancel := pd10.WithCancel(ctx)
 	defer cancel()
 	ch, err := c.Hello_Async(ctx, req)
 	if err != nil {
@@ -1175,7 +1183,7 @@ func (c *client_GreetingService) Hello(ctx pd5.Context, req *HelloRequest) ([]*H
 	}
 }
 
-func (c *client_GreetingService) Hello_Async(ctx pd5.Context, req *HelloRequest) (<-chan GreetingService_Hello_AsyncResult, error) {
+func (c *client_GreetingService) Hello_Async(ctx pd10.Context, req *HelloRequest) (<-chan GreetingService_Hello_AsyncResult, error) {
 	// check if we have memoized that this method is not supported by the server
 	c.ulk.Lock()
 	notSupported := c.unsupported["Hello"]
@@ -1188,14 +1196,17 @@ func (c *client_GreetingService) Hello_Async(ctx pd5.Context, req *HelloRequest)
 		Hello: req,
 	}
 
-	buf, err := pd6.Encode(envelope, pd4.Encode)
+	buf, err := pd5.Encode(envelope, pd9.Encode)
+
 	if err != nil {
 		return nil, pd3.Errorf("unexpected serialization error (%v)", err)
 	}
 
 	// encode request in URL
 	u := *c.endpoint
-	httpReq, err := pd9.NewRequestWithContext(ctx, "POST", u.String(), pd11.NewReader(buf))
+
+	httpReq, err := pd4.NewRequestWithContext(ctx, "POST", u.String(), pd6.NewReader(buf))
+
 	if err != nil {
 		return nil, err
 	}
@@ -1207,7 +1218,7 @@ func (c *client_GreetingService) Hello_Async(ctx pd5.Context, req *HelloRequest)
 
 	resp, err := c.httpClient.Do(httpReq)
 	if err != nil {
-		return nil, pd3.Errorf("sending HTTP request (%v)", err)
+		return nil, pd3.Errorf("sending HTTP request: %w", err)
 	}
 
 	// HTTP codes 400 and 404 correspond to unrecognized method or request schema
@@ -1240,10 +1251,10 @@ func (c *client_GreetingService) Hello_Async(ctx pd5.Context, req *HelloRequest)
 	return ch, nil
 }
 
-func process_GreetingService_Hello_AsyncResult(ctx pd5.Context, ch chan<- GreetingService_Hello_AsyncResult, r pd8.ReadCloser) {
+func process_GreetingService_Hello_AsyncResult(ctx pd10.Context, ch chan<- GreetingService_Hello_AsyncResult, r pd8.ReadCloser) {
 	defer close(ch)
 	defer r.Close()
-	opt := pd4.DecodeOptions{
+	opt := pd9.DecodeOptions{
 		ParseLinks:         true,
 		ParseBytes:         true,
 		DontParseBeyondEnd: true,
@@ -1251,8 +1262,9 @@ func process_GreetingService_Hello_AsyncResult(ctx pd5.Context, ch chan<- Greeti
 	for {
 		var out GreetingService_Hello_AsyncResult
 
-		n, err := pd6.DecodeStreaming(r, opt.Decode)
-		if pd7.Is(err, pd8.EOF) || pd7.Is(err, pd8.ErrUnexpectedEOF) {
+		n, err := pd5.DecodeStreaming(r, opt.Decode)
+
+		if pd7.Is(err, pd8.EOF) || pd7.Is(err, pd8.ErrUnexpectedEOF) || pd7.Is(err, pd10.DeadlineExceeded) || pd7.Is(err, pd10.Canceled) {
 			return
 		}
 
@@ -1284,63 +1296,142 @@ func process_GreetingService_Hello_AsyncResult(ctx pd5.Context, ch chan<- Greeti
 	}
 }
 
-var logger_server_GreetingService = pd12.Logger("service/server/greetingservice")
+var logger_server_GreetingService = pd15.Logger("service/server/greetingservice")
 
 type GreetingService_Server interface {
-	Hello(ctx pd5.Context, req *HelloRequest) (<-chan *GreetingService_Hello_AsyncResult, error)
+	Hello(ctx pd10.Context, req *HelloRequest) (<-chan *GreetingService_Hello_AsyncResult, error)
 }
 
-func GreetingService_AsyncHandler(s GreetingService_Server) pd9.HandlerFunc {
-	return func(writer pd9.ResponseWriter, request *pd9.Request) {
+func GreetingService_AsyncHandler(s GreetingService_Server) pd4.HandlerFunc {
+	return func(writer pd4.ResponseWriter, request *pd4.Request) {
 		// parse request
-		msg, err := pd15.ReadAll(request.Body)
-		if err != nil {
-			logger_server_GreetingService.Errorf("reading request body (%v)", err)
-			writer.WriteHeader(400)
-			return
-		}
-		n, err := pd6.Decode(msg, pd4.Decode)
-		if err != nil {
-			logger_server_GreetingService.Errorf("received request not decodeable (%v)", err)
-			writer.WriteHeader(400)
-			return
-		}
 		env := &AnonInductive4{}
-		if err = env.Parse(n); err != nil {
-			logger_server_GreetingService.Errorf("parsing call envelope (%v)", err)
+		isReqCachable := false
+		switch request.Method {
+		case "POST":
+			isReqCachable = false
+			msg, err := pd16.ReadAll(request.Body)
+			if err != nil {
+				logger_server_GreetingService.Errorf("reading request body (%v)", err)
+				writer.WriteHeader(400)
+				return
+			}
+			n, err := pd5.Decode(msg, pd9.Decode)
+			if err != nil {
+				logger_server_GreetingService.Errorf("received request not decodeable (%v)", err)
+				writer.WriteHeader(400)
+				return
+			}
+			if err = env.Parse(n); err != nil {
+				logger_server_GreetingService.Errorf("parsing call envelope (%v)", err)
+				writer.WriteHeader(400)
+				return
+			}
+		case "GET":
+			isReqCachable = true
+			msg := request.URL.Query().Get("q")
+			n, err := pd5.Decode([]byte(msg), pd11.Decode)
+			if err != nil {
+				logger_server_GreetingService.Errorf("received url not decodeable (%v)", err)
+				writer.WriteHeader(400)
+				return
+			}
+			if err = env.Parse(n); err != nil {
+				logger_server_GreetingService.Errorf("parsing call envelope (%v)", err)
+				writer.WriteHeader(400)
+				return
+			}
+		default:
+			logger_server_GreetingService.Errorf("http method not supported")
 			writer.WriteHeader(400)
 			return
 		}
+		_ = isReqCachable
 
 		writer.Header()["Content-Type"] = []string{
 			"application/vnd.ipfs.rpc+dag-json; version=1",
 		}
 
 		// demultiplex request
+		var err error
 		switch {
 
 		case env.Hello != nil:
-			ch, err := s.Hello(pd5.Background(), env.Hello)
+
+			if isReqCachable {
+				logger_server_GreetingService.Errorf("non-cachable method called with http GET")
+				writer.Header()["Error"] = []string{"non-cachable method called with GET"}
+				writer.WriteHeader(500)
+				return
+			}
+
+			ch, err := s.Hello(request.Context(), env.Hello)
 			if err != nil {
 				logger_server_GreetingService.Errorf("service rejected request (%v)", err)
 				writer.Header()["Error"] = []string{err.Error()}
 				writer.WriteHeader(500)
 				return
 			}
-			for resp := range ch {
-				var env *AnonInductive5
-				if resp.Err != nil {
-					env = &AnonInductive5{Error: &GreetingService_Error{Code: pd2.String(resp.Err.Error())}}
+
+			// if the request is cachable, collect all async results in a buffer, otherwise write them directly to http
+			var resultWriter pd8.Writer
+			if isReqCachable {
+				resultWriter = new(pd6.Buffer)
+			} else {
+				writer.WriteHeader(200)
+				if f, ok := writer.(pd4.Flusher); ok {
+					f.Flush()
+				}
+				resultWriter = writer
+			}
+		chanLoop_Hello:
+			for {
+				select {
+				case <-request.Context().Done():
+					return
+				case resp, ok := <-ch:
+					if !ok {
+						break chanLoop_Hello
+					}
+					var env *AnonInductive5
+					if resp.Err != nil {
+						env = &AnonInductive5{Error: &GreetingService_Error{Code: pd2.String(resp.Err.Error())}}
+					} else {
+						env = &AnonInductive5{Hello: resp.Resp}
+					}
+					var buf pd6.Buffer
+					if err = pd5.EncodeStreaming(&buf, env, pd9.Encode); err != nil {
+						logger_server_GreetingService.Errorf("cannot encode response (%v)", err)
+						continue chanLoop_Hello
+					}
+					buf.WriteByte("\n"[0])
+					resultWriter.Write(buf.Bytes())
+					if f, ok := resultWriter.(pd4.Flusher); ok {
+						f.Flush()
+					}
+				}
+			}
+			// if the request is cachable, compute an etag and send the collected results to http
+			if isReqCachable {
+				result := resultWriter.(*pd6.Buffer).Bytes()
+				etag, err := pd13.ETag(result)
+				if err != nil {
+					logger_server_GreetingService.Errorf("etag generation (%v)", err)
+					writer.Header()["Error"] = []string{err.Error()}
+					writer.WriteHeader(500)
+					return
+				}
+				// if the request has an If-None-Match header, respond appropriately
+				ifNoneMatchValue := request.Header["If-None-Match"]
+				if len(ifNoneMatchValue) == 1 && ifNoneMatchValue[0] == etag {
+					writer.WriteHeader(304)
 				} else {
-					env = &AnonInductive5{Hello: resp.Resp}
+					writer.Header()["ETag"] = []string{etag}
+					writer.Write(result)
+					if f, ok := writer.(pd4.Flusher); ok {
+						f.Flush()
+					}
 				}
-				var buf pd11.Buffer
-				if err = pd6.EncodeStreaming(&buf, env, pd4.Encode); err != nil {
-					logger_server_GreetingService.Errorf("cannot encode response (%v)", err)
-					continue
-				}
-				buf.WriteByte("\n"[0])
-				writer.Write(buf.Bytes())
 			}
 
 		case env.Identify != nil:
@@ -1352,14 +1443,34 @@ func GreetingService_AsyncHandler(s GreetingService_Server) pd9.HandlerFunc {
 					},
 				},
 			}
-			var buf pd11.Buffer
-			if err = pd6.EncodeStreaming(&buf, env, pd4.Encode); err != nil {
+			var buf pd6.Buffer
+			if err = pd5.EncodeStreaming(&buf, env, pd9.Encode); err != nil {
 				logger_server_GreetingService.Errorf("cannot encode identify response (%v)", err)
 				writer.WriteHeader(500)
 				return
 			}
 			buf.WriteByte("\n"[0])
-			writer.Write(buf.Bytes())
+
+			// compute etag, since Identify is cachable
+			result := buf.Bytes()
+			etag, err := pd13.ETag(result)
+			if err != nil {
+				logger_server_GreetingService.Errorf("etag generation (%v)", err)
+				writer.Header()["Error"] = []string{err.Error()}
+				writer.WriteHeader(500)
+				return
+			}
+			// if the request has an If-None-Match header, respond appropriately
+			ifNoneMatchValue := request.Header["If-None-Match"]
+			if len(ifNoneMatchValue) == 1 && ifNoneMatchValue[0] == etag {
+				writer.WriteHeader(304)
+			} else {
+				writer.Header()["ETag"] = []string{etag}
+				writer.Write(result)
+				if f, ok := writer.(pd4.Flusher); ok {
+					f.Flush()
+				}
+			}
 
 		default:
 			logger_server_GreetingService.Errorf("missing or unknown request")

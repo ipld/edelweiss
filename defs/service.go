@@ -10,8 +10,9 @@ func (Service) Kind() string {
 }
 
 type Method struct {
-	Name string
-	Type Fn
+	Name     string
+	Type     Fn
+	Cachable bool
 }
 
 type Methods []Method
