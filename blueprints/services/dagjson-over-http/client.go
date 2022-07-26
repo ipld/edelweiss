@@ -120,7 +120,7 @@ func (x GoClientImpl) GoDef() cg.Blueprint {
 		"New":            x.Ref.Prepend("New_").Append("_Client"),
 		"WithHTTPClient": x.Ref.Append("_Client").Append("_WithHTTPClient"),
 		//
-		"Logger":     cg.GoRef{PkgPath: "github.com/ipfs/go-log", Name: "Logger"},
+		"Logger":     cg.GoRef{PkgPath: "github.com/ipfs/go-log/v2", Name: "Logger"},
 		"LoggerName": cg.StringLiteral(fmt.Sprintf("service/client/%s", strings.ToLower(x.Ref.TypeName))),
 		"LoggerVar":  loggerVar,
 		//
