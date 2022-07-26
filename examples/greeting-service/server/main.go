@@ -4,7 +4,7 @@ import (
 	"flag"
 	"net/http"
 
-	log "github.com/ipfs/go-log"
+	log "github.com/ipfs/go-log/v2"
 	"github.com/ipld/edelweiss/examples/greeting-service/api/proto"
 	"github.com/ipld/edelweiss/examples/greeting-service/service"
 )
