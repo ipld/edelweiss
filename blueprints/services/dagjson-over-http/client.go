@@ -228,7 +228,7 @@ func (c *{{.Type}}) {{.AsyncMethodDecl}} {
 
 	buf, err := {{.IPLDEncode}}(envelope, {{.DAGJSONEncode}})
 	if err != nil {
-		return nil, {{.Errorf}}("unexpected serialization error (%v)", err)
+		return nil, {{.Errorf}}("serializing DAG-JSON request: %w", err)
 	}
 
 	// encode request in URL
