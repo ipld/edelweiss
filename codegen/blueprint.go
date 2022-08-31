@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"sort"
 	"text/template"
 
 	"github.com/ipld/edelweiss/util/indent"
@@ -48,9 +49,19 @@ type T struct {
 
 type BlueMap map[string]Blueprint
 
+// SortedKeys returns a deterministically-ordered set of keys
+func (x BlueMap) SortedKeys() []string {
+	var keys []string
+	for k := range x {
+		keys = append(keys, k)
+	}
+	sort.Stable(sort.StringSlice(keys))
+	return keys
+}
+
 func (x BlueMap) Write(ctx GoFileContext, w io.Writer) error {
-	for _, b := range x {
-		if err := b.Write(ctx, w); err != nil {
+	for _, k := range x.SortedKeys() {
+		if err := x[k].Write(ctx, w); err != nil {
 			return nil
 		}
 	}
@@ -107,7 +118,8 @@ func flattenBlueprint(ctx GoFileContext, b Blueprint) (Blueprint, error) {
 
 func flattenBlueMap(ctx GoFileContext, bm BlueMap) (BlueMap, error) {
 	r := BlueMap{}
-	for k, v := range bm {
+	for _, k := range bm.SortedKeys() {
+		v := bm[k]
 		f, err := flattenBlueprint(ctx, v)
 		if err != nil {
 			return nil, err
