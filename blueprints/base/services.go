@@ -29,7 +29,7 @@ var (
 	IOReadCloser       = &cg.GoRef{PkgPath: "io", Name: "ReadCloser"}
 	IOEOF              = &cg.GoRef{PkgPath: "io", Name: "EOF"}
 	IOErrUnexpectedEOF = &cg.GoRef{PkgPath: "io", Name: "ErrUnexpectedEOF"}
-	IOUtilReadAll      = &cg.GoRef{PkgPath: "io/ioutil", Name: "ReadAll"}
+	IOReadAll          = &cg.GoRef{PkgPath: "io", Name: "ReadAll"}
 )
 
 const EdelweissServicesPkg = services.PkgPath

@@ -138,7 +138,7 @@ func (x GoServerImpl) GoDef() cg.Blueprint {
 		"HTTPResponseWriter": base.HTTPResponseWriter,
 		"IPLDDecode":         base.IPLDDecode,
 		"DAGJSONDecode":      base.DAGJSONDecode,
-		"IOUtilReadAll":      base.IOUtilReadAll,
+		"IOReadAll":          base.IOReadAll,
 		//
 		"Interface":    x.Ref.Append("_Server"),
 		"AsyncHandler": x.Ref.Append("_AsyncHandler"),
@@ -168,7 +168,7 @@ type {{.Interface}} interface {
 func {{.AsyncHandler}}(s {{.Interface}}) {{.HTTPHandlerFunc}} {
 	return func(writer {{.HTTPResponseWriter}}, request *{{.HTTPRequest}}) {
 		// parse request
-		msg, err := {{.IOUtilReadAll}}(request.Body)
+		msg, err := {{.IOReadAll}}(request.Body)
 		if err != nil {
 			{{.LoggerVar}}.Errorf("reading request body (%v)", err)
 			writer.WriteHeader(400)
