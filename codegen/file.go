@@ -3,7 +3,6 @@ package codegen
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path"
 )
@@ -28,7 +27,7 @@ func (f *GoFile) Build() error {
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(f.FilePath, body, 0644)
+	return os.WriteFile(f.FilePath, body, 0644)
 }
 
 func (f *GoFile) Generate() ([]byte, error) {

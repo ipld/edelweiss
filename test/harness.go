@@ -3,7 +3,6 @@ package test
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
@@ -45,7 +44,7 @@ require (
 	github.com/ipfs/go-cid v0.0.4
 )
 `
-	if err := ioutil.WriteFile(path.Join(dir, "go.mod"), []byte(goModSrc), 0644); err != nil {
+	if err := os.WriteFile(path.Join(dir, "go.mod"), []byte(goModSrc), 0644); err != nil {
 		t.Fatalf("creating go.mod (%v)", err)
 	}
 
@@ -99,7 +98,7 @@ var (
 
 %s
 `
-	if err := ioutil.WriteFile(path.Join(dir, "edelweiss_test.go"), []byte(fmt.Sprintf(testGoSrc, testSrc)), 0644); err != nil {
+	if err := os.WriteFile(path.Join(dir, "edelweiss_test.go"), []byte(fmt.Sprintf(testGoSrc, testSrc)), 0644); err != nil {
 		t.Fatalf("creating test.go (%v)", err)
 	}
 

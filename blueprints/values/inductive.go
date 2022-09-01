@@ -48,7 +48,7 @@ func (x *GoInductiveImpl) GoDef() cg.Blueprint {
 	for i := range cases {
 		caseDecls[i] = cg.T{
 			Data: caseData[i],
-			Src: "	{{.CaseName}} *{{.CaseType}}\n",
+			Src:  "	{{.CaseName}} *{{.CaseType}}\n",
 		}
 	}
 	// build case parse cases
