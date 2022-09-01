@@ -53,7 +53,7 @@ func (x *GoStructureImpl) GoDef() cg.Blueprint {
 	for i := range fields {
 		fieldDecls[i] = cg.T{
 			Data: fieldData[i],
-			Src:  "	{{.FieldName}} {{.FieldType}}\n",
+			Src: "	{{.FieldName}} {{.FieldType}}\n",
 		}
 	}
 	// build field parse cases
@@ -62,7 +62,7 @@ func (x *GoStructureImpl) GoDef() cg.Blueprint {
 	for i := range fields {
 		fieldParseMapCases[i] = cg.T{
 			Data: fieldData[i],
-			Src:  "		{{.FieldNameString}}: x.{{.FieldName}}.Parse,\n",
+			Src: "		{{.FieldNameString}}: x.{{.FieldName}}.Parse,\n",
 		}
 		fieldParseCases[i] = cg.T{
 			Data: fieldData[i],

@@ -47,7 +47,7 @@ func (x *GoUnionImpl) GoDef() cg.Blueprint {
 	for i := range cases {
 		caseDecls[i] = cg.T{
 			Data: caseData[i],
-			Src:  "	{{.CaseName}} *{{.CaseType}}\n",
+			Src: "	{{.CaseName}} *{{.CaseType}}\n",
 		}
 	}
 	// build cases for Node() method
