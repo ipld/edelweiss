@@ -48,6 +48,7 @@ func (x GoServerImpl) GoDef() cg.Blueprint {
 			"MethodArg":         x.Lookup.LookupDepGoRef(m.Type.Arg),
 			"MethodReturn":      x.Lookup.LookupDepGoRef(m.Type.Return),
 			"MethodReturnAsync": asyncResultRef,
+			"MethodCachable":    cg.BlueBool(m.Cachable),
 			//
 			"LoggerVar":           loggerVar,
 			"ErrorEnvelope":       x.Lookup.LookupDepGoRef(x.Def.ErrorEnvelope),
@@ -67,7 +68,15 @@ func (x GoServerImpl) GoDef() cg.Blueprint {
 			Data: bmDecl,
 			Src: `
 		case env.{{.MethodName}} != nil:
-			ch, err := s.{{.MethodName}}(request.Context(), env.{{.MethodName}})
+			{{if not .MethodCachable}}
+			if isReqCachable {
+				{{.LoggerVar}}.Errorf("non-cachable method called with http GET")
+				writer.Header()["Error"] = []string{"non-cachable method called with GET"}
+				writer.WriteHeader(500)
+				return
+			}
+			{{end}}
+			ch, err := s.{{.MethodName}}({{.ContextBackground}}(), env.{{.MethodName}})
 			if err != nil {
 				{{.LoggerVar}}.Errorf("service rejected request (%v)", err)
 				writer.Header()["Error"] = []string{err.Error()}
