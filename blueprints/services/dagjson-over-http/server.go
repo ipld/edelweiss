@@ -60,6 +60,7 @@ func (x GoServerImpl) GoDef() cg.Blueprint {
 			"EdelweissETag":       base.EdelweissETag,
 			"BytesBuffer":         base.BytesBuffer,
 			"HTTPFlusher":         base.HTTPFlusher,
+			"IOWriter":            base.IOWriter,
 		}
 		methodDecls = append(methodDecls, cg.T{
 			Data: bmDecl,
@@ -77,7 +78,7 @@ func (x GoServerImpl) GoDef() cg.Blueprint {
 				return
 			}
 			{{end}}
-			ch, err := s.{{.MethodName}}({{.ContextBackground}}(), env.{{.MethodName}})
+			ch, err := s.{{.MethodName}}(request.Context(), env.{{.MethodName}})
 			if err != nil {
 				{{.LoggerVar}}.Errorf("service rejected request (%v)", err)
 				writer.Header()["Error"] = []string{err.Error()}
@@ -85,11 +86,18 @@ func (x GoServerImpl) GoDef() cg.Blueprint {
 				return
 			}
 
-			writer.WriteHeader(200)
-			if f, ok := writer.({{.HTTPFlusher}}); ok {
-				f.Flush()
-			}
+			// if the request is cachable, collect all async results in a buffer, otherwise write them directly to http
+			var resultWriter {{.IOWriter}}
+			if isReqCachable {
+				resultWriter = new({{.BytesBuffer}})
+			} else {
+				resultWriter = writer
+				writer.WriteHeader(200)
+				if f, ok := writer.({{.HTTPFlusher}}); ok {
+					f.Flush()
+				}
 
+			}
 			for {
 				select {
 				case <-request.Context().Done():
@@ -110,10 +118,26 @@ func (x GoServerImpl) GoDef() cg.Blueprint {
 						continue
 					}
 					buf.WriteByte("\n"[0])
-					writer.Write(buf.Bytes())
-					if f, ok := writer.({{.HTTPFlusher}}); ok {
+					resultWriter.Write(buf.Bytes())
+					if f, ok := resultWriter.({{.HTTPFlusher}}); ok {
 						f.Flush()
 					}
+				}
+			}
+			// if the request is cachable, compute an etag and send the collected results to http
+			if isReqCachable {
+				result := resultWriter.(*{{.BytesBuffer}}).Bytes()
+				etag, err := {{.EdelweissETag}}(result)
+				if err != nil {
+					{{.LoggerVar}}.Errorf("etag generation (%v)", err)
+					writer.Header()["Error"] = []string{err.Error()}
+					writer.WriteHeader(500)
+					return
+				}
+				writer.Header()["ETag"] = []string{etag}
+				writer.Write(result)
+				if f, ok := writer.({{.HTTPFlusher}}); ok {
+					f.Flush()
 				}
 			}
 `,
@@ -133,7 +157,9 @@ func (x GoServerImpl) GoDef() cg.Blueprint {
 		"IPLDEncodeStreaming": base.IPLDEncodeStreaming,
 		"DAGJSONEncode":       base.DAGJSONEncode,
 		"EdelweissString":     base.EdelweissString,
+		"EdelweissETag":       base.EdelweissETag,
 		"BytesBuffer":         base.BytesBuffer,
+		"HTTPFlusher":         base.HTTPFlusher,
 		//
 		"IdentifyMethodName":   cg.V(x.Def.Identify.Name),
 		"IdentifyMethodArg":    x.Lookup.LookupDepGoRef(x.Def.Identify.Type.Arg),
@@ -257,6 +283,20 @@ func {{.AsyncHandler}}(s {{.Interface}}) {{.HTTPHandlerFunc}} {
 				return
 			}
 			buf.WriteByte("\n"[0])
-			writer.Write(buf.Bytes())
+
+			// compute etag, since Identify is cachable
+			result := buf.Bytes()
+			etag, err := {{.EdelweissETag}}(result)
+			if err != nil {
+				{{.LoggerVar}}.Errorf("etag generation (%v)", err)
+				writer.Header()["Error"] = []string{err.Error()}
+				writer.WriteHeader(500)
+				return
+			}
+			writer.Header()["ETag"] = []string{etag}
+			writer.Write(result)
+			if f, ok := writer.({{.HTTPFlusher}}); ok {
+				f.Flush()
+			}
 `
 )
