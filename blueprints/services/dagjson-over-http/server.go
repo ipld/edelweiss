@@ -98,6 +98,30 @@ func (x GoServerImpl) GoDef() cg.Blueprint {
 				}
 
 			}
+			// if the request is cachable, compute an etag and send the collected results to http
+			if isReqCachable {
+				defer func() {
+					result := resultWriter.(*{{.BytesBuffer}}).Bytes()
+					etag, err := {{.EdelweissETag}}(result)
+					if err != nil {
+						{{.LoggerVar}}.Errorf("etag generation (%v)", err)
+						writer.Header()["Error"] = []string{err.Error()}
+						writer.WriteHeader(500)
+						return
+					}
+					// if the request has an If-None-Match header, respond appropriately
+					ifNoneMatchValue := request.Header["If-None-Match"]
+					if len(ifNoneMatchValue) == 1 && ifNoneMatchValue[0] == etag {
+						writer.WriteHeader(304)
+					} else {
+						writer.Header()["ETag"] = []string{etag}
+						writer.Write(result)
+						if f, ok := writer.({{.HTTPFlusher}}); ok {
+							f.Flush()
+						}
+					}
+				}()
+			}
 			for {
 				select {
 				case <-request.Context().Done():
@@ -120,28 +144,6 @@ func (x GoServerImpl) GoDef() cg.Blueprint {
 					buf.WriteByte("\n"[0])
 					resultWriter.Write(buf.Bytes())
 					if f, ok := resultWriter.({{.HTTPFlusher}}); ok {
-						f.Flush()
-					}
-				}
-			}
-			// if the request is cachable, compute an etag and send the collected results to http
-			if isReqCachable {
-				result := resultWriter.(*{{.BytesBuffer}}).Bytes()
-				etag, err := {{.EdelweissETag}}(result)
-				if err != nil {
-					{{.LoggerVar}}.Errorf("etag generation (%v)", err)
-					writer.Header()["Error"] = []string{err.Error()}
-					writer.WriteHeader(500)
-					return
-				}
-				// if the request has an If-None-Match header, respond appropriately
-				ifNoneMatchValue := request.Header["If-None-Match"]
-				if len(ifNoneMatchValue) == 1 && ifNoneMatchValue[0] == etag {
-					writer.WriteHeader(304)
-				} else {
-					writer.Header()["ETag"] = []string{etag}
-					writer.Write(result)
-					if f, ok := writer.({{.HTTPFlusher}}); ok {
 						f.Flush()
 					}
 				}
