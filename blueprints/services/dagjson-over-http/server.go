@@ -139,6 +139,7 @@ func (x GoServerImpl) GoDef() cg.Blueprint {
 		"IPLDDecode":         base.IPLDDecode,
 		"DAGJSONDecode":      base.DAGJSONDecode,
 		"IOReadAll":          base.IOReadAll,
+		"DAGCBORDecode":      base.DAGCBORDecode,
 		//
 		"Interface":    x.Ref.Append("_Server"),
 		"AsyncHandler": x.Ref.Append("_AsyncHandler"),
@@ -168,30 +169,56 @@ type {{.Interface}} interface {
 func {{.AsyncHandler}}(s {{.Interface}}) {{.HTTPHandlerFunc}} {
 	return func(writer {{.HTTPResponseWriter}}, request *{{.HTTPRequest}}) {
 		// parse request
-		msg, err := {{.IOReadAll}}(request.Body)
-		if err != nil {
-			{{.LoggerVar}}.Errorf("reading request body (%v)", err)
-			writer.WriteHeader(400)
-			return
-		}
-		n, err := {{.IPLDDecode}}(msg, {{.DAGJSONDecode}})
-		if err != nil {
-			{{.LoggerVar}}.Errorf("received request not decodeable (%v)", err)
-			writer.WriteHeader(400)
-			return
-		}
 		env := &{{.CallEnvelope}}{}
-		if err = env.Parse(n); err != nil {
-			{{.LoggerVar}}.Errorf("parsing call envelope (%v)", err)
+		isReqCachable := false
+		switch request.Method {
+		case "POST":
+			isReqCachable = false
+			msg, err := {{.IOReadAll}}(request.Body)
+			if err != nil {
+				{{.LoggerVar}}.Errorf("reading request body (%v)", err)
+				writer.WriteHeader(400)
+				return
+			}
+			n, err := {{.IPLDDecode}}(msg, {{.DAGJSONDecode}})
+			if err != nil {
+				{{.LoggerVar}}.Errorf("received request not decodeable (%v)", err)
+				writer.WriteHeader(400)
+				return
+			}
+			if err = env.Parse(n); err != nil {
+				{{.LoggerVar}}.Errorf("parsing call envelope (%v)", err)
+				writer.WriteHeader(400)
+				return
+			}
+		case "GET":
+			isReqCachable = true
+			msg := request.URL.Query().Get("q")
+			n, err := {{.IPLDDecode}}([]byte(msg), {{.DAGCBORDecode}})
+			if err != nil {
+				{{.LoggerVar}}.Errorf("received url not decodeable (%v)", err)
+				writer.WriteHeader(400)
+				return
+			}
+
+			if err = env.Parse(n); err != nil {
+				{{.LoggerVar}}.Errorf("parsing call envelope (%v)", err)
+				writer.WriteHeader(400)
+				return
+			}
+		default:
+			{{.LoggerVar}}.Errorf("http method not supported")
 			writer.WriteHeader(400)
 			return
 		}
+		_ = isReqCachable
 
 		writer.Header()["Content-Type"] = []string{
 			{{.ContentType}},
 		}
 
 		// demultiplex request
+		var err error
 		switch {
 {{range .MethodCases}}{{.}}{{end}}
 {{.IdentifyCase}}
