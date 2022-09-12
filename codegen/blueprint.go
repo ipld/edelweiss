@@ -14,6 +14,13 @@ type Blueprint interface {
 	Write(GoFileContext, io.Writer) error
 }
 
+type BlueBool bool
+
+func (x BlueBool) Write(ctx GoFileContext, w io.Writer) error {
+	_, err := fmt.Fprint(w, x)
+	return err
+}
+
 type BlueSlice []Blueprint
 
 func (x BlueSlice) Write(ctx GoFileContext, w io.Writer) error {
@@ -102,6 +109,8 @@ func (x T) Write(ctx GoFileContext, w io.Writer) error {
 
 func flattenBlueprint(ctx GoFileContext, b Blueprint) (Blueprint, error) {
 	switch t := b.(type) {
+	case BlueBool:
+		return t, nil
 	case BlueMap:
 		return flattenBlueMap(ctx, t)
 	case BlueSlice:

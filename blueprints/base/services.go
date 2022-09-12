@@ -27,6 +27,7 @@ var (
 
 var (
 	IOReadCloser       = &cg.GoRef{PkgPath: "io", Name: "ReadCloser"}
+	IOWriter           = &cg.GoRef{PkgPath: "io", Name: "Writer"}
 	IOEOF              = &cg.GoRef{PkgPath: "io", Name: "EOF"}
 	IOErrUnexpectedEOF = &cg.GoRef{PkgPath: "io", Name: "ErrUnexpectedEOF"}
 	IOReadAll          = &cg.GoRef{PkgPath: "io", Name: "ReadAll"}
@@ -39,4 +40,5 @@ var (
 	EdelweissErrProto   = &cg.GoTypeRef{PkgPath: EdelweissServicesPkg, TypeName: "ErrProto"}
 	EdelweissErrService = &cg.GoTypeRef{PkgPath: EdelweissServicesPkg, TypeName: "ErrService"}
 	EdelweissErrSchema  = &cg.GoRef{PkgPath: EdelweissServicesPkg, Name: "ErrSchema"}
+	EdelweissETag       = &cg.GoRef{PkgPath: EdelweissServicesPkg, Name: "ETag"}
 )

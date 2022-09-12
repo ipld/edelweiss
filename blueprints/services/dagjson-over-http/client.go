@@ -50,8 +50,10 @@ func (x GoClientImpl) GoDef() cg.Blueprint {
 			"MethodReturn":       x.Lookup.LookupDepGoRef(m.Type.Return),
 			"MethodReturnAsync":  asyncResultRef,
 			"ProcessReturnAsync": processAsyncResultRef,
+			"MethodCachable":     cg.BlueBool(m.Cachable),
 			//
 			"DAGJSONEncode":             base.DAGJSONEncode,
+			"DAGCBOREncode":             base.DAGCBOREncode,
 			"Context":                   base.Context,
 			"ContextWithCancel":         base.ContextWithCancel,
 			"LoggerVar":                 loggerVar,
@@ -226,14 +228,25 @@ func (c *{{.Type}}) {{.AsyncMethodDecl}} {
 		{{.MethodName}}: req,
 	}
 
+	{{if .MethodCachable}}
+	buf, err := {{.IPLDEncode}}(envelope, {{.DAGCBOREncode}}) // XXX: apply binary encoding on top?
+	{{else}}
 	buf, err := {{.IPLDEncode}}(envelope, {{.DAGJSONEncode}})
+	{{end}}
 	if err != nil {
 		return nil, {{.Errorf}}("serializing DAG-JSON request: %w", err)
 	}
 
 	// encode request in URL
 	u := *c.endpoint
+	{{if .MethodCachable}}
+	q := {{.URLValues}}{}
+	q.Set("q", string(buf))
+	u.RawQuery = q.Encode()
+	httpReq, err := {{.HTTPNewRequestWithContext}}(ctx, "GET", u.String(), nil)
+	{{else}}
 	httpReq, err := {{.HTTPNewRequestWithContext}}(ctx, "POST", u.String(), {{.BytesNewReader}}(buf))
+	{{end}}
 	if err != nil {
 		return nil, err
 	}

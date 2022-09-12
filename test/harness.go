@@ -6,6 +6,8 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/ipld/edelweiss/compile"
@@ -32,18 +34,27 @@ func RunGenTest(t *testing.T, defs defs.Defs, testSrc string) {
 	// defer os.RemoveAll(dir)
 	fmt.Printf("generating test in %s\n", dir)
 
+	// find module root of the test
+	modFile, err := exec.Command("go", "env", "GOMOD").Output()
+	if err != nil {
+		t.Fatal(err)
+	}
+	modRoot := filepath.Dir(strings.TrimSpace(string(modFile)))
+
 	// create go.mod
-	goModSrc := `
+	goModSrc := fmt.Sprintf(`
 module test
 
 go 1.16
 
 require (
-	github.com/ipld/edelweiss 625345fdc3f8a74a9cf356a7b2161ba81eace99b
+	github.com/ipld/edelweiss v0.0.1
 	github.com/ipld/go-ipld-prime v0.14.4
 	github.com/ipfs/go-cid v0.0.4
 )
-`
+replace github.com/ipld/edelweiss v0.0.1 => %s
+`, modRoot)
+
 	if err := os.WriteFile(path.Join(dir, "go.mod"), []byte(goModSrc), 0644); err != nil {
 		t.Fatalf("creating go.mod (%v)", err)
 	}

@@ -48,6 +48,7 @@ func (x GoServerImpl) GoDef() cg.Blueprint {
 			"MethodArg":         x.Lookup.LookupDepGoRef(m.Type.Arg),
 			"MethodReturn":      x.Lookup.LookupDepGoRef(m.Type.Return),
 			"MethodReturnAsync": asyncResultRef,
+			"MethodCachable":    cg.BlueBool(m.Cachable),
 			//
 			"LoggerVar":           loggerVar,
 			"ErrorEnvelope":       x.Lookup.LookupDepGoRef(x.Def.ErrorEnvelope),
@@ -56,8 +57,10 @@ func (x GoServerImpl) GoDef() cg.Blueprint {
 			"IPLDEncodeStreaming": base.IPLDEncodeStreaming,
 			"DAGJSONEncode":       base.DAGJSONEncode,
 			"EdelweissString":     base.EdelweissString,
+			"EdelweissETag":       base.EdelweissETag,
 			"BytesBuffer":         base.BytesBuffer,
 			"HTTPFlusher":         base.HTTPFlusher,
+			"IOWriter":            base.IOWriter,
 		}
 		methodDecls = append(methodDecls, cg.T{
 			Data: bmDecl,
@@ -67,6 +70,14 @@ func (x GoServerImpl) GoDef() cg.Blueprint {
 			Data: bmDecl,
 			Src: `
 		case env.{{.MethodName}} != nil:
+			{{if not .MethodCachable}}
+			if isReqCachable {
+				{{.LoggerVar}}.Errorf("non-cachable method called with http GET")
+				writer.Header()["Error"] = []string{"non-cachable method called with GET"}
+				writer.WriteHeader(500)
+				return
+			}
+			{{end}}
 			ch, err := s.{{.MethodName}}(request.Context(), env.{{.MethodName}})
 			if err != nil {
 				{{.LoggerVar}}.Errorf("service rejected request (%v)", err)
@@ -75,11 +86,42 @@ func (x GoServerImpl) GoDef() cg.Blueprint {
 				return
 			}
 
-			writer.WriteHeader(200)
-			if f, ok := writer.({{.HTTPFlusher}}); ok {
-				f.Flush()
-			}
+			// if the request is cachable, collect all async results in a buffer, otherwise write them directly to http
+			var resultWriter {{.IOWriter}}
+			if isReqCachable {
+				resultWriter = new({{.BytesBuffer}})
+			} else {
+				resultWriter = writer
+				writer.WriteHeader(200)
+				if f, ok := writer.({{.HTTPFlusher}}); ok {
+					f.Flush()
+				}
 
+			}
+			// if the request is cachable, compute an etag and send the collected results to http
+			if isReqCachable {
+				defer func() {
+					result := resultWriter.(*{{.BytesBuffer}}).Bytes()
+					etag, err := {{.EdelweissETag}}(result)
+					if err != nil {
+						{{.LoggerVar}}.Errorf("etag generation (%v)", err)
+						writer.Header()["Error"] = []string{err.Error()}
+						writer.WriteHeader(500)
+						return
+					}
+					// if the request has an If-None-Match header, respond appropriately
+					ifNoneMatchValue := request.Header["If-None-Match"]
+					if len(ifNoneMatchValue) == 1 && ifNoneMatchValue[0] == etag {
+						writer.WriteHeader(304)
+					} else {
+						writer.Header()["ETag"] = []string{etag}
+						writer.Write(result)
+						if f, ok := writer.({{.HTTPFlusher}}); ok {
+							f.Flush()
+						}
+					}
+				}()
+			}
 			for {
 				select {
 				case <-request.Context().Done():
@@ -100,8 +142,8 @@ func (x GoServerImpl) GoDef() cg.Blueprint {
 						continue
 					}
 					buf.WriteByte("\n"[0])
-					writer.Write(buf.Bytes())
-					if f, ok := writer.({{.HTTPFlusher}}); ok {
+					resultWriter.Write(buf.Bytes())
+					if f, ok := resultWriter.({{.HTTPFlusher}}); ok {
 						f.Flush()
 					}
 				}
@@ -123,7 +165,9 @@ func (x GoServerImpl) GoDef() cg.Blueprint {
 		"IPLDEncodeStreaming": base.IPLDEncodeStreaming,
 		"DAGJSONEncode":       base.DAGJSONEncode,
 		"EdelweissString":     base.EdelweissString,
+		"EdelweissETag":       base.EdelweissETag,
 		"BytesBuffer":         base.BytesBuffer,
+		"HTTPFlusher":         base.HTTPFlusher,
 		//
 		"IdentifyMethodName":   cg.V(x.Def.Identify.Name),
 		"IdentifyMethodArg":    x.Lookup.LookupDepGoRef(x.Def.Identify.Type.Arg),
@@ -139,6 +183,7 @@ func (x GoServerImpl) GoDef() cg.Blueprint {
 		"IPLDDecode":         base.IPLDDecode,
 		"DAGJSONDecode":      base.DAGJSONDecode,
 		"IOReadAll":          base.IOReadAll,
+		"DAGCBORDecode":      base.DAGCBORDecode,
 		//
 		"Interface":    x.Ref.Append("_Server"),
 		"AsyncHandler": x.Ref.Append("_AsyncHandler"),
@@ -168,30 +213,56 @@ type {{.Interface}} interface {
 func {{.AsyncHandler}}(s {{.Interface}}) {{.HTTPHandlerFunc}} {
 	return func(writer {{.HTTPResponseWriter}}, request *{{.HTTPRequest}}) {
 		// parse request
-		msg, err := {{.IOReadAll}}(request.Body)
-		if err != nil {
-			{{.LoggerVar}}.Errorf("reading request body (%v)", err)
-			writer.WriteHeader(400)
-			return
-		}
-		n, err := {{.IPLDDecode}}(msg, {{.DAGJSONDecode}})
-		if err != nil {
-			{{.LoggerVar}}.Errorf("received request not decodeable (%v)", err)
-			writer.WriteHeader(400)
-			return
-		}
 		env := &{{.CallEnvelope}}{}
-		if err = env.Parse(n); err != nil {
-			{{.LoggerVar}}.Errorf("parsing call envelope (%v)", err)
+		isReqCachable := false
+		switch request.Method {
+		case "POST":
+			isReqCachable = false
+			msg, err := {{.IOReadAll}}(request.Body)
+			if err != nil {
+				{{.LoggerVar}}.Errorf("reading request body (%v)", err)
+				writer.WriteHeader(400)
+				return
+			}
+			n, err := {{.IPLDDecode}}(msg, {{.DAGJSONDecode}})
+			if err != nil {
+				{{.LoggerVar}}.Errorf("received request not decodeable (%v)", err)
+				writer.WriteHeader(400)
+				return
+			}
+			if err = env.Parse(n); err != nil {
+				{{.LoggerVar}}.Errorf("parsing call envelope (%v)", err)
+				writer.WriteHeader(400)
+				return
+			}
+		case "GET":
+			isReqCachable = true
+			msg := request.URL.Query().Get("q")
+			n, err := {{.IPLDDecode}}([]byte(msg), {{.DAGCBORDecode}})
+			if err != nil {
+				{{.LoggerVar}}.Errorf("received url not decodeable (%v)", err)
+				writer.WriteHeader(400)
+				return
+			}
+
+			if err = env.Parse(n); err != nil {
+				{{.LoggerVar}}.Errorf("parsing call envelope (%v)", err)
+				writer.WriteHeader(400)
+				return
+			}
+		default:
+			{{.LoggerVar}}.Errorf("http method not supported")
 			writer.WriteHeader(400)
 			return
 		}
+		_ = isReqCachable
 
 		writer.Header()["Content-Type"] = []string{
 			{{.ContentType}},
 		}
 
 		// demultiplex request
+		var err error
 		switch {
 {{range .MethodCases}}{{.}}{{end}}
 {{.IdentifyCase}}
@@ -220,6 +291,26 @@ func {{.AsyncHandler}}(s {{.Interface}}) {{.HTTPHandlerFunc}} {
 				return
 			}
 			buf.WriteByte("\n"[0])
-			writer.Write(buf.Bytes())
+
+			// compute etag, since Identify is cachable
+			result := buf.Bytes()
+			etag, err := {{.EdelweissETag}}(result)
+			if err != nil {
+				{{.LoggerVar}}.Errorf("etag generation (%v)", err)
+				writer.Header()["Error"] = []string{err.Error()}
+				writer.WriteHeader(500)
+				return
+			}
+			// if the request has an If-None-Match header, respond appropriately
+			ifNoneMatchValue := request.Header["If-None-Match"]
+			if len(ifNoneMatchValue) == 1 && ifNoneMatchValue[0] == etag {
+				writer.WriteHeader(304)
+			} else {
+				writer.Header()["ETag"] = []string{etag}
+				writer.Write(result)
+				if f, ok := writer.({{.HTTPFlusher}}); ok {
+					f.Flush()
+				}
+			}
 `
 )
