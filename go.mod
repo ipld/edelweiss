@@ -1,6 +1,6 @@
 module github.com/ipld/edelweiss
 
-go 1.19
+go 1.20
 
 require (
 	github.com/ipfs/go-cid v0.2.0
