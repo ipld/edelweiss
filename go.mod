@@ -2,7 +2,6 @@ module github.com/ipld/edelweiss
 
 go 1.21
 
-
 require (
 	github.com/ipfs/go-cid v0.2.0
 	github.com/ipfs/go-log/v2 v2.5.1
